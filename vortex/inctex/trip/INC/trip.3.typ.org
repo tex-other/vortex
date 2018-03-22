@@ -1,0 +1,65 @@
+This is DVItype, Version 2.8 for Berkeley UNIX
+Options selected:
+  Starting page = *.*.*.*.*.*.*.*.*.* 
+  Maximum number of pages = 1000000
+  Output level = 2 (verbose)
+  Resolution =  72.27000000 pixels per inch
+numerator/denominator=25400000/473628672
+magnification=2000;       0.00003052 pixels per DVI unit
+' TeX output 1957.11.20:0700'
+ 
+42: beginning of page 10000.0.0.0.11.131072.0.0.0.0 
+87: push 
+level 0:(h=0,v=0,w=0,x=0,y=0,z=0,hh=0,vv=0) 
+88: down4 32460719 v:=0+32460719=32460719, vv:=991 
+93: push 
+level 1:(h=0,v=32460719,w=0,x=0,y=0,z=0,hh=0,vv=991) 
+94: fntdef1 0: trip---loaded at size 655360 DVI units 
+ (this font is magnified 200%) 
+114: fntnum0 current font is trip 
+115: setchar65 h:=0+131072=131072, hh:=4 
+[A]
+116: down3 65536 v:=32460719+65536=32526255, vv:=993 
+120: setrule height 524288, width 327680 (16x10 pixels) 
+ h:=131072+327680=458752, hh:=14 
+129: pop 
+level 1:(h=0,v=32460719,w=0,x=0,y=0,z=0,hh=0,vv=991) 
+130: y3 1880637 v:=32460719+1880637=34341356, vv:=1048 
+134: push 
+level 1:(h=0,v=34341356,w=0,x=0,y=1880637,z=0,hh=0,vv=1048) 
+135: setchar65 h:=0+131072=131072, hh:=4 
+[A]
+136: down3 65536 v:=34341356+65536=34406892, vv:=1050 
+140: setrule height 524288, width 327680 (16x10 pixels) 
+ h:=131072+327680=458752, hh:=14 
+149: pop 
+level 1:(h=0,v=34341356,w=0,x=0,y=1880637,z=0,hh=0,vv=1048) 
+150: y0 1880637 v:=34341356+1880637=36221993, vv:=1105 
+151: push 
+level 1:(h=0,v=36221993,w=0,x=0,y=1880637,z=0,hh=0,vv=1105) 
+152: setchar65 h:=0+131072=131072, hh:=4 
+[A]
+153: down3 65536 v:=36221993+65536=36287529, vv:=1107 
+157: setrule height 524288, width 327680 (16x10 pixels) 
+ h:=131072+327680=458752, hh:=14 
+166: pop 
+level 1:(h=0,v=36221993,w=0,x=0,y=1880637,z=0,hh=0,vv=1105) 
+167: down3 -1396163 v:=36221993-1396163=34825830, vv:=1063 
+171: push 
+level 1:(h=0,v=34825830,w=0,x=0,y=1880637,z=0,hh=0,vv=1063) 
+172: setchar65 h:=0+131072=131072, hh:=4 
+[A]
+173: down3 65536 v:=34825830+65536=34891366, vv:=1065 
+177: setrule height 524288, width 327680 (16x10 pixels) 
+ h:=131072+327680=458752, hh:=14 
+186: pop 
+level 1:(h=0,v=34825830,w=0,x=0,y=1880637,z=0,hh=0,vv=1063) 
+187: pop 
+level 0:(h=0,v=0,w=0,x=0,y=0,z=0,hh=0,vv=0) 
+188: eop 
+Postamble starts at byte 189.
+maxv=34956902, maxh=0, maxstackdepth=2, totalpages=1
+warning: observed maxv was 36287529
+warning: observed maxh was 458752
+Font 0: trip 
+ 

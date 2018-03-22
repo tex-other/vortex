@@ -1,0 +1,16 @@
+This is DVItype, Version 2.8 for Berkeley UNIX
+Options selected:
+  Starting page = *.*.*.*.*.*.*.*.*.* 
+  Maximum number of pages = 1000000
+  Output level = 2 (verbose)
+  Resolution =  72.27000000 pixels per inch
+numerator/denominator=25400000/473628672
+magnification=2000;       0.00003052 pixels per DVI unit
+' TeX output 1957.11.20:0700'
+ 
+42: beginning of page -1.2.-1118806.0.11.196608.327680.1572864.1073741823.0 
+87: down3 1179648 v:=0+1179648=1179648, vv:=36 
+91: eop 
+Postamble starts at byte 92.
+maxv=1073610751, maxh=6553600, maxstackdepth=1, totalpages=1
+ 

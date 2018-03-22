@@ -1,0 +1,214 @@
+;; Copyright (c) 1987 The Regents of the University of California.
+;; All rights reserved.
+;;
+;; Permission is hereby granted, without written agreement and without
+;; license or royalty fees, to use, copy, modify, and distribute this
+;; software and its documentation for any purpose, provided that the
+;; above copyright notice and the following two paragraphs appear in
+;; all copies of this software.
+;; 
+;; IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+;; DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+;; OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+;; CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;;
+;; THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+;; INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+;; AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+;; ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+;; PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+;;
+;; The above licensing information supersedes all licensing information
+;; below.
+;
+;  RCS Info: $Header: kill.vl,v 0.1 87/05/01 13:05:57 john Locked $
+;
+;  VorTeX - Visually Oriented TeX
+;  A source-based WYSIWYG editor for beautiful documents
+;
+;  This file is part of the source editor/user interface written
+;  by John Coker for the VorTeX project under the direction of
+;  Prof. Michael A. Harrison of the University of California at
+;  Berkeley.
+;
+;  Copyright (c) 1987 John L. Coker
+;  University of California, Berkeley
+;  john@renoir.Berkeley.EDU
+;  vortex@renoir.Berkeley.EDU
+;
+;  This file intact and any code derived from it are copyright
+;  John Coker and the Regents of the University of California.
+;  All rights reserved by the author.  See the copyright notice
+;  distributed with this software for a complete description of
+;  the conditions under which it is made available.
+;
+;  kill.vl - the various kill commands
+;
+
+;
+;  DOCUMENTATION
+;
+;  Name: %kill-ring
+;  Desc: This variable is bound to a circular list of strings
+;	which is the ``kill ring,'' the buffer where the result
+;	of ``killing'' (as opposed to deleting) text is stored.
+;	The \sym{car} of this list is always the last thing
+;	put there by \sym{push-kill-ring} (I.e., usually the
+;	last killed text).
+;
+;	The kill ring is effectively a fixed length stack, that
+;	is, it always extends %kill-ring-length arguments down
+;	from the top.  Pushing an element onto the kill ring
+;	pushes all elements on ring down one level, losing the
+;	bottom element and the pused text becomes the new top element.
+;	Popping from the ring causes the popped element to become
+;	the new bottom element and all other elements to move
+;	up one notch.
+;
+;	The length of the kill ring (the number of unique elements)
+;	is kept in the variable %kill-ring-length, which should
+;	not be reset, since \sym{push-kill-ring} uses it to
+;	maintain the kill ring.
+;  Side: This variable should not be set by the user without
+;	extreme caution.  Playing with circular lists is dangerous
+;	since anything which tries to traverse them to the end
+;	like \sym{length} or \sym{print} will take an infinite
+;	amount of time to do so.
+;  Xref: kill-ring %kill-ring-length
+;  SeeA: push-kill-ring pop-kill-ring
+;
+
+(setq %kill-ring-length 20)
+(setq %kill-ring nil)
+
+;
+;  Create the kill ring, this is a circular list of strings
+;  with %kill-ring-length elements in it.
+;
+(let ((count 0))
+  (while (< count %kill-ring-length)
+    (setq %kill-ring (cons "" %kill-ring))
+    (setq count (add count 1))))
+(rplacd (nthcdr (minus %kill-ring-length 1) %kill-ring) %kill-ring)
+
+;
+;  Define functions to manipulat the kill-ring.  We can just use
+;  car or nth to access elements of it, but we need to do some
+;  slightly more obscure stuff to push or pop elments from it.
+;
+;  DOCUMENTATION
+;
+;  Name: push-kill-ring
+;  Call: (push-kill-ring 'string)
+;  Retu: nil
+;  Desc: This function takes the given string and pushes it onto
+;	the ``front'' of the kill ring.  This means that the \sym{car}
+;	of the kill ring will contain the given string and the
+;	\sym{cadr} will contain the previous ``top element''.
+;  SeeA: pop-kill-ring kill-ring
+;
+
+(defun push-kill-ring (text)
+  (cond ((not (stringp text))
+	 (error "Argument to push-kill-ring must be a string!")))
+  (setq %kill-ring (nthcdr (minus %kill-ring-length 1) %kill-ring))
+  (rplaca %kill-ring text)
+  nil
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: pop-kill-ring
+;  Call: (pop-kill-ring)
+;  Retu: string
+;  Desc: This function moves the top element of the kill ring to
+;	the bottom and advances all other elements one notch.
+;	The text that was moved is returned by this function.
+;	This means that the \sym{car} of the kill ring will now
+;	contain the string that was the \sym{cadr}, the previous
+;	``second element''.
+;  SeeA: push-kill-ring kill-ring
+;
+
+(defun pop-kill-ring ()
+  (let ((text (car %kill-ring)))
+    (setq %kill-ring (cdr %kill-ring))
+    text)
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: kill-region
+;  Call: (kill-region 'minpos 'maxpos)
+;  Retu: nil
+;  Desc: This function pushes the text delimited by the minimum and
+;	maximum offset arguments onto the kill and ring and then
+;	deletes the text.  This is done internally by \sym{copy-region}
+;	and \sym{delete-region}.
+;
+;	When called interactive, the region delimiters are automatically
+;	given as point and mark.  This means that one defines the region
+;	to kill by setting mark at the beginning of the text, moving to
+;	the end, and invoking \sym{kill-region}.
+;  SeeA: yank-from-kill-ring point mark kill-ring
+;
+
+(defun kill-region (minpos maxpos)
+  (interactive "r")
+  (push-kill-ring (copy-region minpos maxpos))
+  (delete-region minpos maxpos)
+  nil
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: copy-region-as-kill
+;  Call: (copy-region-as-kill 'minpos 'maxpos)
+;  Retu: nil
+;  Desc: This function copies the text delimited by the two file
+;	offsets into the head of the kill buffer.  This means that
+;	the text, instead of being killed, is just copied as though
+;	it had been killed.
+;
+;	When called interactively, the region is that specified
+;	by point and mark in the current buffer.
+;  SeeA: kill-region yank-from-kill-ring kill-ring
+;
+
+(defun copy-region-as-kill (minpos maxpos)
+  (interactive "r")
+  (push-kill-ring (copy-region minpos maxpos))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: yank-from-kill-ring
+;  Call: (yank-from-kill-ring)
+;  Retu: nil
+;  Desc: This function yanks the top text string from the kill ring
+;	and inserts it into the current buffer before point.  This
+;	means that the text previously killed is placed in the
+;	current buffer.
+;  SeeA: kill-chars kill-region copy-region-as-kill kill-ring
+;
+
+(defun yank-from-kill-ring ()
+  (interactive)
+  (insert-string (car %kill-ring))
+  nil
+)
+
+;  debugging routine: print out kill ring
+(defun %pkr ()
+ (let ((count 0))
+  (patom "< ")
+  (while (< count %kill-ring-length)
+    (print (nth count %kill-ring))
+    (patom " ")
+    (setq count (add count 1)))
+  (patom ">\n"))
+)

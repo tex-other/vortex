@@ -1,0 +1,91 @@
+\section{The Three Components}
+
+The three basic pieces to the {\VorTeX} system are the {\em source
+editor}, {\em proof editor} and {\em formatter}.  These have been
+implemented as separate processes which communicate through Berkeley
+{\UNIX} TCP/IP, ``stream sockets.''  For the most part, the
+communications are asynchronous, without acknowlegements and avoiding
+the necessity for request/reply messages.  However, there are several
+places where queries were unavoidable.  The source editor is the
+program run by the user to invoke the system, it then invokes the
+processes which implement the proof editor and formatter as daemons.
+
+Along each of the three communications channels editor,
+{\em i\TeX}--the {\TeX} formatter and {\em source}--the source editor)
+a constant-length header has been defined and message-specific data
+trails the header.  Other than the data length parameter in the
+header, there are no message boundaries.
+
+\begin{figure}
+    \centerline{\psfig{figure=figs/triangle.ps}}
+    \caption{The Basic System Triangle}
+\end{figure}
+
+\subsection{The Source Editor}
+
+The source editor invokes the proof editor and formatter in response to
+the commands {\tt start-proof-editor} and {\tt start-formatter}.
+The formatter is also started, if necessary, when the user creates a new
+{\TeX} document with {\tt make-document}.  Similarly, the proof editor
+is started automatically by {\tt proof-document}.
+
+Since {\tt vortex} can function as an editor with both, one or none of
+the daemons running, it does not exit if they do.  The user may get rid
+of the proof editor and formatter with {\tt kill-proof-editor} and
+{\tt kill-formatter} respectively.  However, without the two daemons,
+only normal text editing may be done.
+
+Note that all real editing is done in the source editor.  The proof
+editor displays the formatted output and allows selection on that
+output, but the system translates all selections back into the source
+buffers and is edited there.
+
+All files handled by the system are managed by the source editor.
+This is necessary since the method of invocation of the formatter
+allows it to be run on a different host machine.
+
+\subsection{The Proof Editor}
+
+The proof editor appears to be identical to the source editor in terms
+of paradigm--it's windows operate as do source buffer windows.  Any
+{\VorTeX} buffer window may visit a proof buffer; the differences
+between a source and a proof window are all implemented at the buffer
+level.
+
+The proof editor commands are implemented as a small set of remote
+procedure calls to the proof editor daemon, which is responsible for
+maintaining the image in the window.  The mode line and window itself
+is managed by the source editor and all input is filtered through the
+key bindings scheme and devolves into Lisp function calls.
+
+\subsection{The Formatter}
+
+The formatter is not accessible by the user directly.  It is responsible
+for formatting the document and performing translation functions in
+both directions, but the user never needs to interact with it.  As with
+the proof editor, all functionality is implemented through a set of
+remote procedure calls.
+
+The top-level structure is the {\em document\/}, which contains a set
+of {files\/}.  Every character in the system belongs to a file and has
+a unique character ID assigned it by the source editor.  The character
+ID encodes the file ID within it.  Once formatted, that character has
+a direct relationship with a \tbox, the representation of the
+character in the formatted page.
+
+When a file needs to be sent to the formatter, the source editor makes
+sure it exists in a buffer, marks the buffer as a special {\TeX} file
+buffer, and sends the contents of the file to the formatter.  These
+file transfers are always initiated by the formatter when it requires
+a new file.  When the source editor needs to update the contents of a
+file, the changes are sent in terms of {\em insert\/} and {\em delete\/}
+remote procedure calls.
+
+When a file marked as a {\TeX} file buffer is changed (inserted into
+or deleted from) the source editor must send the changes to the
+formatter before any other processing (using either of the daemons) is
+done.  Currently, the lowest-level insert and delete commands in the
+source editor translate into formatter remote procedure calls
+immediately.  Thus, formatting occurs during normal text editing, and
+an explicit request to format the document may find it already in a
+consistent state.

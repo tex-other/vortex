@@ -1,0 +1,26 @@
+1c1
+< This is Common TeX, Version 2.9 (INITEX) 10 NOV 1988 12:39
+---
+> This is TeX, Version 1.4 (INITEX)  18 APR 1985 03:02
+3c3,11
+< (./trip.tex
+---
+> (trip.tex
+> ! Bad character code (128).
+> <to be read again> 
+>                    -
+> l.26   \nonstopmode\lccode128-
+>                               0\mathchardef\a="8000\def\a{ SC...
+> The numeric code for a character must be between 0 and 127.
+> I changed this one to zero.
+> 
+74,76c82,84
+<  (preloaded format=trip 88.11.10)
+< 612 strings of total length 3204
+< 468 memory locations dumped; current usage is 92,14,266
+---
+>  (preloaded format=trip 85.4.18)
+> 1178 strings of total length 22700
+> 457 memory locations dumped; current usage is 92&270
+84a93
+> No pages of output.

@@ -1,0 +1,67 @@
+\section{Introduction}
+
+{\VorTeX}\cite{phc:vortex} is a source-based interactive document
+preparation, system built on the {\TeX} typesetting
+language\cite{knuth:tex}, which allows some of the functions of
+direct-manipulation systems as well.  This report describes the editor
+portion of the prototype system as currently implemented.
+
+{\VorTeX} is an interactive system based on {\TeX}. {\TeX} allows
+finer control and produces higher quality typesetting than the other
+systems commonly available on {\UNIX}.  {\VorTeX} makes these features
+more accessible through integration with a powerful editor, an
+incremental {\TeX} processor and a what-you-see-is-what-you-get output
+displayer.
+
+The first version of {\VorTeX} is nearly finished and has
+shown us what problems our early assumptions and the design have
+produced.  This document describes the internals of the system from
+the point of view of the {\VorTeX} source editor (the user interface).
+Since {\VorTeX} is written in three separate pieces, this paper does
+not describe the architecture of the entire system.  However, it
+does document most of the interfaces within the system.
+
+The references at the end of this report can be followed up for more
+information, especially the Ph.D. thesis of Pehong Chen\cite{phc:phd}.
+More information on the internal represenation can be found
+in \cite{phc:int}.
+
+\subsection{Some Associations}
+
+The system runs under X version 10, and appears to be another of the
+{\EMACS}\cite{stallman:emacs} family of visual editors.  The command
+structure and invocation is based on the {\EMACS} paradigm.  The
+source editing paradigm is also that of {\EMACS} with point (the left
+edge of the text cursor) and mark (an invisible text marker) used to
+delimit text.
+
+{\VorTeX} is actually implemented as several processes.  The one the
+user starts up (which is called {\tt vortex}) implements the source
+editor.  The source editor contains a Lisp interpreter which is used
+to invoke the other processes, although this is typically done by the
+system when needed.  From the user's point of view, he interacts
+solely with the source editor since its Lisp interpreter performs all
+interpretation and executes commands at the higher levels.
+
+\subsection{A Few Words About the Editor}
+
+The program {\tt vortex} is a text editor with a built-in Lisp interpreter
+which has been written in C to perform all the user interaction for the
+{\VorTeX} system.  It runs only under X, since is windows (in {\EMACS}
+terminology) are also X windows.  Every different ``locus of editing''
+is directed through a separate window.  In most instances, each window
+views a different source file or page of the proof output, although it
+is quite possible to edit the same file and view the same page at the
+same time in different windows.
+
+Our Lisp interpreter, vLisp, has been built into the editor (it kernel is
+entirely written in C) and all the editor functions are accessed through
+the Lisp system.  Higher level editing is done through vLisp functions.
+The Lisp kernel and most primitive editing functions are coded in C and
+almost all of the visible system is built up from these primitives through
+vLisp functions.
+
+\begin{figure}
+    \centerline{\psfig{figure=figs/system.ps}}
+    \caption{The {\VorTeX} System Layout}
+\end{figure}

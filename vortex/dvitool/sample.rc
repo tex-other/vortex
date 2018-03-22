@@ -1,0 +1,6 @@
+set init-icon-file	"~/lib/icons/dvitool.black.suntools"
+set init-icon-x		1000
+set init-icon-y		0
+set init-win-x		106
+set init-win-y		200
+bind-to-key which-font	"\e\^P"

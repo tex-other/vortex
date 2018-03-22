@@ -1,0 +1,63 @@
+\magnification\magstep1
+\def\VorTeX{V\kern-2.7pt\lower.5ex\hbox{O\kern-1.4pt R}\kern-2.6pt
+  T\kern-.1667em\lower.5ex\hbox{E}\kern-.125emX}
+\def\myitem#1#2{\bgroup
+  \advance\rightskip by2\parindent
+  \medskip
+  \item{#1}{#2}\par
+  \egroup}
+\def\bul{$\bullet$}
+
+
+\noindent \VorTeX\ makes complex document editing easier, because:
+
+\myitem{\bul}{\VorTeX\ is incremental--only the changed pages need
+to be reformatted (assuming the changes don't ripple to other pages).}
+
+\myitem{\bul}{\VorTeX\ has a built-in displayer and editor--one can
+point to the formatted output and even perform some editing on it.}
+
+\myitem{\bul}{\VorTeX\ uses the \TeX\ language--it is not a toy
+formatter.  \TeX\ can been used to format complex documents and
+especially complex mathematics.}
+
+\bigskip
+Powerful personal workstatiosn with high-resolution displays, pointing
+devices, and windowing environments have created many new
+possibilities in presenting information, accessing data, and efficient
+computing in general.  In the context of document preparation, this
+workstation-based technology has made it possible for the user to
+directly manipulate a document in its final form.  The central idea is
+that a document is immediately reprocessed as it is edited; no
+syntactic constructs are explicitly used to express the desired
+operations.  This so-called {\it direct manipulation\/} approach
+differs substantially from the traditional {\it source language
+model\/}, in which document semantics (structures and appearances) are
+specified with interspersed markup commands.  In the source language
+model, a document is first prepared with a text editor, its formatting
+and other related processors are then executed, usually in batch mode,
+and the result is obtained.
+
+The complete document development process involves a number of
+subtasks ranging from authoring, reading, filing, to printing.  There
+are certain aspects of document development that are best-suited to a
+source-language approach while others are easier to deal with using
+direct-manipulation techniques.  A hybrid paradigm combining the best
+of both approaches seems most desirable.  In such a hybrid system, a
+document has at least two representations: a {\it source\/}
+representation with embedded commands that yields flexible high-level
+abstractions, and a {\it target\/} representation displaying an
+object's final appearance that gives precise placement and orientation
+in response to direct manipulation.
+
+Simultaneously maintaining more than one user-manipulable
+representation of the same document is not an easy task.  In
+particular, the historically batch-oriented processors that correspond
+to source-to-target transformations would have to be made {\it
+incremental\/}.  Furthermore, there must be a systematic way of
+mapping changes from the target representation back to the source
+representation.  Finally, an effective intermediate representation
+needs to be derived in order to make transformations in both
+directions possible.
+
+\bye

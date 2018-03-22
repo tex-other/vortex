@@ -1,0 +1,109 @@
+\begin{thebibliography}{10}
+
+\bibitem{reid:man}
+{\it Scribe Document Production System User Manual}.
+\newblock Unilogic Ltd., Pittsburgh, Pennsylvania, April 1984.
+
+\bibitem{sun:prm}
+{\it SunView Programmer's Guide, Release A of 17}.
+\newblock Sun Microsystems, Mountain View, California, February 1986.
+
+\bibitem{phc:bm}
+Pehong Chen.
+\newblock {\it GNU Emacs {\BM}}.
+\newblock Technical Report~87/317, Computer Science Division, University of
+  California, Berkeley, California, 1986.
+
+\bibitem{phc:tm}
+Pehong Chen.
+\newblock {\it GNU Emacs {\TM}}.
+\newblock Technical Report~87/316, Computer Science Division, University of
+  California, Berkeley, California, 1986.
+
+\bibitem{phc:aip}
+Pehong Chen and Michael~A. Harrison.
+\newblock {\it Automating Index Preparation}.
+\newblock Technical Report~87/347, Computer Science Division, University of
+  California, Berkeley, California, March 1987.
+\newblock Submitted for publication.
+
+\bibitem{fuchs:dvi2}
+David Fuchs.
+\newblock Device independent file format.
+\newblock {\it TUGBoat}, 3(2):14--19, October 1982.
+
+\bibitem{joy:vi}
+William Joy.
+\newblock {\it An Introduction to Display Editing with Vi}.
+\newblock 1980.
+\newblock Appears in UNIX 4.2BSD User's Manual.
+
+\bibitem{kernighan:doc}
+Brian~W. Kernighan, Michael~E. Lesk, and Joseph~F. Ossanna.
+\newblock Document preparation.
+\newblock {\it The Bell System Technical Journal}, 57(6):2115--2135,
+  July--August 1978.
+
+\bibitem{knuth:tex}
+Donald~E. Knuth.
+\newblock {\it The {\TeX} Book}.
+\newblock Addison-Wesley Publishing Company, Reading, Massachusetts, 1984.
+\newblock Reprinted as Vol. A of {\it Computers \& Typesetting\/}, 1986.
+
+\bibitem{lamport:latex}
+Leslie Lamport.
+\newblock {\it {\Lit}: A Document Preparation System. User's Guide and
+  Reference Manual}.
+\newblock Addison-Wesley Publishing Company, Reading, Massachusetts, 1986.
+
+\bibitem{lesk:tbl}
+Michael~E. Lesk.
+\newblock {\it Tbl---A Program to Format Tables}.
+\newblock Computer Science Techincal Report~49, AT\&T Bell Laboratories, Murray
+  Hill, New Jersey, September 1976.
+\newblock Also available in UNIX User's Manual.
+
+\bibitem{jwm:dvi}
+Jeffrey~W. McCarrell.
+\newblock {\it An Overview of DVITool}.
+\newblock {\VorTeX} internal report, Computer Science Division, University of
+  California, Berkeley, California, December 1986.
+
+\bibitem{patashnik:bibtex}
+Oren Patashnik.
+\newblock {\it {\Bit}ing}.
+\newblock Computer Science Department, Stanford University, Stanford,
+  California, March 1985.
+
+\bibitem{procter:dvi}
+Steve Procter.
+\newblock {\it Documentation on DVI2X}.
+\newblock {\VorTeX} internal report, Computer Science Division, University of
+  California, Berkeley, California, March 1987.
+
+\bibitem{scheifler:x}
+Robert~W. Scheifler and Jim Gettys.
+\newblock The {X} window system.
+\newblock {\it ACM Transactions on Graphics}, 6(3), 1987.
+
+\bibitem{spivak:ams}
+Michael~D. Spivak.
+\newblock {\it The Joy of {\TeX}}.
+\newblock American Mathematical Society, 1985.
+
+\bibitem{stallman:emacs}
+Richard~M. Stallman.
+\newblock {EMACS}: the extensible, customizable self-documenting display
+  editor.
+\newblock In {\it Proc. of the ACM SIGPLAN/SIGOA Symposium on Text
+  Manipulation}, pages~147--156, Portland, Oregan, June 8--10 1981.
+\newblock A somewhat extended version appears in {\it Interactive Programming
+  Environments\/}, Barstow et al. (eds.), McGraw-Hill Book Company, 1984, pp.
+  300--325.
+
+\bibitem{stallman:gnu}
+Richard~M. Stallman.
+\newblock {\it {GNU} Emacs Manual, Fifth Edition, Version 18}.
+\newblock Free Software Foundation, Cambridge, Massachusetts, December 1986.
+
+\end{thebibliography}

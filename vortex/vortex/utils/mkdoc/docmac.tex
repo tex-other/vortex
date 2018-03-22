@@ -1,0 +1,129 @@
+% Copyright (c) 1986 The Regents of the University of California.
+% All rights reserved.
+%
+% Permission is hereby granted, without written agreement and without
+% license or royalty fees, to use, copy, modify, and distribute this
+% software and its documentation for any purpose, provided that the
+% above copyright notice and the following two paragraphs appear in
+% all copies of this software.
+% 
+% IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+% DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+% OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+% CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+%
+% THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+% INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+% AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+% ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+% PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+%
+%  RCS Info: $Header$
+%
+%  VorTeX -- Visually ORiented TeX
+%
+%  Peehong Chen, John Coker, Jeff McCarrell, Steve Procter
+%  for Prof. Michael Harrison of the Computer Science Division
+%  University of California, Berkeley
+%
+%  mkdoc: prepare documentation from lisp and C source files
+%
+%  docmac.tex - TeX macros to typeset manual
+%
+
+%
+%  Macros for typesetting the documentation strings
+%  extracted from source files.  The program mkdoc
+%  scans source files and spits out TeX sources using
+%  the macros below to do the actual typesetting.
+%
+%  Each of the standard fields has a separate macro,
+%  since all but the NAME and DESC fields are optional.
+%  These macros should be called in the order defined
+%  here, although some may be omitted.  Each macro is
+%  named the same as the field in the documentation
+%  entry, except that NAME is docstr (this must be the
+%  first of these macros called.
+%
+%  Before any of these macros are called to set individual
+%  manual entries, \startdoc must be called to set things
+%  up.  After the last entry, \enddoc should be called to
+%  clean things up.  These are provided as global context
+%  savers, enclosing all manual entries in a group.
+%
+
+\newdimen\bodyindent \bodyindent=0.5truein
+
+\def\unix{{\sc UNIX}}
+\def\VorTeX{
+  V\kern-2.7pt\lower.5ex\hbox{O\kern-1.4pt R}\kern-2.6pt
+  T\kern-.1667em\lower.5ex\hbox{E}\kern-.125emX}
+\def\PS{{\rm P{\sc OST}S{\sc RIPT}}}
+
+\def\docstr#1{
+  \goodbreak\bigskip\bigskip\hrule height0.65pt
+  \medskip
+  \leftline{Name: \bf #1}}
+
+\def\call#1{\smallskip\leftline{Usage: #1}}
+
+\def\retu#1{\smallskip\leftline{Returns: #1}}
+
+\long\def\desc#1{\begingroup
+  \smallskip\leftline{Description:}
+  \vskip-\parskip
+  \leftskip=\bodyindent
+    #1
+  \parskip=0pt\par\endgroup}
+
+\long\def\side#1{\begingroup
+  \smallskip\leftline{Side Effects:}
+  \vskip-\parskip
+  \leftskip=\bodyindent
+    #1
+  \parskip=0pt\par\endgroup}
+
+\def\errs#1{\smallskip\noindent{Errors: #1}}
+
+\def\seea#1{\smallskip\leftline{See Also: #1}}
+
+%
+%  TeX implementations of the generic markup commands.
+%  All but the \tab command can be done directly in TeX.
+%  However, \tab needs to be translated into a sequence
+%  of tab macros, it would be too hard to do this in TeX.
+%  Because of synchronization problems, \lit and \tab must
+%  be separated into \blit, \elit and \btab, \etab.  This
+%  is done by the time TeX runs on the source.
+%
+
+\def\\{\char92 }
+\def\{{\char123 }
+\def\}{\char125 }
+\def\~{\char126 }
+\def\^{\char94 }
+
+\def\sym#1{\begingroup\bf #1\endgroup}
+\def\lit#1{\begingroup\obeylines\tt #1\endgroup}
+\def\em#1{\begingroup\it #1\endgroup}
+
+\def\tbnl{\tabalign&}
+\def\tbcol{&}
+\long\def\tab#1{\begingroup\vskip\parskip\settabs9\columns #1\endgroup}
+
+\newcount\fcount \global\fcount=0
+\long\def\fn#1{
+  \global\advance\fcount by 1
+  \footnote{\kern-3pt$^{\the\fcount}$}{#1}}
+
+\def\sc#1{\begingroup\scfont #1\endgroup}
+
+\def\quote{{\bf '\kern.5pt}}
+\def\space{{\tt\char32}}
+
+\def\startdoc{\begingroup
+  \parindent=0pt
+  \parskip=8pt plus 1pt
+  \font\scfont=cmr8}
+
+\def\enddoc{\endgroup\vfil\eject}

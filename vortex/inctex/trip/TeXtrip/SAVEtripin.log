@@ -1,0 +1,93 @@
+This is TeX, Version 1.4 (INITEX)  18 APR 1985 03:02
+**\input trip
+(trip.tex
+! Bad character code (128).
+<to be read again> 
+                   -
+l.26   \nonstopmode\lccode128-
+                              0\mathchardef\a="8000\def\a{ SC...
+The numeric code for a character must be between 0 and 127.
+I changed this one to zero.
+
+! Bad math code (32768).
+<to be read again> 
+                   \def 
+l.26 ...\mathchardef\a="8000\def
+                                \a{ SCALED 3~2769}
+A numeric math code must be between 0 and 32767.
+I changed this one to zero.
+
+! Illegal magnification has been changed to 1000 (32769).
+<to be read again> 
+                   \skewchar 
+l.28   \skewchar
+                \rip=`B \countdef\countz % \countz will be \c...
+The magnification ratio must be between 1 and 32768.
+
+! Missing number, treated as zero.
+<to be read again> 
+                   \def 
+l.29   \def
+           \on{1} \toksdef\tokens=256 \show\errorstopmode
+A number should have been here; I inserted `0'.
+(If you can't figure out why I needed to see a number,
+look up `weird error' in the index to The TeXbook.)
+
+! Bad register code (256).
+l.29 ...{1} \toksdef\tokens=256 
+                                \show\errorstopmode
+A register number must be between 0 and 255.
+I changed this one to zero.
+
+> \errorstopmode=\errorstopmode.
+l.29 ...=256 \show\errorstopmode
+                                
+
+> \rip .
+<recently read> \font 
+                      
+l.30   \showthe\font
+                     \showthe\pageshrink \showthe\pagegoal
+
+> 0.0pt.
+l.30 ...font \showthe\pageshrink
+                                 \showthe\pagegoal
+
+> 16383.99998pt.
+l.30 ...shrink \showthe\pagegoal
+                                
+
+! Bad \patterns.
+l.33   \patterns{\?
+                   50aa1b3 *1aca. bb bb1 0b2b0 b1c} % remembe...
+(See Appendix H.)
+
+! Nonletter.
+l.33   \patterns{\?50
+                     aa1b3 *1aca. bb bb1 0b2b0 b1c} % remembe...
+(See Appendix H.)
+
+! Duplicate pattern.
+l.33 ...1b3 *1aca. bb bb1 0b2b0 
+                                b1c} % remember that *==space
+(See Appendix H.)
+
+! Illegal unit of measure (replaced by filll).
+l.35 ...ip200 = 10pt plUs5fillll
+                                minus 0 fill
+I dddon't go any higher than filll.
+
+\one \csname 
+Beginning to dump on file trip.fmt
+ (preloaded format=trip 85.4.18)
+1178 strings of total length 22700
+457 memory locations dumped; current usage is 92&270
+330 multiletter control sequences
+\font\nullfont=nullfont
+\font\rip=trip
+\font\smalltrip=trip at 5.0pt
+\font\bigtrip=trip at 20.0pt
+545 words of font info for 3 preloaded fonts
+1 hyphenation exception
+Hyphenation trie of length 137 has 6 ops
+No pages of output.

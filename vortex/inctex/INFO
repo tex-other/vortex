@@ -1,0 +1,82 @@
+IncTeX is an incremental version of TeX. It is derived from
+Common TeX 2.9 by Pat Monardo.  IncTeX analyzes the document
+(LaTeX or plain TeX or or other type of style) and reformats the pages
+which have changed.  There is some overhead and limit to
+its ability to know when it can skip reformatting a page.
+It checkpoints the state and input at page breaks so it can
+reformat individual pages.  It finds the page where the first
+change occurs and restarts formatting.  It parses the formatter state
+and skips reformatting when it can guarantee that the formatter
+has returned to a state on a later page that is equivalent to
+the previous time it was formatting.  A document change that
+permanently changes the formatter state (like changing the sections)
+prevents this.
+
+IncTeX traces the entire set of include's in the input path.
+It is as sophisticated as "make" in understanding where and
+how to reposition itself in the input files.
+The .aux file is always read at the beginning of LaTeX documents, so
+anything that changes the aux file (like changing paper citations) has
+the unfortunate side effect of requiring formatting to restart at
+the first page.  IncTeX usually reformats from page 1 the first TWO
+times it is run on a LaTeX file, because the .aux file
+has new contents on the second pass.
+
+IncTeX is run like normal TeX or LaTeX, with all of the same flags.
+Type "itex <file>" or "ilatex <file>".
+"ilatex myarticle" runs IncTeX on a LaTeX file called myarticle.tex.
+IncTeX also has these special flags:
+
+  -v	: Reformat the whole document.
+  -j N	: Save checkpoints every N pages (jump N).
+	  This is to reduce storage use if you have a lot of pages.
+  -q	: Disable quiescence checking.  IncTeX will not check the
+	  formatter state at the end of each page to see if reformatting
+	  can be skipped.  This is to reduce overhead if you know
+	  you will have to reformat from the first change through the end.
+  -i	: Force incremental mode.  IncTeX skips reformatting and restarts
+	  at the next page where there is a change.
+  	  However, it tries to estimate whether reformatting the intervening
+	  pages would be faster than loading a checkpoint and decompressing
+	  it using page formatting and checkpointing timing.  System load
+	  or pausing IncTeX with a debugger throws this logic off and
+	  causes it to reformat erroneously.  This flag turns off this
+	  feature and it will always skip formatting and load a checkpoint.
+  -b	: Run in batch mode (turn off all incremental operation).
+	  IncTeX will run just like CommonTeX 2.9.
+
+(Your TEXFORMATS environment variable so it picks up
+the .fmt files for IncTeX on your system if they have not been put
+in the normal TeX directory)
+
+You should have a megabyte or so of free disk space to run IncTeX.
+The storage overhead for IncTeX consists of copies of the (writable)
+input files and formatter checkpointing information.
+If a file is a style file or read-only or
+write-only it does not bother to save it; inctex will just
+save the file timestamp so it knows if it is changed.
+Checkpoint sizes depend on the page complexity and the formatter state, and
+vary from 7K to 35K per page.  These files are stored in a local
+subdirectory called INC.  One technique you may want to use is
+to create a directory on a volume which has more free space,
+and make a symbolic link called INC to that directory.
+Since checkpoints are large, when you no longer want to use IncTeX
+on a document, you should delete the INC directory and free up the space.
+
+IncTeX was written as a master's thesis project.  This version
+has been updated from the one which is described.  Instead of saving
+each page as a separate dvi file, the new pages are put in one file
+and combined with the previous pages to make the new version.  This
+cuts down the number of UNIX file opens and speeds it up.
+The thesis is available from the Publications Office, 571 Evans Hall,
+Univ. of California at Berkeley, Berkeley, CA 94720, USA,
+Tech Report #614, "IncTeX: An Incremental Document Processing System",
+by Michael A Harrison and Derluen Pan.
+
+The following information may help you if are getting strange formatting
+errors.  When LaTeX is aborted, the .aux file can be left in a garbled or
+incomplete state which causes error messages to be printed and
+future formatting to fail or be incorrect.  If this situation
+happens with IncTeX, you should delete the .aux file and reformat
+with the -v flag.  Try this if execution of IncTeX failed (it core dumped)
+and you don't understand why future runs have strange errors.

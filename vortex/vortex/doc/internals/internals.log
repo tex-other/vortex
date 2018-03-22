@@ -1,0 +1,41 @@
+This is Common TeX, Version 2.9 (preloaded format=lplain 88.5.19) 23 AUG 19
+89 12:16
+**internals 
+(./internals.tex
+LaTeX Version 2.09 - Released 27 October 1986
+(/usr/local/lib/tex82/article.sty
+Document Style `article'. Released 4 September 1986.
+(/usr/local/lib/tex82/art12.sty)
+\c@part=\count78
+\c@section=\count79
+\c@subsection=\count80
+\c@subsubsection=\count81
+\c@paragraph=\count82
+\c@subparagraph=\count83
+\c@figure=\count84
+\c@table=\count85
+) (/usr4/texers/phc/texlib/regmar.sty)
+! I can't find file `vortex'.
+l.3 \input vortex
+                 
+Please type another input file name: ../userdoc/vortex
+(./../userdoc/vortex.tex) (/usr/local/lib/tex82/psfig.tex
+\@unused=\write3
+
+psfig: version 1.1
+\ps@stream=\read0
+) (./internals.aux) (./intro.tex [1
+
+] [2]
+psfig: searching figs/system.ps for bounding box
+psfig: including figs/system.ps 
+) (./paradigm.tex [3] [4]
+psfig: searching figs/IR.ps for bounding box
+psfig: including figs/IR.ps 
+[5] [6]) (./pieces.tex [7]
+psfig: searching figs/triangle.ps for bounding box
+psfig: including figs/triangle.ps 
+[8] [9]) (./commands.tex [10] [11] [12] [13] [14]) (./proto.tex [15]
+[16] [17] [18] [19] [20] [21] [22] [23] [24]) (./misc.tex) [25]
+(./internals.bbl) [26] (./internals.aux)
+Output written on internals.dvi (26 pages, 58116 bytes).

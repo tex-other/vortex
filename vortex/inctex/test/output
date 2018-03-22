@@ -1,0 +1,40 @@
+----------Run 1----------
+IncTeX, version 1.0
+Derived from Common TeX, Version 2.9 (no format preloaded)
+Incremental processing info not found.
+(./sample.tex
+Formatting ./sample.tex from scratch...
+LaTeX Version 2.09 <14 January 1991>
+(/usr/sww/lib/tex/inputs/article.sty
+Document Style `article' <16 Mar 88>.
+(/usr/sww/lib/tex/inputs/art10.sty)) (./sample.aux) [1] [2] [3] [4]
+[5] [6]
+Overfull \hbox (1.90695pt too wide) in paragraph at lines 182--185
+[]\tenrm Mathematical for!mu!las may also be dis!played. A dis!played fo
+r!mula is one-line
+[7] (./sample.aux)
+(see the transcript file for additional information)
+Total processing time: 8.547 seconds.
+Total document pages: 7.
+Transcript written on sample.log.
+
+
+----------Run 2----------
+IncTeX, version 1.0
+Derived from Common TeX, Version 2.9 (no format preloaded)
+File ./sample.tex is different at character 6479, affects page 7
+Loading state after page 6 from file ./INC/sample.6.stc...done
+
+Formatting skipped for pages 1 through 6.
+
+Overfull \hbox (1.90695pt too wide) in paragraph at lines 182--185
+[]\tenrm Mathematical for!mu!las may also be dis!played. A dis!played fo
+r!mula is one-line
+[7]
+Reconvergence Detected!
+(see the transcript file for additional information)
+Total processing time: 3.706 seconds.
+Total document pages: 7.
+Transcript written on sample.log.
+
+done.

@@ -1,0 +1,29 @@
+1,3c1,3
+< This is Olivetti-Berkeley-Matsushita IncTeX, Version 0.0
+< This is Common TeX, Version 2.9 (INITEX)
+< **(./trip.tex ##
+---
+> This is TeX, Version 1.4 (INITEX)
+> ** &trip  trip 
+> (trip.tex ##
+10,11c10
+< Completed box being shipped out
+< [0.0.0.0.11]
+---
+> Completed box being shipped out [0.0.0.0.11]
+21c20
+< Memory usage before: 155&14; after: 98&14; still untouched: 1963
+---
+> Memory usage before: 155&302; after: 98&270; still untouched: 1621
+68,69c67,68
+< Completed box being shipped out
+< [-1.2.-1118806.0.11.196608.327680.1572864.1073741823]
+---
+> Completed box being shipped out [-1.2.-1118806.0.11.196608.327680.157286
+> 4.1073741823]
+79c78
+< Memory usage before: 343&31; after: 301&31; still untouched: 397
+---
+> Memory usage before: 334&395; after: 292&382; still untouched: 112
+84a84
+> Output written on trip.dvi (16 pages, 2888 bytes).

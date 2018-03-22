@@ -1,0 +1,258 @@
+;; Copyright (c) 1987 The Regents of the University of California.
+;; All rights reserved.
+;;
+;; Permission is hereby granted, without written agreement and without
+;; license or royalty fees, to use, copy, modify, and distribute this
+;; software and its documentation for any purpose, provided that the
+;; above copyright notice and the following two paragraphs appear in
+;; all copies of this software.
+;; 
+;; IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+;; DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+;; OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+;; CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;;
+;; THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+;; INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+;; AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+;; ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+;; PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+;;
+;; The above licensing information supersedes all licensing information
+;; below.
+;
+;  RCS Info: $Header: move.vl,v 0.1 87/05/01 13:06:14 john Locked $
+;
+;  VorTeX - Visually Oriented TeX
+;  A source-based WYSIWYG editor for beautiful documents
+;
+;  This file is part of the source editor/user interface written
+;  by John Coker for the VorTeX project under the direction of
+;  Prof. Michael A. Harrison of the University of California at
+;  Berkeley.
+;
+;  Copyright (c) 1987 John L. Coker
+;  University of California, Berkeley
+;  john@renoir.Berkeley.EDU
+;  vortex@renoir.Berkeley.EDU
+;
+;  This file intact and any code derived from it are copyright
+;  John Coker and the Regents of the University of California.
+;  All rights reserved by the author.  See the copyright notice
+;  distributed with this software for a complete description of
+;  the conditions under which it is made available.
+;
+;  move.vl - move point and mark in buffers
+;
+
+;
+;  DOCUMENTATION
+;
+;  Name: set-mark-at-point
+;  Call: (set-mark-at-point)
+;  Retu: offset
+;  Desc: This function sets the mark in the current buffer to be
+;	at the same position as point in the current buffer.  This
+;	is the normal way to set mark.  Mark, along with point
+;	usually defines a region of text in the editor for specific
+;	commands.
+;  SeeA: set-mark mark point
+;
+
+(defun set-mark-at-point ()
+  (interactive)
+  (set-window-mark (window-point))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: user-set-point
+;  Call: (user-set-point 'position)
+;  Retu: position
+;  Desc: This function sets point in the current buffer to the
+;	position given (which is a character count offset into
+;	the buffer).  If a negative position is given, this
+;	function prints the message ``Beginning of buffer''
+;	and sets the position to zero, if the position is greater
+;	than the end of the buffer, the message ``End of buffer''
+;	is printed and point is set after the last character.
+;
+;	This is an interface the the builtin \sym{set-point}
+;	which signals an error if one tries to move to a
+;	negative position and quietly truncates movemements
+;	to after the last character.  All the standard user
+;	movement commands use this function instead of
+;	\sym{set-point} so that these errors are not generated.
+;
+;	This function can also be calle dinteractively to set
+;	point to an absolute character offset, but this is of
+;	doubtful utility.
+;  SeeA: set-point
+;
+
+(defun user-set-point (pos)
+  (interactive "nSet point to offset: ")
+  (cond ((< pos 0)
+	 (beep)
+	 (message "Beginning of buffer.")
+	 (setq pos 0))
+	((> pos (buffer-length))
+	 (beep)
+	 (message "End of buffer.")
+	 (setq pos (buffer-length))))
+  (set-window-point pos)
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: exchange-point-and-mark
+;  Call: (exchange-point-and-mark)
+;  Retu: t
+;  Desc: Exchanges the value of point and mark in the current window.
+;  SeeA: window-point window-mark
+;
+
+(defun exchange-point-and-mark ()
+  (interactive)
+  (let ((p (window-point)))
+    (set-window-point (window-mark))
+    (set-window-mark p))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: forward-character
+;  Call: (forward-character [ 'count ])
+;  Retu: offset
+;  Desc: This function moves point in the current buffer forward
+;	by the number of characters in count, or by 1 character
+;	if no argument is given.
+;  SeeA: backward-character set-point point
+;
+
+(defun forward-character (count)
+  (interactive "p")
+  (user-set-point (add (window-point) count))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: backward-character
+;  Call: (backward-character [ 'count ])
+;  Retu: offset
+;  Desc: This function moves point in the current buffer back
+;	by the number of characters in count, or by 1 character
+;	if no argument is given.
+;  SeeA: forward-character set-point point
+;
+
+(defun backward-character (count)
+  (interactive "p")
+  (user-set-point (minus (window-point) count))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: beginning-of-buffer
+;  Call: (beginning-of-buffer)
+;  Retu: offset
+;  Desc: This function moves point to the start of the buffer
+;	and returns the offset of the new position.
+;  SeeA: end-of-buffer
+;
+
+(defun beginning-of-buffer ()
+  (interactive)
+  (set-window-point (buffer-start))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: end-of-buffer
+;  Call: (end-of-buffer)
+;  Retu: offset
+;  Desc: This function moves point to the end of the buffer
+;	and returns the offset of the new position.
+;  SeeA: beginning-of-buffer
+;
+
+(defun end-of-buffer ()
+  (interactive)
+  (set-window-point (buffer-length))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: beginning-of-line
+;  Call: (beginning-of-line)
+;  Retu: fixnum
+;  Desc: This function moves backward to the beginning of the current
+;	line or the beginning of the buffer.  This function returns the
+;	new position of point in the buffer.
+;  SeeA: end-of-line bolp preceding-character
+;
+
+(defun beginning-of-line (count)
+  (interactive "p")
+  (let ((offset (find-character-backward ?\n count)))
+    (if (nullp offset)
+       (setq offset 0))
+    (set-window-point offset)))
+
+;
+;  DOCUMENTATION
+;
+;  Name: end-of-line
+;  Call: (end-of-line)
+;  Retu: fixnum
+;  Desc: This function moves forward to the end of the current
+;	line or the end of the buffer.  This function returns the
+;	new position of point in the buffer.
+;  SeeA: beginning-of-line eolp following-character
+;
+
+(defun end-of-line (count)
+  (interactive "p")
+  (let ((offset (find-character-forward ?\n count)))
+    (if (nullp offset)
+       (setq offset (buffer-length)))
+    (set-window-point offset)))
+
+;
+;  DOCUMENTATION
+;
+;  Name: bolp
+;  Call: (bolp)
+;  Retu: t or nil
+;  Desc: This predicate function returns t if point in the current
+;	buffer is at the beginning of a line or at the beginning of
+;	the buffer and nil otherwise.
+;  SeeA: eolp beginning-of-line
+;
+
+(defun bolp ()
+  (let ((c (preceding-character)))
+    (or (not c) (eq c ?\n))))
+
+;
+;  DOCUMENTATION
+;
+;  Name: eolp
+;  Call: (eolp)
+;  Retu: t or nil
+;  Desc: This predicate function returns t if point in the current
+;	buffer is at the end of a line or at the end of the buffer
+;	and nil otherwise.
+;  SeeA: bolp end-of-line
+;
+
+(defun eolp ()
+  (let ((c (following-character)))
+    (or (not c) (eq c ?\n))))

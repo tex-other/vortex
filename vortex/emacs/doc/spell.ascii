@@ -1,0 +1,48 @@
+The following describes how spelling lists work under the TeX-mode.
+
+An unhashed spelling list is a file (.usl file) containing words assumed to be
+correct.  Each word should be placed in a single line.
+A hashed spelling list is a file (.hsl file) which contains a hashed version of
+the words listed in the .usl file.
+
+There are two levels of spelling lists:
+	(1) Per user spelling lists -- put the following in tex-mode-hook:
+		(setq tex-usl-default <file-name>)
+		(setq tex-hsl-default <file-name>)
+	(2) Per document spelling lists:
+ 		foo.usl and foo.hsl will be created at the end of a
+		spelling correction session upon request for a document
+		rooted at foo.tex.
+		Note that only the .usl file propagates through network.
+		That means your .hsl on VAX will not work on SUN, but
+		rcping the .usl file over will suffice.
+
+The algorithm that determines which file to use as the spelling list is
+as follows.  For a document rooted at foo.tex,
+	(1) if foo.hsl exists and is newer than foo.usl, foo.hsl is used
+	    as the spelling list.
+	(2) if foo.hsl doesn't exist and tex-hsl-default is non-nil,
+	    the file bound to tex-hsl-default is used.
+	(3) otherwise, if foo.usl exists, a new foo.hsl is created,
+	    by adding words in the file bound to tex-usl-default, if any,
+	    and those in foo.usl to the system hashed list
+	    (/usr/dict/hlista).
+	(4) otherwise, no customized spelling list is used.
+
+At the end of a spelling correction sesssion, the RET/s option
+enters an incremental spelling list saving facility.
+First, you'll be asked to reexamine uncorrected words, you can remove
+whatever not supposed to go into the list.
+Then, the incremental saving takes place.
+The algorithm is as follows.
+	(1) If foo.hsl exists and is newer than foo.usl, uncorrected words
+	    from this buffer are added to the hashed list.
+	(2) If foo.usl exists, uncorrected words are merged into the file;
+	    otherwise a new file foo.usl is created to hold these words.
+	(3) If foo.hsl doesn't exist, a new foo.hsl is created by
+	    adding words in the new foo.usl and those in the file bound to
+	    tex-usl-default, if any, to the system hashed list
+	    (/usr/dict/hlista).
+		
+	
+

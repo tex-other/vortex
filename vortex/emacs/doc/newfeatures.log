@@ -1,0 +1,44 @@
+This is TeX, C Version 2.95 (preloaded format=lplain 90.1.31)  15 AUG 1990 12:48
+**&lplain newfeatures
+(newfeatures.tex
+LaTeX Version 2.09 <24 May 1989>
+(/usr/local/lib/tex/inputs/article.sty
+Document Style `article' <16 Mar 88>.
+(/usr/local/lib/tex/inputs/art10.sty)
+\c@part=\count78
+\c@section=\count79
+\c@subsection=\count80
+\c@subsubsection=\count81
+\c@paragraph=\count82
+\c@subparagraph=\count83
+\c@figure=\count84
+\c@table=\count85
+) (/usr/local/lib/local/tex/logo.tex)
+(newfeatures.aux)
+Overfull \hbox (23.07748pt too wide) in paragraph at lines 44--44
+[]\bigbf Automatic Ci-ta-tions us-ing Forms-Based Queries 
+
+\hbox(9.99998+2.79999)x345.0, glue set - 1.0
+.\hbox(9.27998+0.0)x24.83983
+..\glue 0.0
+..\bigbf 2
+..\glue 16.55989
+.\bigbf A
+.\bigbf u
+.\bigbf t
+.\bigbf o
+.etc.
+
+[1
+
+] [2] [3] [4] [5] (newfeatures.aux) 
+Here is how much of TeX's memory you used:
+ 240 strings out of 4611
+ 1794 string characters out of 64002
+ 34439 words of memory out of 262141
+ 2167 multiletter control sequences out of 9500
+ 22112 words of font info for 82 fonts, out of 72000 for 255
+ 14 hyphenation exceptions out of 607
+ 15i,9n,15p,365b,240s stack positions out of 300i,40n,60p,2000b,4000s
+
+Output written on newfeatures.dvi (5 pages, 15584 bytes).

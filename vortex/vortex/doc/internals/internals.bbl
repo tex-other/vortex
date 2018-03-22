@@ -1,0 +1,36 @@
+\begin{thebibliography}{1}
+
+\bibitem{phc:phd}
+Pehong Chen.
+\newblock {\em A Multiple Representation Paradigm for Document Development}.
+\newblock PhD thesis, 1988.
+
+\bibitem{phc:vortex}
+Pehong Chen, John~L. Coker, Michael~A. Harrison, Jeffrey~W. McCarrell, and
+  Steven~J. Procter.
+\newblock The {\VorTeX} document preparation environment.
+\newblock pages 32--24, June 19--21 1986.
+
+\bibitem{phc:int}
+Pehong Chen and Michael~A. Harrison.
+\newblock Integrating noninteractive document processors into an interactive
+  environment.
+\newblock Technical Report 87/349, April 1987.
+\newblock Submitted for publication.
+
+\bibitem{knuth:tex}
+Donald~E. Knuth.
+\newblock {\em The {\TeX} Book}.
+\newblock 1984.
+\newblock Reprinted as Vol. A of {\it Computers \& Typesetting\/}, 1986.
+
+\bibitem{stallman:emacs}
+Richard~M. Stallman.
+\newblock {EMACS}: The extensible, customizable self-documenting display
+  editor.
+\newblock pages 147--156, June 8--10 1981.
+\newblock A somewhat extended version appears in {\it Interactive Programming
+  Environments\/}, Barstow et al. (eds.), McGraw-Hill Book Company, 1984, pp.
+  300--325.
+
+\end{thebibliography}

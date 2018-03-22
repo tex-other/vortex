@@ -1,0 +1,41 @@
+#!/bin/csh
+#  Copyright (c) 1992 Regents of the University of California
+#  All rights reserved.
+
+#set echo
+
+# This is a shell script that runs incremental tex
+# and then puts the final pages together with patchdvi.
+# usage: ilatex [options] name               (name.tex = input file)
+
+#set this variable to refer to the latex .fmt file (ilplain)
+set fmt="&ilplain"
+
+#You may want to set this variable to point to IncTeX binary
+#and instead of invoking inctex directly below, use $inctex
+#set inctex=/yew4/pan/I/inctex
+
+set options=""
+while ($#argv > 0)
+    switch ($1)
+    case -j:
+    case -d:
+	set options="$options $1 $2"
+	shift
+	shift
+	breaksw
+    case -*:
+	set options="$options $1"
+	shift
+	breaksw
+    default:
+	set x=$1:r
+	shift
+	breaksw
+    endsw
+end
+
+../bin/inctex $options $fmt $x
+
+../bin/patchdvi -o t.dvi INC/$x.newpages INC/$x.dvi $x.dvi >& /dev/null
+mv t.dvi $x.dvi

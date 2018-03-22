@@ -1,0 +1,139 @@
+\section{The Editing Paradigm}
+
+In order to implement the functionality required, we decided to use an
+``internal representation'' which was equivalent neither to the source text
+of a {\TeX} document nor the primitive typesetting commands of a {\tt dvi}
+file.  We needed something that could represent both, and ultimately be
+mapped back into the {\TeX} source.  However, due to the lack of structure
+of {\TeX} source, this was impractical although we did manage to achieve
+approximately the same functionality.
+
+\subsection{Our Problems with \TeX}
+
+The largest problem is that there is very little underlying structure to
+{\TeX}.  There is a form of scoping (groups, delimited by {\tt \{} and {\tt
+\}}).  And one can imagine words and symbols as children of paragraphs, but
+the scoping is not bound into the logical structure and there is no control
+over side-effects.  All control structures and user definitions are done
+with macros, which may be changed at any time.  In fact, a {\TeX} program
+may change the reader syntax conditionally.
+
+Thus, it is not practical to get completely away from the text-based
+structure.  We could not design an internal representation that would
+allow us to generate correct and reasonable {\TeX} source from some
+abstract representation of a document.  Thus, in the implementation,
+we ended up with an internal representation which is used to map
+between the basic representations of the document, the ``source''
+({\TeX} code) and the ``proof'' (e.g., {\tt dvi} command).
+
+The terminology used denotes the tree-based internal representation as
+the {\IRI} and the source text representation (basically {\ASCII} text)
+as the {\IRS} and the target representation (images to print or display)
+as the {\IRT}.  Basically, the ``internal representation'' is a tree
+with the interior nodes representing logical structure (pages, paragraphs
+and words) and the leaves pointing to the {\TeX} source which implements
+it.  The tree also has links (filled in as necessary) into the {\IRT}
+at all levels.
+
+Thus, we end with a system which appears as through it has a fundamental
+representation, but is actually a way to map the logical and display
+elements back into the source stream.  We cannot make a change in the
+proof editor and fix up the text, we must use the {\IRI} to map the
+change back into the source and then re-format the portion of the
+document which has been changed.  This then fixes the {\IRI} and {\IRT}.
+
+\subsection{What We Have Done}
+
+We make it appear as through the user can edit either in the source
+using {\EMACS} commands or on an image of the formatted document using
+WYSIWYG\note{WYSIWYG--What You See Is What You Get.}-style commands.
+The source updates instantly and the representations are kept
+synchronized.  When editing on the proof, it synchronizes after each
+editing operation.  When editing the source, merely typing space
+synchronizes the proof representation.
+
+\subsection{Separation of Responsibility}
+
+The source editor is responsible for maintaining the most basic representation
+of the document, the {\TeX} program text.  Since {\VorTeX} operations on the
+typical {\UNIX} paradigm (read in files, edit and write them back), the only
+representation stored externally is the source text.  During its execution
+the formatter will have a current copy of the source, its own {\IRI} and
+information on the {\IRT}.  The proof editor will also have it's own cache
+of the {\IRT} (page-level granularity) and other command-state and selection
+information.
+
+\medskip
+\centerline{\psfig{figure=figs/IR.ps}}
+
+{\tt vortex}, the source editor, can run with or without the other two
+processes.  In fact, starting up {\tt VorTeX} does not automatically start
+those daemon programs.  The user may explicitly start the formatter with
+{\tt start-formatter} or the proof editor with {\tt start-proof-editor} or
+implicitly with {\tt format-document} or {\tt proof-document} respectively.
+{\tt make-document} starts up the formatter, transmits the entire contents
+of the {\TeX} document (possibly more than one file) and begins treating the
+source buffer(s) as part of the WYSIWYG system.
+
+Editing in a buffer which is part of the formatted document causes the
+source editor to send the changes to the formatter.  However, due to the
+possibility of syntactic inconsistencies, the formatter will not reorganize
+the {\IRI} until the user explicitly requests it with {\tt format-document}.
+The command {\tt format-document} will only send the changed characters from
+the document's source buffers and trigger an incremental re-format.  The
+user is expected to format the document often, whenever he wishes to see the
+formatted version.  In fact, a version of the system could be built which
+would request formatting every time the user made a change to the source
+(although we think this would be prohibitively slow).
+
+To understand the following descriptions one must keep in mind the fact
+that the system only truly maintains the source text of the document.
+The formatter translates this into the proof version with which {\VorTeX}
+can display the formatted document and translates what little structure
+there is in the formatted representation back into the source text stream.
+
+\subsection{The Selection is the Thing}
+
+All proof editing works based on the ``current selection.''  In the
+{\EMACS} paradigm, the current region is defined by the point and most
+recent mark.  In the proof editor, the selection is defined by selecting
+one or more pieces of the document at some level of structure.  Assuming
+that these all come from some ordered, contiguous portion of the source
+document, the proof selection can be mapped back into the source text
+as an {\EMACS} region.
+
+Making a selection in the proof editor, causes it to send the selection
+back to the source editor.  The proof selection is available to Lisp
+programs through the command {\tt proof-selected-region}, which returns
+the current proof selection as an {\EMACS} region (plus the buffer name).
+The Lisp functions which implement the WYSIWYG commands use this mechanism
+to set up the current buffer, point and mark and then use {\EMACS}
+editing commands to make the change.
+
+The proof selection can also be set from the source editor by translating
+point and mark into a list of characters for the proof editor to display.
+This mechanism is not used much, but the trivial case, selecting a single
+character, is very useful for finding the current position in the other
+representation ({\tt C-x .} is bound, in both editors, to a function
+which selects the current point in the other editor).
+
+This has the advantage of being easy to extend, since writing a Lisp
+function is all that is required, although the lack of any true
+knowledge of the document makes more sophisticated transformations
+impractical.
+
+\subsection{The Mapping Mechanism}
+
+The proof editor maintains a copy of the {\IRT} which associates {\TeX}
+boxes with {\tt dvi}-style output primitives.  It can paint a window with
+the glyphs and rules to display the formatted output and translate the
+mouse cursor position into a formatter box~ID.  These {\IRI} box~IDs
+may represent terminals (characters), called \tbox es, or logical
+structure (words, paragraphs and pages), called \nbox es.
+
+Each character in the {\IRS} is tagged with a unique ID which allows the
+source editor to translate \tbox~IDs as sent from the proof editor into
+source buffer positions which can be used for editing.  Thus, when the
+proof editor sends the selection as a pair of \tbox~IDs, the source
+editor requests the corresponding buffer/region from the formatter
+and sets up the data returned by {\tt proof-selected-region}.

@@ -1,0 +1,912 @@
+% Document Type: LaTeX
+% Master File: dd.tex
+\documentstyle[times,santafe,alltt]{article}
+
+\input{logo}
+\input{psfig}
+
+\def\TRFootVorTeX{V\kern-2pt\lower.5ex\hbox{O\kern-1pt R}\kern-2pt
+            T\kern-.1667em\lower.5ex\hbox{E}\kern-.125emX}
+
+\title{Incremental Document Formatting\thanks{Sponsored
+by the Defense Advanced Research Projects Agency (DoD),
+monitored by Space and Naval Warfare Systems Command,
+under Contract No. N00039-88-C-0292.
+Additional funding came from the California
+MICRO program (Grant 88-083 in conjunction with IBM).}
+}
+
+\author{Pehong Chen\thanks{Current Address:
+ Computer Systems Research Laboratory,
+ Olivetti Research Center,
+ Menlo Park, California}
+ \hspace{7truept}
+ Michael A. Harrison
+ \hspace{7truept}
+ Ikuo Minakata\thanks{Current Address:
+ Information Systems Research Lab.,
+ Matsushita Electric Industrial Co.,
+ Osaka, Japan}\\[18pt]
+{\em Computer Science Division,
+University of California,
+Berkeley, CA 94720}\\}
+
+%\psdraft
+
+\begin{document}
+
+\twocolumn
+\maketitle
+\pagestyle{regular}
+\copyrightspace
+
+The incremental techniques reported in this paper are an outgrowth of
+work on the {\VorTeX} system~\cite{phc:vortex}.  Although, the
+techniques and algorithms developed extend beyond this particular
+system {\em per se}, it does remain our canonical example.  Since our
+prototype implementation is for {\VorTeX}, we will describe the
+overall idea of the system first.  Many more details may be found in
+References~\cite{phc:phd,phc:vortex,phc:mrdd}.
+
+{\VorTeX} is an integrated document preparation environment capable of
+producing high quality technical documents which involve mathematics,
+text, and graphics.  In {\VorTeX}, both source and target
+representations of a document are maintained and presented.  The
+source representation refers to a {\TeX} document in its original
+unformatted form; the target representation presents its formatted
+result.  The user can edit both representations using a text editor
+and what is called a proof editor, respectively.  Our editor is an
+Emacs-like editor written in our own VLisp ({\VorTeX} Lisp).  Changes
+made to one representation propagate to the other version
+automatically.  It is easy to support source modifications that cause
+the target representation to change, but a major research issue is the
+transformation from a target version back to the source version.
+
+The system reformats a document and redisplays it on the screen {\em
+incrementally}.  Only the part of the document or the subregion of the
+screen that is affected by recent changes is reprocessed.  This is
+part of a larger environment for handling conventional documents and
+the textual components of an advanced program development system.  The
+document environment has support for automatic production of indexes
+for books, support for bibliographic material, spelling checkers, and
+other document-related utilities.
+
+Our current system uses SUN workstations and the X window
+system~\cite{scheifler:x}.  In order to provide device independent
+high quality graphics, we use PostScript~\cite{adobe:ps,adobe:cook}
+and have written a PostScript interpreter.  We are developing methods
+to interpolate Postscript into our displays.  Future research plans
+include supporting composite objects, symbolic mathematics, hypertext
+documents, audio, live video, etc.  A key element will be access to a
+persistent object base which is important for many purposes including
+access to bibliographic data and histories.
+
+
+To summarize, this is an interesting and fruitful research area
+because of the general applicability of the techniques.  In the
+present case, the process of designing and implementing the
+incremental formatter has yielded methods which can be extended to
+other systems.  For this reason, we now present a general discussion
+of incremental processing techniques and will work back to our
+particular implementation later.
+
+\section*{Incremental Processing}
+
+Incremental processing, which performs only minimal necessary work on
+a specific task, is a key ingredient of interactive software
+environments.  This paper discusses the principles of one particular
+task --- incremental document formatting.  Traditional document
+formatting algorithms such as those for
+hyphenation~\cite{liang:hyphen}, line
+breaking~\cite{achugbue:break,knuth:break,samet:heu}, and
+pagination~\cite{plass:page} are non-incremental.  They are designed
+for batch-oriented systems and do not take into account issues that
+are essential to interactive environments such as response time,
+reprocessing granularity, etc.  Because they are batch-oriented,
+global considerations and better optimizations can be exercised, which
+give them the unique advantage of producing very high-quality output.
+The best example of a non-incremental document processing system that
+generates output of superb quality is {\TeX}~\cite{knuth:tex}.
+
+There are now direct manipulation systems that focus on prompt visual
+response and fine grain reprocessing.  Their goal is to achieve the
+sensation of directness by immediately evaluating the keystrokes or
+mouse clicks while the document is being manipulated.  Here,
+incremental processing is essential.  However, shifting from a
+batch-oriented approach to an interactive one has a number of
+technical ramifications.  Most noticeably, quality usually
+deteriorates.  For instance, hyphenation pre\-sents some difficulties
+because an attempt to hyphenate a word under construction or
+modification may produce nonsensical results, not to mention the
+semantic confusion of user-entered hyphens versus those introduced by
+automatic word hyphenation.  Pagination is sometimes avoided or
+delayed due to similar concerns or due to the need to achieve seamless
+scrolling.  Line breaking is usually based on some obvious ``first-fit
+algorithms'', which do not perform as well as algorithms with
+look-ahead such as {\TeX}'s line breaking
+algorithm~\cite{knuth:break}.  As a result of these compromises in
+quality, these systems sometimes rely on a non-incremental formatter
+as a postprocessor of their underlying documents if better quality is
+desired.
+
+Quality and directness are not conflicting concepts.  Quality is a
+property of the document, while directness is a sensation involved in
+the process of manipulating a document.  One way to design incremental
+formatting strategies with increased directness without sacrificing
+quality is to focus on higher-level issues that are unique to the
+interactive situation.  Pieces of the known non-incremental algorithms
+can be embedded in the inner-most layer as subroutines.  This
+high-level approach is ideal for augmenting existing non-incremental
+programs.  Compared to reinventing low-level incremental algorithms
+from scratch, this {\it augmentation approach\/} is also more flexible
+because a number of parameters can be adjusted to achieve the best
+solution for a particular situation.  This paper also describes an
+instance of this augmentation approach --- our experience of
+converting a non-incremental {\TeX} to an incremental version as part
+of the {\VorTeX} system~\cite{phc:vortex}.
+
+Incremental strategies can be exploited at many different levels.  The
+so-called ``processing'' typically comprises several subtasks, each of
+which may be handled incrementally.  Naturally, the ideal situation is
+one that fully exploits incremental strategies at all levels without
+being penalized by any introduced overhead.  In practice, depending on
+the ultimate goal, the overall strategy is often a blending of
+incremental approaches at some levels and non-incremental ones at
+others.
+
+One commonly hears the view expressed that document processors are
+special cases of compilers.  This is a natural enough observation,
+particularly of the batch oriented systems like Scribe or {\TeX}.  On
+the other hand, the emphasis is very different since much of the
+emphasis in the compiler literature is devoted to syntactic issues
+which are relatively straightforward in this area.  For document
+processors, incremental code generation is of top priority.  The
+execution of a document's target code is effectively the process of
+rendering its output image.  The sensation of directness is derived
+from efficient redisplay (execution) of a document's formatted view,
+which depends on how efficiently the target code can be generated.
+While the compiler technology literature is suggestive, new algorithms
+are required for these document processing problems.  The strategies
+reported in this paper concern incremental code generation in the
+{\VorTeX} formatter.  We believe the same approach can be applied to
+other document processing systems as well and that some apply to
+incremental systems in general.
+
+\section*{Basic Concepts}
+\label{txt:bc}
+
+One of the premises of an integrated software environment is to have
+the task of editing integrated with its main processing.  Normally the
+main processor maintains the bulk of a system's internal state.  A
+closely-coupled editor is used to register changes at a fine
+granularity.  In the context of document development, a document
+editor is intimately connected with the formatter and other processing
+engines.
+
+A major difference between an integrated environment and the
+traditional unintegrated approach is in the granularity of
+reprocessing.  The unintegrated case often implies a batch-oriented
+strategy, in which processing always begins with a ``cold start''.
+The internal state is reconstructed in every pass and is discarded
+when the task is finished.  Conversely, an integrated environment
+enables ``warm start'', or {\it incremental processing\/}, which
+reprocesses the system at a much finer granularity.  Instead of
+starting from the very beginning, an incremental strategy detects the
+unchanged state and processes only the minimal necessary part,
+reducing computation overhead while yielding a higher degree of
+directness.
+
+In designing an incremental strategy, one must consider the following
+important concepts: {\it dependence\/}, {\it pertinence\/}, {\it
+quiescence\/}, {\it convergence\/}, and {\it checkpointing\/}.  Before
+explaining these concepts, the underlying {\it execution mode\/} must
+be clarified first.  Two modes are of interest here: in the {\it
+immediate execution mode\/}, the system is automatically reevaluated
+whenever an update is registered; in the {\it delayed execution
+mode\/}, the system accumulates all the updates and is reevaluated
+only when it is so requested by the user.
+
+\subsection*{Dependence}
+\label{txt:dep}
+
+When a system is modified, some data may be independent of the changes
+and hence need not be reprocessed.  Detecting data dependence,
+therefore, establishes a condition for starting incremental processing
+and for skipping independent data during the processing.  For example,
+if we assume that no global attribute management such as cross
+references or table of contents is involved, a change to page $N$
+normally has no effect on data between pages $1$ and $N-1$.  Hence
+reformatting can start from the state associated with page $N$,
+leaving those associated with previous pages intact.  A finer grain
+algorithm can even detect data dependence at the paragraph level,
+resulting in even less reprocessing.
+
+\subsection*{Pertinence}
+\label{txt:per}
+
+
+An incremental system is able to do partial evaluation by processing
+only {\it pertinent data\/}.  Non-pertinent data can be processed in
+the background or simply be delayed until the next processing cycle.
+The central issue here is to determine what information is pertinent
+and what is not.  Suppose the processing in question is a sequence of
+events and there is a {\it focal point\/}, a place to which the user's
+attention is focused, then everything from the start of processing
+till the focal point is reached is pertinent.
+
+In our document formatting example, data up to the page the user wants
+to examine are pertinent and everything beyond that page is
+non-pertinent.  Based on this simple heuristic, an incremental
+formatter can suspend its foreground processing when a desired page is
+encountered.  The remainder of the document can be left unprocessed
+(dirty) until the next cycle.  A more elaborate strategy would pass
+the processing into background for efficiency considerations.
+In general, a focal
+point is not fixed; it shifts back and forth throughout the whole
+session.  There may even be multiple focal points active
+simultaneously in a windowing environment.  For instance, different
+pages of a document can be displayed in different windows at the same
+time.
+
+\subsection*{Quiescence and Convergence}
+\label{txt:qui}
+
+An incremental processing strategy may also reach {\it quiescence\/}
+in which the system state is identical to that of the previous
+processing cycle.  Subsequently, all independent data can be ignored
+and ``real'' processing does not have to resume until any dependent
+information is encountered again.  If there are no dependent data to
+process when quiescence is detected, the system is said to have
+reached {\it convergence\/}.  At this point, no more processing,
+either in foreground or background, is necessary.
+
+Quiescence is a transient phenomenon within a single pass of
+processing.  It can be exploited to suspend the processing which would
+produce a result identical to that of the previous cycle.  Convergence
+determines whether more processing passes must be invoked.  One or
+more passes of processing are needed when the current pass of
+processing cannot resolve some references or causes side effects to
+some antecedents in such as way that their references must be
+re-evaluated.  Chamberlin~\cite{chamberlin:dc} describes a
+scenario in which a document oscillates between
+alternating formatting states and therefore never converges.  In
+practice, such pathological examples are rare and convergence is
+achieved within three passes.
+An environment which maintains a document history can reduce the
+number of passes required in most cases to one.
+This is the approach taken
+by Scribe~\cite{reid:hla}.
+
+
+
+\subsection*{Checkpointing}
+\label{txt:chk}
+
+A granularity issue is of concern here.  The question is how often
+does the processing checks for quiescence; that is, when does it
+compare the newly generated output data with that produced previously.
+Since {\it quiescence checkpointing\/} is a potentially expensive
+operation, the idea is to set checkpoints at appropriate places so
+that the overhead of quiescence detection at a checkpoint is less than
+that of regular processing between checkpoints.  A related issue is
+{\it internal state checkpointing\/}, which saves a snapshot of the
+system state at each checkpoint.  The checkpointed state information
+can be reloaded in some later cycle if the system decides to resume
+processing from that point.
+
+\begin{figure}[t]
+  \hrule
+\vspace{6pt}
+  \centerline{
+    \psfig{figure=figs/chk.ps,height=2in,width=3.25in}
+  }
+   \caption{\protect{\footnotesize\bf Incremental processing and checkpointing.}}
+\vspace{6pt}
+  \hrule
+\vspace{6pt}
+  \label{fig:chk}
+\end{figure}
+
+Figure~\ref{fig:chk} illustrates a difference between the two types of
+checkpointing.  Quiescence checkpointing involves comparing target
+representations produced by the present and previous formatting
+cycles.  Internal state checkpointing involves only the intermediate
+representation of the present cycle.  In general, there is a
+modulo-$\alpha$ relationship between state and quiescence checkpoints,
+where $\alpha$ is some small integer.  That is, after every $\alpha$
+state checkpoints, there is a quiescence checkpoint.
+Figure~\ref{fig:chk} shows an example of $\alpha = 1$.  Another
+overhead associated with incremental processing is the cost of loading
+the checkpointed state information.  Evaluating this cost against that
+of regular processing determines whether or not suspending processing
+upon quiescence is worthwhile.
+
+
+\section*{Generic Issues}
+\label{txt:gi}
+
+Putting the concepts mentioned above together, this section outlines
+some generic incremental formatting issues that are common to most
+integrated document development systems.  A pidgin-C syntax is used to
+describe the algorithms.
+
+\subsection*{Editor Events}
+
+The first problem an incremental document formatter must confront is
+interacting with editors.  The separation of editors from the
+formatter is conceptual because in many direct manipulation document
+preparation systems the two tasks are strongly integrated.  Some of
+the various strategies which may be used are discussed in
+Reference~\cite{phc:mrdd}.  A generic top level of an incremental
+formatter would be similar to Figure~\ref{fig:gtl}.
+
+\begin{figure}[tb]
+  \hrule
+  \vspace{-4truept}
+  \begin{alltt}{\small\RM{
+        \em{top\_level ()} \{
+            \LOOP\ forever \{
+                get next event;
+                process event;
+            \}
+        \}}}\end{alltt}
+  \caption{\protect{\footnotesize\bf Incremental processing and checkpointing.\/}}
+  \vspace{6truept}
+  \hrule
+  \label{fig:gtl}
+\end{figure}
+
+Events include {\it update\/} (insert/delete), {\it format\/} (or
+reformat), {\it display\/} (or redisplay).  In the immediate execution
+mode, a pair of format and display events automatically follows each
+update event.  In the delayed execution mode, format and display
+requests are asynchronously generated by the user.
+
+A preemption issue arises in the immediate execution mode.  Because
+the user is not in control of when to format, a newly arrived update
+event must be able to preempt current formatting.  This makes sense
+from a user interface stand point: when the user modifies the
+document, it is expected that the result be immediately shown.
+Preemption is less of a problem in the delayed execution mode because
+the user is in charge of initiating format requests.  A user-driven
+asynchronous behavior like this has the advantage of having more
+tolerance for delay.
+
+In addition to modifying data touched by the user, it is also
+necessary for an update event to mark their enclosing objects {\it
+dirty\/}.  The scope of the enclosing object is determined by the
+granularity of reprocessing (i.e., state checkpoints).  If an update
+happens in the body of a macro or procedure, then the enclosing
+objects of all its callers must be marked dirty.  If a macro or
+procedure definition is removed, the system symbol table must reflect
+this fact accordingly.  If an update inserts or deletes a
+cross-referenced antecedent, a flag must be turned on to notify the
+possibility of multi-pass processing.  Whenever a reference is
+inserted or deleted, its antecedent's reference list must be updated
+correspondingly.
+
+
+\subsection*{Incremental Formatter}
+
+\begin{figure}[tb]
+  \hrule
+  \vspace{2pt}
+  \begin{alltt}{\small\RM{
+        \em{format ()} \{
+            \DO \{
+                \IF  (\em{suspend} \AND current unit clean) \{
+                    skip independent data;
+                    \CONTINUE;
+                \} \ELSE \{
+                    \IF  (\em{suspend}) \{
+                        \em{suspend} = \FALSE;
+                        load preceding context;
+                    \}
+                    process current unit;
+                    mark current unit clean;
+                    state checkpointing;
+                \}
+                \IF  (quiescence checking needed) \{
+                    check for quiescence;
+                    \IF  (quiescence detected)
+                        \em{suspend} = \TRUE;
+                \}
+            \}  (focal point reached);
+            display focal point;
+        \}}}\end{alltt}
+  \caption{\protect{\footnotesize\bf A generic incremental
+   formatting algorithm.}}
+  \vspace{6pt}
+  \hrule
+  \label{fig:inc}
+\end{figure}
+
+The marking process facilitates dependence checking, which establishes
+a pre-condition of the general incremental formatting algorithm.
+Another pre-condition is that there is at least one user viewport with
+a designated focal point.  Figure~\ref{fig:inc} describes a generic
+incremental formatting algorithm.  With default value \TRUE, the
+global variable \SL{suspend} is a flag that marks quiescence status
+during the processing.  The same algorithm works under both cold and
+warm starts.  In the general case of a warm start, an initial non-null
+sequence of pages is marked clean.  In the case of a cold start, the
+opposite of a warm start, every object is considered dirty.  Objects
+already processed are marked clean by the formatter.  As the editing
+session progresses, some objects are marked dirty again by update
+events, until they are cleared by the next cycle of formatting.
+
+
+The main loop terminates when the focal point has been reached, at which
+time the visible part of the document covered by the focal point is
+displayed on the user's viewport.  The focal point is implicitly set
+at infinity in the case of background formatting.  So the same
+algorithm applies to both foreground and background formatting.  The
+granularity of reprocessing is unspecified, which means it can be
+page-based, paragraph-based, or based on some finer unit.
+
+
+\subsection*{Inherent Conflicts with Incremental Processing}
+\label{txt:ic}
+
+There are some inherent conflicts between resolving dependencies and
+incremental processing.  The stumbling block is the multi-pass
+processing required in resolving dependencies such as cross
+references.  The first issue is that updating antecedents, especially
+when page numbers are involved in the reference, may cause global
+consequences.  So every reference to any antecedent in those places
+must be updated unless quiescence is reached at some point.  This is
+why it is a good idea to put off dependency resolution especially when
+indexes are involved until the main document body is near completion.
+
+The second issue concerns the external auxiliary processors often
+required to handle the second pass of processing, and this leads to
+the question of whether these external processors are themselves
+incremental, and if so, how does the formatter exchange state
+information with them.  Making cooperating processes mutually
+incremental is nontrivial and deserves further research.  Usually
+these external processors write auxiliary files to record information.
+Another conflict is the user interface issue coupled with the
+semantics of these references.  If the user were allowed to modify
+actual reference strings generated by attribute dependency resolutions
+(e.g., citations, cross references, etc.), the semantic correctness of
+these references could easily be violated.  Massaging actual reference
+strings is forbidden or at least discouraged to avoid the semantic
+confusions it may cause.  A batch oriented example might be the {\tt
+aux} and {\tt bbl} files of {\LaTeX}~\cite{lamport:latex} and of
+{\BibTeX}~\cite{patashnik:bibtex}.  Modifying the original symbolic
+references is still allowed and this may trigger reformatting as
+usual.
+
+\subsection*{Reaching Convergence}
+\label{txt:tc}
+
+The external processors involved should be integrated with the
+environment so that the input they need and the output they produce
+can be exchanged easily with the editor and the main document
+formatter.  A tightly-coupled document editor can be used to share
+much of the preprocessing work if certain programmability is
+supported.  It is also important to keep track of changes to any
+antecedents so that either the system knows additional passes of
+processing are needed and therefore automatically spawns the jobs, or
+the user is informed of the situation and jobs can be spawned
+asynchronously.
+It is important that this algorithm be correct.
+Otherwise,  documents might be produced with incorrect cross references.
+
+The current implementation of the {\VorTeX} incremental formatter
+focuses on exploiting pertinence, quiescence, and checkpointing.
+Convergence detection is not implemented, although such an extension
+is possible within the basic framework.  An algorithm for the
+detection of convergence has been given in
+Reference~\cite{chamberlin:dc}.
+
+Next we return to the
+more specific case of the {\VorTeX} formatter.
+
+
+\section*{{\VorTeX}'s Incremental Strategies}
+\label{txt:vis}
+
+The {\VorTeX} incremental formatter maintains full compatibility with
+{\TeX}.  {\TeX}'s chief executive \SL{main\_control~()} is a big long
+loop, in which a master switch drives all the various pieces of {\TeX}
+to do their jobs, in the right order.  In {\TeX}, this loop does not
+terminate until the end of document.  {\TeX} generates code on a per
+page basis, which allows {\VorTeX} to operate incrementally on a page
+granularity.  The following are some key routines that constitute
+{\VorTeX}'s incremental formatting engine.
+
+\begin{itemize}
+  \item \SL{top\_level~()}: main event dispatcher.
+
+  \item \SL{send\_page~()}: the routine that transmits page information
+  	to the target editor for display.
+	
+  \item \SL{fg\_format~()}: foreground formatting routine.
+
+  \item \SL{bg\_format~()}: background formatting routine.
+
+  \item \SL{save\_state~()}: internal state checkpointing routine.
+
+  \item \SL{load\_state~()}: the routine that restores a page's internal state
+	before processing.
+
+  \item \SL{compare\_page~()}: quiescence checkpointing routine.
+\end{itemize}
+
+
+\begin{figure}[tb]
+  \hrule
+  \vspace{-4pt}
+  \begin{alltt}{\small\RM{
+        \em{top\_level (E)} \{
+            \WHILE (\TRUE) \{
+                select socket;
+                \IF  (timed out \AND (\em{starting\_page} \(\neq \infty\))
+                    \em{bg\_format ()};
+                \ELSE \{
+                    process event;
+                    \IF  (event \(\equiv \)E)
+                        \RETURN;
+                \}
+            \}
+        \}}}\end{alltt}
+  \caption{\protect{\footnotesize\bf Top-level control loop of
+  {\TRFootVorTeX}'s incremental formatter.}}
+  \vspace{6pt}
+  \hrule
+  \label{fig:top}
+\end{figure}
+
+Figure~\ref{fig:top} illustrates the top level of {\VorTeX}'s
+incremental formatting engine.
+\begin{figure}[t]
+  \hrule
+  \vspace{-4pt}
+  \begin{alltt}{\small\RM{
+        \em{fg\_format ()} \{
+            \IF  (\em{starting\_page} \(\equiv \infty\)) \{
+                /* cold start */
+                \em{pre\_format ()};
+                \em{starting\_page} = 1;
+                \em{save\_state (}0\em{)};
+            \} \ELIF  ((\em{starting\_page} \(\leq\) \em{viewing\_page}) \AND
+                       (\em{starting\_page} \(\neq\) \em{total\_pages} + 1)) \{
+                /* warm start */
+                \em{load\_state (starting\_page} - 1\em{)};
+                \em{last\_page} = \(\infty\);
+            \} \ELIF  (\em{starting\_page} \(>\) \em{viewing\_page})
+                \RETURN (no need to format);
+            \ELIF  (\em{last\_page} \(\neq \infty\))
+                \RETURN (nothing to format);
+        
+            \WHILE  (\TRUE) \{
+                \IF  (\CATCH (error raised))
+                    \RETURN (error code);
+                \em{main\_control ()};
+                \em{save\_state (total\_pages)};
+                \em{starting\_page}++;
+                \IF  (\em{total\_pages} \(\equiv\) \em{viewing\_page})
+                    \RETURN (success);
+                \IF  (\em{last\_page} \(\neq \infty\))
+                    \RETURN (error: no such page);
+      
+                \em{format\_suspended} = \em{compare\_page ()};
+                \IF  (\em{format\_suspended}) \{
+                    \WHILE  (\em{starting\_page} \(<\) \em{viewing\_page} \AND 
+                             \em{starting\_page} is clean)
+                        \em{starting\_page}++;
+                    \IF  (\em{starting\_page} is clean)
+                        \RETURN (success);
+                    \IF  (\em{starting\_page} \(\neq\) \em{total\_pages} + 1) \{
+                        \em{load\_state (starting\_page} - 1\em{)};
+                        \em{format\_suspended} = \FALSE;
+                    \}
+                \}
+            \}
+        \}}}\end{alltt}
+  \caption{\protect{\footnotesize\bf {\TRFootVorTeX}'s foreground formatting
+  routine.}}
+  \vspace{6pt}
+  \hrule
+  \vspace*{\fill}
+  \label{fig:fge}
+\end{figure}
+The body of the code is an infinite loop that
+receives events from either the source or target editors.
+If no
+events have arrived before the receiver is timed out, the background
+formatting routine \SL{bg\_format~()} is invoked.
+This action assumes that foreground formatting has taken place
+already.
+If this happens, then
+\SL{starting\_page} should have been assigned
+some value other than $\infty$.
+If, on the other hand, an event has been received then the
+the corresponding event handling routine is invoked.  
+
+\subsection*{Foreground and Background Formatting}
+\label{txt:sf}
+
+The foreground formatter \SL{fg\_format~()} is shown in
+Figure~\ref{fig:fge}.  Here \SL{starting\_page} is set asynchronously
+by every update event so that it always points to the leftmost dirty
+page.  Initially, it has the default value of $\infty$ and is
+immediately reset to $1$ after cold start.  The routine
+\SL{pre\_format~()} performs the necessary initializations.  For any
+incremental run, the pre-context of \SL{starting\_page} is loaded
+prior to the actual processing and \SL{last\_page} is reset to
+$\infty$ if the leftmost dirty page is not located beyond the focal
+point (\SL{starting\_page} \(\leq\) \SL{viewing\_page}) and the page
+to be processed is not the immediate successor of the most recently
+processed page (\SL{starting\_page} \(\neq\) \SL{total\_pages} + 1).
+In this case the context in core is the one to inherit.  If the
+leftmost dirty page is indeed located beyond the focal point
+(\SL{starting\_page} \(>\) \SL{viewing\_page}), there is no need to
+format the document in the foreground (i.e., the focal page is clean).
+There may also be nothing left to format, in which case
+\SL{last\_page} is assigned some value other than $\infty$.
+
+The principal loop invokes the {\TeX} chief executive
+\SL{main\_control~()} to format one page at a time and increment
+\SL{total\_pages} by one.  Moreover, \SL{main\_control~()} does state
+checkpointing afterwards by calling \SL{save\_state~()}, and advances
+\SL{starting\_page} until either the focal page is reached
+(\SL{total\_pages \(\equiv\) viewing\_page}) or the end of document is
+encountered first (\SL{last\_page} is assigned some value other than
+$\infty$).
+
+Here, quiescence is reached when \SL{compare\_page~()} returns \TRUE,
+at which point formatting is suspended (\SL{format\_suspended} is
+\TRUE) and all independent data, i. e. clean pages, are ignored.
+Formatting resumes upon encountering the first instance of dependent
+data (dirty page).  The routine \SL{compare\_page~()} compares the
+newly generated target page with what exists in target representation.
+It returns \TRUE\ if the two are identical, otherwise the old page is
+replaced by the new one and \FALSE\ is returned.  It is relatively
+easy to conclude non-quiescence; starting from the largest box in the
+page, the moment any property of a new box, which may be its content,
+attribute, dimension, etc., does not match its counterpart in the old
+page, \SL{compare\_page~()} can immediately return \FALSE.  There is a
+hypothetical routine \CATCH\ that handles errors and exceptions.  It
+sets an environment pointer to which an error situation can return.
+
+Background formatting, \SL{bg\_format~()} shown in
+Figure~\ref{fig:bge}, is almost identical to foreground formatting,
+but less complex in logic.  One condition precludes background
+formatting from happening, that is, when the document has reached its
+end while every page in the document is clean (\SL{last\_page} is
+assigned some value other than $\infty$), no further processing is
+necessary.  There is no such notion as the current focal point in
+background formatting; it is only bounded by the end of document.
+Again, the pre-context of \SL{starting\_page} is loaded prior to the
+actual processing, provided the page to be processed is not the
+immediate successor of the most recently processed page
+(\SL{starting\_page} \(\neq\) \SL{total\_pages} + 1), otherwise the
+necessary context can simply be inherited from the most recently
+processed page.
+
+\begin{figure}[tb]
+  \hrule
+  \vspace{-4pt}
+  \begin{alltt}{\small\RM{
+        \em{bg\_format ()} \{
+            \IF  (\em{format\_suspended})
+                \WHILE (\em{starting\_page} is clean)
+                    \em{starting\_page}++;
+            \IF  (\em{starting\_page} \(\equiv\) \em{last\_page} + 1)
+                \RETURN (nothing to format);
+            \IF  (\em{starting\_page} \(\neq\) \em{total\_pages} + 1) \{
+                \em{load\_state (starting\_page} - 1\em{)};
+            \}
+      
+            \IF  (\CATCH (error raised))
+                \RETURN (error code);
+            \em{main\_control ()};
+            \em{save\_state (total\_pages)};
+            \em{starting\_page}++;
+
+            \em{format\_suspended} = \em{compare\_page ()};
+        \}}}\end{alltt}
+  \caption{\protect{\footnotesize\bf {\TRFootVorTeX}'s background formatting
+  routine.}}
+  \vspace{6pt}
+  \hrule
+  \label{fig:bge}
+\end{figure}
+Basically, if formatting has been suspended,
+the variable \SL{format\_suspended} is
+\TRUE, all clean pages are ignored until either a dirty page is
+found, or the chain of target pages in the document's internal
+representation has come to an end.
+Then \SL{last\_page} is assigned some value other than $\infty$ only if the
+end of document has been processed.  So if the page to be processed
+(\SL{starting\_page}) is the immediate successor of \SL{last\_page},
+no further processing is necessary.
+
+\subsection*{Refinements}
+\label{txt:ref}
+
+The duet of Figures~\ref{fig:fge} and~\ref{fig:bge} is targeted toward
+incremental code generation.  It is natural that the granularity is a
+page because {\TeX} generates code on a page basis.  There are a
+number possible refinements to the page-based scheme.
+
+The first refinement is to lower the granularity to a paragraph.
+Anything finer than a paragraph would be difficult as far as {\TeX} is
+concerned, because line breaking involves every word in a paragraph.
+The reason, as mentioned previously, is to achieve more even
+interword spacing within a paragraph.  A paragraph-based strategy
+implies that code must be generated on a per paragraph basis, which is
+rather straightforward even under the augmentation approach.  In fact,
+the strategies illustrated in Figures~\ref{fig:fge} and~\ref{fig:bge}
+should still apply; the only modification needed is to replace page
+considerations by paragraph considerations.  The extra overhead
+introduced is in the storage required for state checkpointing if the
+brute force approach is used.
+
+The next refinement is to perform incremental state checkpointing.
+This is not restricted to paragraph-based incremental formatting per
+se; the original page-based approach can also take advantage of this
+if external storage is a scarce resource.  The idea is to save only
+the deltas.  Both save and restore would take longer:
+\SL{save\_state~()} must know which state variables are touched and
+which are intact, thereby saving only the touched ones;
+\SL{load\_state~()} would have to traverse the delta tree to recover
+the complete state information before restoring it.
+
+\subsection*{Validation}
+
+An incremental {\TeX} formatter has been constructed as part of the
+{\VorTeX} system.  The {\TeX} 
+software includes a validation suite called the TRIP test~\cite{knuth:trip}.
+The idea of this
+test is to create a version of {\TeX} with a small internal memory and
+then to subject the program to a sequence of commands designed to
+cause as many errors to occur as possible.
+Sometimes, this is referred to as a ``torture
+test.''  If a new implementation of {\TeX} is created, one gives it
+this TRIP test and compares the log of the computation against a
+master log.  If the two logs agree, then the system is said to pass
+the TRIP test and the implementation is validated.  Program testing of
+this sort is not a substitute for a proof of correctness, but such
+proofs are infeasible for non-toy examples of the type discussed here.
+
+The incremental {\TeX} formatter described here which is used in the
+{\VorTeX} system has passed the TRIP test.  We have an incremental
+formatter which must work in a more demanding environment so a more
+comprehensive test is in order.  We required that this formatter pass
+the (TRIP$)^\ast$ test which means that the formatter pass the TRIP
+test if we are stopped at page $i$, which is then marked dirty and the
+system is asked to reformat.  The system must pass the TRIP test for
+each page number $i$, $i = 1, 2, 3, \ldots\,$.  This guarantees that
+proper ``state information'' has been kept.  Our prototype has passed
+the (TRIP$)^\ast$ test.
+
+\subsection*{Experience}
+
+The version of {\TeX} from which we started was Common {\TeX} which
+was written by Pat Monardo.  This system was based on Knuth original
+PASCAL implementation of {\TeX} which has been documented so
+thoroughly in Reference~\cite{knuth:pgm}.  Monardo manually translated
+the program to C, trying to be as faithful as possible to the original
+design.  Our incremental processor utilized the C-code for {\TeX} and
+added new internal representations and the control code described in
+this paper.  The techniques described in this paper and explained more
+fully in Reference~\cite{phc:phd} can be applied to other systems as
+well.  This work should also be viewed in the context of the general
+approach to incremental algorithms studied in
+Reference~\cite{yellin:inc}.
+
+At this writing, we are just getting some experience in using the
+system.  We have installed code in Common {\TeX} and in this formatter
+to produce timing information.  We can offer some preliminary timings
+at this time and will have much more to add later.  We tested two
+types of documents on a SUN 3/260 workstation.  Table~\ref{tab:Ctex}
+shows the results of timings on pages of dense text and on highly
+mathematical material.
+
+\begin{table}[tb]
+    \hrule
+    \vspace{6pt}
+    \centering
+\begin{tabular}{l || c c}
+    \multicolumn{1}{l || }{Type}&
+    \multicolumn{1}{p{1in}}{{\centering Initialization and page 1}}&
+    \multicolumn{1}{c}{Other pages}\\
+    \hline
+    Text&	3.18&	.955\\
+    Math&	2.34&	.600\\
+  \end{tabular}
+\vspace{10pt}
+\caption{\protect{\footnotesize\bf Timings for Common {\TeX}.
+The time to write the postamble of the DVI file is not included but
+is negligible.}}
+\vspace{6pt}
+  \hrule
+\vspace{6pt}
+  \label{tab:Ctex}
+\end{table}
+
+While the mathematical pages were complex, they did contain a
+substantial amount of white space.  There was insufficient evidence to
+conclude that mathematics takes more time than straight text.  Some of
+the textual material had long paragraphs which would add to the time
+used by the line breaking algorithm in {\TeX}~\cite{knuth:break}.
+On the other hand,
+Table~\ref{tab:vortex} shows the timings for the {\VorTeX} formatter.
+
+\begin{table}[tb]
+    \hrule
+    \vspace{6pt}
+    \centering
+    \begin{tabular}{l || c c c| c }
+    \multicolumn{1}{l || }{Type}&
+    \multicolumn{1}{p{.6in}}{{\centering Start up \& page 1}}&
+    \multicolumn{1}{p{.35in}}{{\centering Other pages}}&
+    \multicolumn{1}{c|}{Checkpoint}&
+    \multicolumn{1}{c}{Total}\\
+    \hline
+    Text&	9.60&	1.67&	.64&	2.31\\[7pt]
+    Math&	6.74&	1.06&	.46&	1.52\\
+  \end{tabular}
+\vspace{10pt}
+\caption{\protect{\footnotesize\bf Timings for the {\VorTeX} formatter.
+Column 2 does not include the time to checkpoint.}}
+\vspace{6pt}
+  \hrule
+\vspace{6pt}
+  \label{tab:vortex}
+\end{table}
+We were just running the formatter and not the source editor and displayer.
+In spite of this, the program was constructing and maintaining
+the internal representations which {\VorTeX} requires.
+
+The reason that {\VorTeX} takes so long in initialization and doing
+the first page is that the processor reads the entire source file
+first and also checkpoints the initial state of the system.  These
+very crude measurements suggest that the {\VorTeX} processor takes
+about 2.5 times as much time as Common {\TeX}.  Of course, we expect
+to make up much more than this by only redoing pages that are
+necessary.
+
+Time is only one parameter of efficiency.  As each page is processed,
+{\VorTeX} stores its DVI file and the state is checkpointed.  In our
+first prototype, the formatter saved the entire internal state of
+{\TeX} in uncompacted form.  Although this was obviously inefficient,
+it did allow the the testing of the rest of the system.  In the
+current version of the system, a more compact representation is
+stored.  A typical amount of memory used per page is some 25K bytes
+while a typical DVI file might contain 5K bytes.  We have omitted the
+details of exactly what is saved in the internal state and how this is
+done.  Such a discussion involves more details about the internal
+organization of {\TeX} and would carry us over the space limit imposed
+on this paper.
+
+The reader is cautioned that these numbers are preliminary.  The
+system will be tuned and measured more precisely.  A version of the
+incremental {\TeX} processor is being prepared which does not support
+the complex {\VorTeX} data structures and which is editor independent.
+This system, as well as {\VorTeX}, will be made available (in source
+form) to the community.
+
+\section*{Acknowledgements}
+
+The other designers of {\VorTeX} were John Coker, Jeff McCarrell, and
+Steve Procter.  The implementation was organized into three separate
+modules and this paper describes the incremental formatter.  John
+Coker wrote VLisp and the source editor while Steve Procter wrote the
+display editor.
+
+Special thanks go to Donald E. Knuth for not only writing a fine
+program which uses exceptionally efficient algorithms, but for
+documenting it so meticulously in Reference~\cite{knuth:pgm}.  We were
+also greatly assisted by Pat Monardo's faithful translation into the C
+language.
+
+\def\baselinestretch{1}	% overwrite baselineskip
+\bibliographystyle{plain}
+\bibliography{abbrev,doc,inc}
+
+\end{document}
+

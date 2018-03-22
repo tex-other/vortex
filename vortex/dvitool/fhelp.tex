@@ -1,0 +1,657 @@
+% Copyright (c) 1986-1991 The Regents of the University of California.
+% All rights reserved.
+%
+% Permission is hereby granted, without written agreement and without
+% license or royalty fees, to use, copy, modify, and distribute this
+% software and its documentation for any purpose, provided that the
+% above copyright notice and the following two paragraphs appear in
+% all copies of this software.
+% 
+% IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+% DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+% OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+% CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+%
+% THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+% INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+% AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+% ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+% PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+%
+% DOCSTR Sat Mar  4 16:43:58 1989
+
+\input docmac.tex
+
+\startdoc
+
+\docstr{Prefix-1}
+\desc{\em{Prefix-1} is a command to access an auxiliary keymap in the
+Emacs tradition.  There are 3 such keymaps: the default keymap,
+the \em{Prefix-1} keymap and the \em{Prefix-2} keymap.
+\em{Prefix-1} is always bound to \lit{$<$ESC$>$}.
+Normally, the user need not be aware of this command; it simply
+exists more commands can be run from the keyboard.  You can
+think of it as a different kind of shift key.}
+\seea{{\it Prefix-2}}
+
+\docstr{Prefix-2}
+\desc{\em{Prefix-2} is the command to access the second auxiliary
+keymap.  \em{Prefix-2} is always bound to \lit{$<$C-X$>$}.}
+\seea{{\it Prefix-1}}
+
+\docstr{ansi-keys}
+\desc{This function interprets the codes sent by the Sun function keys
+and attempts to do something intelligent with them.  The best 
+solution would be to be able to map each of them to a function
+just like any other key.  But since the function keys generate
+strings of characters, it isn't easy to incorporate them into 
+\lit{dvitool}'s key binding scheme.  So instead
+\lit{dvitool} interprets each
+sequence and runs a command from a private key map, much like
+the key map the menu uses.  The person who installed \lit{dvitool}
+can change the default bindings for the function keys; the
+normal defaults are ``unbound'' for every key except the arrow
+keys on the right keypad which scroll, L5 which runs 
+\em{toggle-tool}, and L7 which runs \em{close-window}.
+These binding are site-wide; once compiled in by the installer,
+they cannot be changed by individual users.
+This command is something of a hack; it was never intended to be
+run intentionally by the user.  It's ability to interpret the
+ANSI sequences depends on it being bound to \lit{\\e[} and you
+will after you type some additional input, you will get innocuous
+error messages if you run \em{ansi-keys} manually.  For all its
+short comings though, it does suppress the unwanted characters 
+that result when your fingers slip onto one of the function keys.}
+\seea{{\it enable-ansi-keys}}
+
+\docstr{ascii-of-selection}
+\desc{This function displays a previously-made selection in ASCII
+to make it easier to determine what the correct search string
+for the selection would be.}
+\seea{{\it erase-selection}, {\it extend-selection}, {\it select-char}}
+
+\docstr{beginning-of-file}
+\desc{This command positions \lit{dvitool} on the first page
+of the \lit{DVI} file.}
+\seea{{\it end-of-file}}
+
+\docstr{bind-to-key}
+\call{\bf function-name key-strokes}
+\desc{This command ``binds'' a key (or keys)
+to a function that will be executed when that
+key is pressed.  The binding's life is the life of the 
+\lit{dvitool} that executed it; to get bindings which take effect
+on every instance of \lit{dvitool}, put the \em{bind-to-key}
+command in your startup file.  Control and mouse characters
+have ASCII representations which must be used in the startup
+file.  \em{Describe-key} displays what command a particular
+key sequence will invoke; as a side effect, it also displays
+the ASCII representation of the sequence, so it can be 
+used to easily determine the correct ASCII representation
+for any valid input.}
+\seea{{\it describe-key}, {\it dump-bindings}, {\it Startup-File}}
+
+\docstr{bottom-edge}
+\desc{This command positions the page image so the bottom edge of the
+current \lit{DVI} page is visible.
+If a numeric argument is given, the bottom edge of the
+visible page (without the bottom margin) will be shown.}
+\seea{{\it bottom-left}, {\it bottom-right}, {\it top-edge}}
+
+\docstr{bottom-left}
+\desc{This command positions the \lit{DVI} page so the bottom left
+hand corner is visible.
+If a numeric argument is given, the bottom left corner of the
+visible page (without the margins) will be shown.}
+\seea{{\it bottom-edge}, {\it bottom-right}, {\it top-left}}
+
+\docstr{bottom-right}
+\desc{This command positions the \lit{DVI} page so the bottom right
+hand corner is visible.}
+\seea{{\it bottom-edge}, {\it bottom-left}, {\it top-right}}
+
+\docstr{bound-to}
+\call{\bf command name}
+\desc{This command describes all of the key strokes that will invoke
+\sym{command name} separated by commas.}
+\seea{{\it dump-bindings}}
+
+\docstr{cd}
+\call{\bf filename }
+\desc{This command is similiar to the \em{sh(1)} or \em{csh(1)}
+commands of the same name; it changes the directory.
+When it is given a null argument, it changes to the user's
+home directory.
+The working directory can be viewed with the \em{print}
+command; it can also be altered with the \em{set} command,
+but since \em{cd} takes a file name which can be completed
+on, and cwd is considered a string when changed with \em{set},
+it is generally easier to use \em{cd}.}
+\seea{{\it cwd}, {\it print}, {\it set}}
+
+\docstr{close-window}
+\desc{This command ``closes'' \lit{dvitool} to a small iconic shape.
+The image that is painted and the position at which the image
+is painted are controlled by user-definable variables.}
+\seea{{\it init-icon-file}, {\it init-icon-x}, {\it init-icon-y}}
+
+\docstr{describe-key}
+\call{\bf key-strokes }
+\desc{This command identifies what command a sequence of keystrokes
+will invoke.  In the process it also echos the ASCII
+character sequences \lit{dvitool} uses to represent all of 
+the different input combinations.
+This means that you don't have to remember that
+control--shift--middle--mouse button is represented as
+\lit{\\m\\\^M}; \em{describe-key} will tell you that.}
+\seea{{\it bind-to-key}, {\it dump-bindings}}
+
+\docstr{dump-bindings}
+\desc{This command creates a file in the current directory
+called \lit{dvitool.bindings} that 
+describes which command each of the possible keyboard and mouse 
+combinations will invoke.}
+\seea{{\it bind-to-key}, {\it dump-commands}}
+
+\docstr{dump-commands}
+\desc{This command creates a file in the current directory
+called \lit{dvitool.commands} that describes each of the 
+\lit{dvitool} commands, the type of arguments that it takes,
+and the key strokes it is bound to separated by commas.
+In addition, all of the \lit{dvitool} variables and the their types
+are described.}
+\seea{{\it dump-bindings}}
+
+\docstr{end-of-file}
+\desc{This command positions \lit{dvitool} on the last page
+of the \lit{DVI} file.}
+\seea{{\it beginning-of-file}}
+
+\docstr{erase-selection}
+\desc{This command erases the current selection, if any.
+It is primarily used to ensure that a search operation
+begins at the top of the page.  A search begins
+at the end of the current selection, if any, or the top
+of the page, so erasing the current selection guarantees
+that the search will begin at the top of the current page.}
+\seea{{\it select-char}}
+
+\docstr{exec}
+\call{\bf command name}
+\desc{\em{Exec} is the most general way to run a \lit{dvitool}
+command.  \em{Exec} takes a (possibly completed) string
+and looks in it's table of command names.  If some command
+name exactly matches the string, then that command is 
+executed.  Since the command name argument to \em{exec}
+is subject to completion, a quick way to see all of
+\lit{dvitool}'s commands is to type \lit{$<$ESC$>$x?}.}
+
+\docstr{exit}
+\desc{This is the command to use when you wish to end your session
+with \lit{dvitool}.  It is usually bound to \lit{e}, 
+\lit{$<$C-C$>$}, and \lit{$<$C-X$>$$<$C-C$>$}.}
+
+\docstr{exit-help}
+\desc{This command exits from the last instance of help to the
+document you were viewing before you invoked help.  If the
+stack of help entries is empty, an error message is printed.}
+\seea{{\it help-commands}, {\it help-overview}, {\it help-variables}}
+
+\docstr{expose-tool}
+\desc{This command behaves exactly the same as the ``expose'' entry
+on a the standard tool menu; i.e. it causes a partially covered
+\lit{dvitool} to become the topmost tool, and thus unobscured.
+If \lit{dvitool} is not covered by some other tool, this command
+is a no-op.}
+\seea{{\it hide-tool}, {\it toggle-tool}}
+
+\docstr{extend-selection}
+\desc{This command extends a previously made selection to include
+new characters.  The command \em{select-char} only selects
+1 character; thus, the usual method to selection a region
+of characters is to first select one boundary character with
+\em{select-char} and then to select the region by selecting
+the other boundary character with \em{extend-selection}.
+It is an error to run this command with no current selection.}
+\seea{{\it ascii-of-selection}, {\it erase-selection}, {\it select-char}}
+
+\docstr{find-file}
+\call{\bf filename }
+\desc{This command is the main entry point for viewing a \lit{DVI} file.
+\em{Find-file} takes a filename, expands \lit{\~} and \lit{\$}
+characters into home directories and environment variables 
+respectively, appends \lit{.dvi} if necessary and attempts to read
+the file and display it.  Various error messages are issued if
+the named file is not a \lit{DVI} file or if it malformed etc.
+The argument filename is subject to completion, so at any time
+the user may enter a space character to attempt completion or
+a question mark to see the list of choices \lit{dvitool} will
+select from.  If a question mark or space character is needed
+in the filename itself, precede it with a backslash.
+
+In addition to completion, there is ``next file'' and 
+``previous file'' selection, used in conjuction
+with the \lit{DVI} files named on the command line.  Control-N
+gets the next file name off of the list and control-P gets the
+previous file name.  So to preview all of the chapters of
+your upcoming book, invoke \lit{dvitool} like this:
+\lit{\%\space dvitool\space ch*.dvi} and then use control-N and control-P
+to select which file you'd like to view.  Just as with
+space and question mark, if you really want a control-N or
+a control-P in your filename, precede it with a backslash.}
+
+\docstr{full-screen}
+\desc{The \em{full-screen} command toggles the size of \lit{dvitool}
+between as big as the physical screen will allow and whatever
+size it was before \em{full-screen} was invoked.}
+\seea{{\it zoom-horizontal}, {\it zoom-vertical}}
+
+\docstr{goto-manuscript-page}
+\call{\bf string }
+\desc{This command searches for a specific page by examining
+between 1 and 10 of {\TeX's} \lit{\\count} variables.
+Each page of a \lit{DVI} file contains the value of these
+10 variables when it was shipped out; with the proper macro
+definitions, any number of section, chapter, or heading
+configurations can be described with them.  The string that
+\em{goto-manuscript-page} takes is parsed into up to 10 fields;
+then each of the \lit{\\count} fields of each page is compared
+with the parsed string until either a match is found or until
+all the pages have been examined.  The format for the search
+string is {$n[.n]\ldots$} where {$n$}
+is either a decimal number
+or the asterisk character \lit{*}.  The dot character is
+a field separator.  Thus, assuming the the appropriate macros
+have put the chapter number into \lit{\\count1}, the string
+\lit{*.4} will find the first page of chapter 4 beyond the
+current page.
+
+\em{Goto-manuscript-page} also accepts strings of roman numerals
+as input.}
+\seea{{\it goto-physical-page}}
+
+\docstr{goto-physical-page}
+\call{\bf integer }
+\desc{This command provides an alternative way to
+\em{goto-manuscript-page} to seek to a \lit{DVI} page.  
+Instead of the complexity of \lit{\\count} variables,
+\em{goto-physical-page} simply displays the nth page
+of the file.  Thus, \em{goto-physical-page}
+with an argument of 1 is semantically equivalent to
+\em{beginning-of-file}.}
+\seea{{\it goto-manuscript-page}}
+
+\docstr{help-commands}
+\call{\bf help command name}
+\desc{This command displays the \lit{dvitool} command help
+file and then searchs for the optional argument in that
+file.  The argument is subject to completion.  If completion
+is used to generate the search string, a match is guaranteed.
+The user may type in an arbitrary string as an argument.}
+\seea{{\it help-overview}, {\it help-variables}}
+
+\docstr{help-overview}
+\call{\bf help overview string}
+\desc{This command displays the overview file which describes
+the general mechanisms of \lit{dvitool}.  The optional string
+argument describes a search string to search for in the
+overview file.  If completion is used to generate the string,
+a match is guaranteed; however, the user may search for arbitrary
+strings in the overview file.}
+\seea{{\it help-commands}, {\it help-variables}}
+
+\docstr{help-variables}
+\call{\bf help variable name}
+\desc{Like \em{help-commands}, this command displays the \lit{dvitool}
+variable help file and then searchs for an optional string in
+that file.  If completion is used to generate the search string,
+then a match is guaranteed; the user may supply arbitrary strings
+though.}
+\seea{{\it help-commands}, {\it help-overview}}
+
+\docstr{hide-tool}
+\desc{This command behaves exactly the same as the ``Hide'' option
+of the standard tool menu; i.e. it causes \lit{dvitool} to be
+placed at the bottom of the stack of visible tools.}
+\seea{{\it expose-tool}, {\it toggle-tool}}
+
+\docstr{left-edge}
+\desc{This command positions the page image so the left edge of the
+page is visible.
+If a numeric argument is given, the left edge of the
+visible page (without the margin) will be shown.
+This command is commonly used when one wants to see the
+maximum amount of visible page.}
+\seea{{\it bottom-left}, {\it right-edge}, {\it top-left}}
+
+\docstr{list-all-commands}
+\desc{This command simply displays the names of all of the commands.}
+\seea{{\it dump-commands}, {\it list-all-variables}}
+
+\docstr{list-all-variables}
+\desc{This command simply displays the names of all of the variables.}
+\seea{{\it dump-commands}, {\it list-all-commands}}
+
+\docstr{magstep-0}
+\desc{This function displays the \lit{DVI} file at its normal size.
+It is a no-op unless the file has previous been displayed at
+some other magstep.  Note that magnification in \lit{dvitool}
+is global, that is, everything including the width of the page
+and the margins will be affected by the magnification routines.
+There is no analogy to {\TeX's} true points in \lit{dvitool}.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-1}
+\desc{This command magnifies the document to 120 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-2}
+\desc{This command magnifies the document to 144 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-3}
+\desc{This command magnifies the document to 172.8 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-4}
+\desc{This command magnifies the document to 207.4 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-5}
+\desc{This command magnifies the document to 248.8 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-minus-1}
+\desc{This command shrinks the document to 83.3 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-minus-2}
+\desc{This command shrinks the document to 69.4 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-minus-3}
+\desc{This command shrinks the document to 57.9 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-minus-4}
+\desc{This command shrinks the document to 48.2 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{magstep-minus-5}
+\desc{This command shrinks the document to 40.2 percent of its
+\em{magstep-0} size.}
+\seea{{\it magstep-minus-5{$\ldots$}magstep-5}}
+
+\docstr{mouse-menus}
+\desc{This command invokes the menus.  It may only be executed in
+response to a mouse button, though \em{bind-to-key} will bind
+it anywhere.}
+
+\docstr{next-page}
+\desc{This is the normal command to page through the \lit{DVI} file.
+It displays the next page of the document with the upper left
+hand corner of the page visible, easing the normal reading
+flow from the bottom of one page to the top of the next.}
+\seea{{\it goto-manuscript-page}, {\it next-page-positioned}, {\it previous-page}}
+
+\docstr{next-page-positioned}
+\desc{This command displays the next page of the \lit{DVI} file
+at the same position on the page as the current page.  Thus,
+if you are viewing the bottom of one page and want to see the 
+bottom of the next page, this command suffices.}
+\seea{{\it next-page}, {\it previous-page-positioned}}
+
+\docstr{numeric-argument}
+\desc{This command is used to enter a ``count'' which can be interpreted
+by functions that take an integer as their first argument.
+It is a prefix argument that is zeroed after each command.
+The command interpreter checks each time a command is run for a
+non-zero value of the numeric argument.  If it is non-zero and
+the first argument of the command being executed is of type 
+integer, the command interpreter substitutes the numeric argument
+for the command argument.
+For
+example, \em{goto-physical-page} takes a single integer argument
+and is usually bound to \lit{G}.  So the character sequence
+\lit{1G} will position \lit{dvitool} on the first page of the
+\lit{DVI} file.
+Other commands use the presence or absence of a numeric argument
+as a switch; for example, the edge commands act differently when
+a numeric argument is present.}
+
+\docstr{previous-page}
+\desc{This is the previous analog to \em{next-page}.}
+\seea{{\it next-page}, {\it previous-page-positioned}}
+
+\docstr{previous-page-positioned}
+\desc{This command is the previous analog to \em{next-page-positioned}.}
+\seea{{\it next-page-positioned}, {\it previous-page}}
+
+\docstr{print}
+\call{\bf variable name}
+\desc{This function shows the value of \lit{dvitool}'s internal
+variables.}
+\seea{{\it set}}
+
+\docstr{redraw-tool}
+\desc{This command behaves exactly the same as the ``Redisplay''
+option of the standard tool menu; i.e. it causes \lit{dvitool}
+to repaint all of its windows.}
+
+\docstr{reload-fonts}
+\desc{This function is identical to \em{reread-file} except that
+before the file is reread, all of the characters in the
+font cache are flushed.  This command is most useful when
+some of the pixel images of characters in a \lit{DVI} file
+have changed.}
+\seea{{\it reread-file}}
+
+\docstr{reread-file}
+\desc{This command reloads and redisplays the current \lit{DVI}
+file.  It is most useful when in the {edit--\TeX--preview}
+cycle.}
+\seea{{\it find-file}}
+
+\docstr{right-edge}
+\desc{This command positions the page image so the right edge of
+the current \lit{DVI} page is visible.
+If a numeric argument is given, the right edge of the
+visible page (without the margin) will be shown.
+This command is commonly used when one wants to see the
+maximum amount of visible page.}
+\seea{{\it bottom-right}, {\it left-edge}, {\it top-right}}
+
+\docstr{scroll-absolute}
+\call{\bf integer }
+\desc{This command scrolls down vertically down the page by the amount
+of the argument.  The argument is a percentage between 0 and 100
+of the page to scroll down.}
+\seea{{\it scroll-down}}
+
+\docstr{scroll-down}
+\desc{This command scrolls the page image down in the window if there
+is any more of the page to display vertically.  The amount scrolled
+by default is {$1/3$} of the vertical size of the window; 
+the default
+can be changed by supplying a numeric argument.  That argument
+is taken as the denominator of the fraction of the window to scroll
+down.  For example, the keystrokes \lit{10d} will scroll down
+by {$1/10$} the vertical size of the window.}
+\seea{{\it numeric-arg}, {\it scroll-left}, {\it scroll-right}, {\it scroll-up}}
+
+\docstr{scroll-left}
+\desc{This command is the leftward analog of \em{scroll-down}.}
+\seea{{\it scroll-down}}
+
+\docstr{scroll-right}
+\desc{This command is the rightward analog of \em{scroll-down}.}
+\seea{{\it scroll-down}}
+
+\docstr{scroll-up}
+\desc{This command is the upward analog of \em{scroll-down}.}
+\seea{{\it scroll-down}}
+
+\docstr{search-backward}
+\call{\bf literal-string }
+\desc{This command is exactly like \em{search-forward} except that 
+it searches backwards through the document instead of forwards,
+and the search is begun either from the last character of the
+page, or the character before the first character of the selection.}
+\seea{{\it search-backward-by-font}, {\it search-forward}}
+
+\docstr{search-backward-by-font}
+\call{\bf font-name literal-string}
+\desc{This command is exactly like \em{search-backward} except that
+a \lit{SET\_CHAR} must be in the named font to be a match.}
+\seea{{\it search-backward}, {\it search-forward}}
+
+\docstr{search-forward}
+\call{\bf literal-string }
+\desc{This command searches forward sequentially from a point on the 
+current	page for a string of characters in the \lit{DVI} file.
+The string is first parsed for any control sequences (any sequence
+of characters beginning with the backslash (\lit{`\\'}) character.)
+Then the search begins, either at the first character on the page
+if there is no selection on the current page or at the first 
+character after the selection.  Each character in the search
+string is compared with a \lit{SET\_CHAR} operand in the \lit{DVI}
+file or with a dvitool-created logical space character that
+matches an ASCII space character.
+The character matches if the integer parameter to the
+\lit{SET\_CHAR} matches the integer value of the ASCII character.
+If the end of the search string is reached, a match is reported.
+Note that a match which spans a page boundary will not be found.
+The variables \em{kern-threshold} and \em{line-break-threshold}
+control how dvitool decides whether movements are interword
+spaces or kerns.
+
+Since a match is based on the position of the character in the
+font, ligatures, in particular require some special handling.
+The ``fi'' ligature for example is at position 12 decimal
+in the roman font family.  This corresponds to the ASCII
+character control-L.  So to search for the word ``file'',
+you must use the string \lit{\\\^Lle}.  The command 
+\em{ascii-of-selection} greatly eases the task of computing
+the proper search string for a selection.
+
+Searches can can be aborted prematurely by hitting the L1
+key (usually the key at the upper-left most position on the
+keyboard).  This is the same key that is used to reboot the
+machine, but you needn't hold it down like a control key
+to make it work; just depress it and release it.  
+Every so often \lit{dvitool} will check to see if the key
+has been depressed and will terminate the search if it has.
+This key is effective only in the search functions.}
+\seea{{\it ascii-of-selection}, {\it kern-threshold}, {\it line-break-threshold}, {\it search-backward}, {\it search-forward-by-font}}
+
+\docstr{search-forward-by-font}
+\call{\bf font-name literal-string}
+\desc{This command is exactly like \em{search-forward} except that
+a \lit{SET\_CHAR} must be in the named font to be a match.
+
+\lit{Dvitool} keeps a cache of all the fonts you've used,
+so the fonts presented as choices for the \em{font-name}
+argument may or may not actually be in your DVI file.
+This isn't a major concern, however, since \lit{dvitool} will
+just issue an innocuous error message if you ask to restrict
+searching to a font that doesn't exist in your current DVI file.}
+\seea{{\it search-forward}}
+
+\docstr{select-char}
+\desc{This command makes a single character of the \lit{DVI} file the
+current selection.  The character chosen is highlighted by 
+displaying it in inverse video.  It may only be executed in
+response to an input from the mouse.  To extend the selection
+to more than one character, use \em{extend-selection}.
+A ``double click'' will select a word (a sequence of contiguous
+non-space characters).}
+\seea{{\it ascii-of-selection}, {\it extend-selection}, {\it which-char}, {\it which-font}}
+
+\docstr{set}
+\call{\bf variable name  value string}
+\desc{This command is used to change the value of \lit{dvitool}'s 
+variables.  It can be run interactively, but is used most
+often in the user's \lit{.dvitoolrc} file to customize 
+\lit{dvitool}'s behavior.  This first argument is the name
+of the variable to change and the second argument is the
+value to change it to.  The second argument will of course
+vary depending on the type of the variable to be changed;
+to get the previous contents of the variable, type your
+\lit{rprnt} character (usually control-R, see \em{stty(1)}).}
+\seea{{\it print}}
+
+\docstr{toggle-tool}
+\desc{This command puts dvitool at the top of the windows visible
+on the screen unless it already is the top window; in that case
+it puts it on the bottom of the stack.}
+\seea{{\it expose-tool}, {\it hide-tool}}
+
+\docstr{top-edge}
+\desc{This command positions the page image so the top edge of the
+current \lit{DVI} page is visible.
+If a numeric argument is given, the top edge of the
+visible page (without the top margin) will be shown.}
+\seea{{\it top-left}, {\it top-right}, {\it bottom-edge}}
+
+\docstr{top-left}
+\desc{This command positions the \lit{DVI} page so the top left
+hand corner is visible.
+If a numeric argument is given, the top left corner of the
+visible page (without the margins) will be shown.}
+\seea{{\it top-edge}, {\it top-right}, {\it bottom-left}}
+
+\docstr{top-right}
+\desc{This command positions the \lit{DVI} page so the top right
+hand corner is visible.
+If a numeric argument is given, the top right corner of the
+visible page (without the margins) will be shown.}
+\seea{{\it top-edge}, {\it top-left}, {\it bottom-right}}
+
+\docstr{version}
+\desc{Print a string which contains the version number of 
+\lit{dvitool}.}
+
+\docstr{which-char}
+\desc{This command describes some of the properties of the first
+character of the selection.  It reports the font name 
+and the position of the character in the font in decimal,
+octal, and hexadecimal.  If the selection contains more
+than one character, it is trimmed down to the first charcter
+in the selection and the information is reported on that
+character.}
+\seea{{\it ascii-of-selection}, {\it which-font}}
+
+\docstr{which-font}
+\desc{This command reports the font
+name of the characters in the selection.  If there are characters from
+more that one font in the selection, the selection is first trimmed to
+include only characters from the same font as the first character in
+the selection.}
+\seea{{\it ascii-of-selection}, {\it which-char}}
+
+\docstr{zoom-horizontal}
+\desc{Make \lit{dvitool} as wide as the physical screen.  Like
+\em{full-screen} and \em{zoom-vertical}, this command is a 
+toggle; running it again will return \lit{dvitool} to its 
+previous dimensions.}
+\seea{{\it full-screen}, {\it zoom-vertical}}
+
+\docstr{zoom-vertical}
+\desc{This command offers the same functionality as clicking 
+control middle button on the name stripe, e.g. the tool
+becomes a tall as the physical screen while retaining
+the current width.  This command is a toggle; running it
+again will return \lit{dvitool} to its previous dimensions.}
+\seea{{\it full-screen}, {\it zoom-horizontal}}
+
+\enddoc
+\bye

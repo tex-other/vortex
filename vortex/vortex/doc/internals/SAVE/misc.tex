@@ -1,0 +1,19 @@
+\section{Restrictions and Assumptions}
+
+The packet header contains just enough information to allow the serialization
+and deserialization routines to be independent of the code which calls
+or handles the individual requests.  Each request specifies the format of
+the data (if any) individually.
+
+Since there is only one message length in the header, we never use more
+than one variable length field, although it would still be possible to
+do so (with a second length in the data or a terminator convention).
+Variable length data is avoided whenever possible.
+
+The programs assume that the packet header is written in one unit (one
+call to {\bf write}) and may fail if the header is written in pieces.
+Thus, the header should be written out as one chunk and the data in
+whatever form is most appropriate.  The source editor always writes the
+header in one system call and the data in another (always two calls
+to {\bf write} if the packet contains data).  (This could also be achieved
+with the single system call {\bf writev}.)

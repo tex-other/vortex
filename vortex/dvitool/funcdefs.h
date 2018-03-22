@@ -1,0 +1,188 @@
+/* 
+ * Copyright (c) 1986-1991 The Regents of the University of California.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, without written agreement and without
+ * license or royalty fees, to use, copy, modify, and distribute this
+ * software and its documentation for any purpose, provided that the
+ * above copyright notice and the following two paragraphs appear in
+ * all copies of this software.
+ * 
+ * IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+ * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+ * OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+ * CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+ * ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+ * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ */
+
+extern int
+	add_to_sel(),
+	ansi_keys(),
+	backwd_by_font(),
+	backwd_str_search(),
+	bind_key(),
+	bof(),
+	bottom_edge(),
+	bottom_left(),
+	bottom_right(),
+	bound_to(),
+	bye_bye(),
+	char_info(),
+	close_window(),
+	describe_key(),
+	dump_bindings(),
+	dump_commands(),
+	eof(),
+	erase_selection(),
+	exit_help(),
+	expose_tool(),
+	find_ctrl(),
+	find_file(),
+	forwd_by_font(),
+	forwd_str_search(),
+	full_screen(),
+	goto_logical(),
+	goto_ppage(),
+	help_cmds(),
+	help_over(),
+	help_vars(),
+	hide_tool(),
+	horiz_zoom(),
+	left_edge(),
+	list_cmds(),
+	list_vars(),
+	mag0(), mag1(), mag2(), mag3(), mag4(), mag5(),
+	mag_minus_1(), mag_minus_2(), mag_minus_3(),
+	mag_minus_4(), mag_minus_5(), 
+	mouse_exec(),
+	next_page(),
+	next_positioned(),
+	numeric_arg(),
+	pre_1(),
+	pre_2(),
+	prev_page(),
+	prev_positioned(),
+	print_var(),
+	redraw_tool(),
+	reload_fonts(),
+	reread_file(),
+	right_edge(),
+	run_named_command(),
+	scroll_abs_ver(),
+	scroll_down(),
+	scroll_left(),
+	scroll_right(),
+	scroll_up(),
+	sel_in_ascii(),
+	select_char(),
+	set_var(),
+	set_wd(),
+	show_version(),
+	toggle_tool(),
+	top_edge(),
+	top_left(),
+	top_right(),
+	which_font(),
+	zoom_tool();	/* this is the last function */
+
+int	a_fhelp(),
+	a_fname(),
+	a_font(),
+	a_func(),
+	a_int(),
+	a_lstr(),
+	a_ohelp(),
+	a_str(),
+	a_var(),
+	a_vhelp();
+
+#ifdef TXT_TO_C
+#	define F(a) 0
+#else
+#	define F(a) a
+#endif
+
+func commands[] = {
+{ "Prefix-1",		F(pre_1),		NORC,	0,0,0,0,0,0 },
+{ "Prefix-2",		F(pre_2),		NORC,	0,0,0,0,0,0 },
+{ "ansi-keys",		F(ansi_keys),		NORC,	0,0,0,0,0,0 },
+{ "ascii-of-selection",	F(sel_in_ascii),	ODVI|SEL,0,0,0,0,0,0 },
+{ "beginning-of-file",	F(bof),			ODVI,	0,0,0,0,0,0 },
+{ "bind-to-key",	F(bind_key),		0,	F(a_func),0,0,0,0,0 },
+{ "bottom-edge",	F(bottom_edge),		ODVI,	0,0,0,0,0,0 },
+{ "bottom-left",	F(bottom_left),		ODVI,	0,0,0,0,0,0 },
+{ "bottom-right",	F(bottom_right),	ODVI,	0,0,0,0,0,0 },
+{ "bound-to",		F(bound_to),		NORC,	F(a_func),0,0,0,0,0 },
+{ "cd",			F(set_wd),		0,	F(a_fname),F(cwd),0,0,0,0 },
+{ "close-window",	F(close_window),	NORC,	0,0,0,0,0 },
+{ "describe-key",	F(describe_key),	NORC,	0,0,0,0,0 },
+{ "dump-bindings",	F(dump_bindings),	NORC,	0,0,0,0,0 },
+{ "dump-commands",	F(dump_commands),	NORC,	0,0,0,0,0 },
+{ "end-of-file",	F(eof),			ODVI,	0,0,0,0,0 },
+{ "erase-selection",	F(erase_selection),	ODVI,	0,0,0,0,0 },
+{ "exec",		F(run_named_command),	NORC,	F(a_func),F(last_cmd),0,0,0,0 },
+{ "exit",		F(bye_bye),		NORC,	0,0,0,0,0 },
+{ "exit-help",		F(exit_help),		NORC,	0,0,0,0,0 },
+{ "expose-tool",	F(expose_tool),		NORC,	0,0,0,0,0,0 },
+{ "extend-selection",	F(add_to_sel),		ODVI|ISBUT|SEL,0,0,0,0,0,0},
+{ "find-file",		F(find_file),		NORC,	F(a_fname),F(last_fname),F(find_ctrl),0,0,0 },
+{ "full-screen",	F(full_screen),		NORC,	0,0,0,0,0,0 },
+{ "goto-manuscript-page",F(goto_logical),	ODVI,	F(a_str),0,0,0,0,0 },
+{ "goto-physical-page",	F(goto_ppage),		ODVI,	F(a_int),0,0,0,0,0 },
+{ "help-commands",	F(help_cmds),		NORC,	F(a_fhelp),F(last_fhelp),0,0,0,0 },
+{ "help-overview",	F(help_over),		NORC,	F(a_ohelp),F(last_ohelp),0,0,0,0 },
+{ "help-variables",	F(help_vars),		NORC,	F(a_vhelp),F(last_vhelp),0,0,0,0 },
+{ "hide-tool",		F(hide_tool),		NORC,	0,0,0,0,0,0 },
+{ "left-edge",		F(left_edge),		ODVI,	0,0,0,0,0,0 },
+{ "list-all-commands",	F(list_cmds),		NORC,	0,0,0,0,0,0 },
+{ "list-all-variables",	F(list_vars),		NORC,	0,0,0,0,0,0 },
+{ "magstep-0",		F(mag0),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-1",		F(mag1),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-2",		F(mag2),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-3",		F(mag3),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-4",		F(mag4),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-5",		F(mag5),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-minus-1",	F(mag_minus_1),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-minus-2",	F(mag_minus_2),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-minus-3",	F(mag_minus_3),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-minus-4",	F(mag_minus_4),		ODVI,	0,0,0,0,0,0 },
+{ "magstep-minus-5",	F(mag_minus_5),		ODVI,	0,0,0,0,0,0 },
+{ "mouse-menus",	F(mouse_exec),		NORC|ISBUT,0,0,0,0,0,0 },
+{ "next-page",		F(next_page),		ODVI,	0,0,0,0,0,0 },
+{ "next-page-positioned",F(next_positioned),	ODVI,	0,0,0,0,0,0 },
+{ "numeric-arg",	F(numeric_arg),		NORC,	0,0,0,0,0,0 },
+{ "previous-page",	F(prev_page),		ODVI,	0,0,0,0,0,0 },
+{ "previous-page-positioned",F(prev_positioned),ODVI,	0,0,0,0,0,0 },
+{ "print",		F(print_var),		0,	F(a_var),F(last_printed),0,0,0,0 },
+{ "redraw-tool",	F(redraw_tool),		NORC,	0,0,0,0,0,0 },
+{ "reload-fonts",	F(reload_fonts),	ODVI,	0,0,0,0,0,0 },
+{ "reread-file",	F(reread_file),		NORC,	0,0,0,0,0,0 },
+{ "right-edge",		F(right_edge),		ODVI,	0,0,0,0,0,0 },
+{ "scroll-absolute",	F(scroll_abs_ver),	ODVI,	F(a_int),0,0,0,0,0 },
+{ "scroll-down",	F(scroll_down),		ODVI,	0,0,0,0,0,0 },
+{ "scroll-left",	F(scroll_left),		ODVI,	0,0,0,0,0,0},
+{ "scroll-right",	F(scroll_right),	ODVI,	0,0,0,0,0,0},
+{ "scroll-up",		F(scroll_up),		ODVI,	0,0,0,0,0,0},
+{ "search-backward",	F(backwd_str_search),	ODVI,	F(a_lstr),F(pattern_buf),0,0,0,0 },
+{ "search-backward-by-font",F(backwd_by_font),	ODVI,	F(a_font),F(last_font),0,F(a_lstr),F(pattern_buf),0 },
+{ "search-forward",	F(forwd_str_search),	ODVI,	F(a_lstr),F(pattern_buf),0,0,0,0 },
+{ "search-forward-by-font",F(forwd_by_font),	ODVI,	F(a_font),F(last_font),0,F(a_lstr),F(pattern_buf),0 },
+{ "select-char",	F(select_char),		ODVI|ISBUT,0,0,0,0,0,0},
+{ "set",		F(set_var),		0,	F(a_var),F(last_set),0,0,0,0 },
+{ "toggle-tool",	F(toggle_tool),		NORC,	0,0,0,0,0,0 },
+{ "top-edge",		F(top_edge),		ODVI,	0,0,0,0,0,0 },
+{ "top-left",		F(top_left),		ODVI,	0,0,0,0,0,0 },
+{ "top-right",		F(top_right),		ODVI,	0,0,0,0,0,0 },
+{ "version",		F(show_version),	0,	0,0,0,0,0,0 },
+{ "which-char",		F(char_info),		ODVI|SEL,0,0,0,0,0,0 },
+{ "which-font",		F(which_font),		ODVI|SEL,0,0,0,0,0,0 },
+{ "zoom-horizontal",	F(horiz_zoom),		NORC,	0,0,0,0,0,0 },
+{ "zoom-vertical",	F(zoom_tool),		NORC,	0,0,0,0,0,0 },
+{ (char *) 0 }
+};
+

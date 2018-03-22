@@ -1,0 +1,234 @@
+This is Olivetti-Berkeley-Matsushita IncTeX, Version 0.0
+Recovering incremental processing info from ./INC/trip.inc...done
+This is Common TeX, Version 2.9 (preloaded format=trip 88.11.10)
+Formatting ./trip.tex from scratch... (./trip.tex
+str_pool read: 40000 bytes
+str_start read: 8800 bytes ##
+! Bad number (-7).
+<to be read again> 
+                   8
+l.94 \openout-'78
+                 terminal \openout10=tripos % we will write t...
+
+Completed box being shipped out
+[0.0.0.0.11]
+! Missing number, treated as zero.
+<to be read again> 
+                   {
+<write> \uppercase {\number {
+                             \outputpenalty }}
+<inserted text> 
+                }\endwrite 
+l.107 \penalty-10000 
+                     % now we'll compute silently for awhile,...
+Memory usage before: 155&14; after: 98&14; still untouched: 1965
+ <./INC/trip.1.dvi (156 bytes)> {./INC/trip.1.stc
+saved global vars: 19622 bytes
+saved eqtb size: 28004 bytes
+actual save_stack size: 0 bytes
+saved hash size: 15128 bytes
+used single mem: beg= 2986, end= 2986
+single mem write: 4 bytes
+used single mem: beg= 2988, end= 3000
+single mem write: 52 bytes
+single mem overhead: 12 bytes
+used tok_mem: beg= 30001, end= 30011
+tok_mem write: 22 bytes
+tok_link write: 22 bytes
+used tok_mem: beg= 30036, end= 30036
+tok_mem write: 2 bytes
+tok_link write: 2 bytes
+token_list overhead: 12 bytes
+used multi mem: beg= 0, end= 19
+multi mem write: 80 bytes
+used multi mem: beg= 916, end= 919
+multi mem write: 16 bytes
+used multi mem: beg= 934, end= 981
+multi mem write: 192 bytes
+used multi mem: beg= 994, end= 1017
+multi mem write: 96 bytes
+used multi mem: beg= 1020, end= 1020
+multi mem write: 4 bytes
+multi mem overhead: 24 bytes
+single node: 56 bytes
+tok_end= 30070	tok_low= 29647	tok_empty= 58
+token_list node: 24 bytes
+token_list link: 24 bytes
+multi node: 388 bytes (63294 bytes)}
+! OK (see the transcript file).
+l.452 ...se unbal}\fi}\showlists
+                                \tracingonline1%
+{|escapechar}
+{^^?global}
+{^^?global}
+{end}
+! Missing } inserted.
+<inserted text> 
+                }
+<to be read again> 
+                   end 
+l.453 ...lobal\escapechar128\end
+                                
+{end-group character }}
+{retaining escapechar=128}
+> 3.
+<output> {showthe deadcycles 
+                             global advance countz by1global ...
+<to be read again> 
+                   end 
+l.453 ...lobal\escapechar128\end
+                                
+! You can't use `end' in internal vertical mode.
+<recently read> end 
+                    
+<output> ...cal {}unvbox 255end 
+                                rb }
+<to be read again> 
+                   end 
+l.453 ...lobal\escapechar128\end
+                                
+! Unbalanced output routine.
+<output> ... {}unvbox 255end rb 
+                                }
+<to be read again> 
+                   end 
+l.453 ...lobal\escapechar128\end
+                                
+! Output loop---3 consecutive dead cycles.
+<to be read again> 
+                   end 
+l.453 ...lobal\escapechar128\end
+                                
+
+Completed box being shipped out
+[-1.2.-1118806.0.11.196608.327680.1572864.1073741823]
+! Unbalanced write command.
+<write> if 01{else unbal}fi 
+                            
+<inserted text> 
+                }endwrite 
+<to be read again> 
+                   end 
+l.453 ...lobal\escapechar128\end
+                                
+Memory usage before: 343&31; after: 301&31; still untouched: 481
+ <./INC/trip.16.dvi (132 bytes)> {./INC/trip.16.stc
+saved global vars: 19622 bytes
+saved eqtb size: 28004 bytes
+actual save_stack size: 52 bytes
+saved hash size: 15128 bytes
+used single mem: beg= 2988, end= 3000
+single mem write: 52 bytes
+used single mem: beg= 3013, end= 3013
+single mem write: 4 bytes
+used single mem: beg= 3015, end= 3015
+single mem write: 4 bytes
+used single mem: beg= 3019, end= 3019
+single mem write: 4 bytes
+used single mem: beg= 3021, end= 3023
+single mem write: 12 bytes
+used single mem: beg= 3025, end= 3029
+single mem write: 20 bytes
+used single mem: beg= 3032, end= 3033
+single mem write: 8 bytes
+used single mem: beg= 3035, end= 3035
+single mem write: 4 bytes
+used single mem: beg= 3042, end= 3042
+single mem write: 4 bytes
+used single mem: beg= 3052, end= 3052
+single mem write: 4 bytes
+used single mem: beg= 3070, end= 3070
+single mem write: 4 bytes
+used single mem: beg= 3074, end= 3074
+single mem write: 4 bytes
+single mem overhead: 52 bytes
+used tok_mem: beg= 30001, end= 30011
+tok_mem write: 22 bytes
+tok_link write: 22 bytes
+used tok_mem: beg= 30035, end= 30041
+tok_mem write: 14 bytes
+tok_link write: 14 bytes
+used tok_mem: beg= 30062, end= 30062
+tok_mem write: 2 bytes
+tok_link write: 2 bytes
+used tok_mem: beg= 30072, end= 30198
+tok_mem write: 254 bytes
+tok_link write: 254 bytes
+used tok_mem: beg= 30200, end= 30200
+tok_mem write: 2 bytes
+tok_link write: 2 bytes
+used tok_mem: beg= 30202, end= 30234
+tok_mem write: 66 bytes
+tok_link write: 66 bytes
+used tok_mem: beg= 30238, end= 30238
+tok_mem write: 2 bytes
+tok_link write: 2 bytes
+used tok_mem: beg= 30240, end= 30287
+tok_mem write: 96 bytes
+tok_link write: 96 bytes
+used tok_mem: beg= 30315, end= 30363
+tok_mem write: 98 bytes
+tok_link write: 98 bytes
+token_list overhead: 40 bytes
+used multi mem: beg= 0, end= 19
+multi mem write: 80 bytes
+used multi mem: beg= 167, end= 170
+multi mem write: 16 bytes
+used multi mem: beg= 233, end= 276
+multi mem write: 176 bytes
+used multi mem: beg= 284, end= 299
+multi mem write: 64 bytes
+used multi mem: beg= 325, end= 344
+multi mem write: 80 bytes
+used multi mem: beg= 349, end= 372
+multi mem write: 96 bytes
+used multi mem: beg= 387, end= 402
+multi mem write: 64 bytes
+used multi mem: beg= 430, end= 431
+multi mem write: 8 bytes
+used multi mem: beg= 773, end= 796
+multi mem write: 96 bytes
+used multi mem: beg= 861, end= 862
+multi mem write: 8 bytes
+used multi mem: beg= 916, end= 919
+multi mem write: 16 bytes
+used multi mem: beg= 934, end= 969
+multi mem write: 144 bytes
+used multi mem: beg= 974, end= 981
+multi mem write: 32 bytes
+used multi mem: beg= 1014, end= 1017
+multi mem write: 16 bytes
+used multi mem: beg= 1163, end= 1169
+multi mem write: 28 bytes
+used multi mem: beg= 1172, end= 1175
+multi mem write: 16 bytes
+used multi mem: beg= 1186, end= 1209
+multi mem write: 96 bytes
+used multi mem: beg= 1239, end= 1267
+multi mem write: 116 bytes
+used multi mem: beg= 1482, end= 1483
+multi mem write: 8 bytes
+used multi mem: beg= 1515, end= 1516
+multi mem write: 8 bytes
+used multi mem: beg= 2046, end= 2049
+multi mem write: 16 bytes
+used multi mem: beg= 2144, end= 2160
+multi mem write: 68 bytes
+used multi mem: beg= 2496, end= 2504
+multi mem write: 36 bytes
+multi mem overhead: 96 bytes
+single node: 124 bytes
+tok_end= 30363	tok_low= 29647	tok_empty= 85
+token_list node: 556 bytes
+token_list link: 556 bytes
+multi node: 1200 bytes (65518 bytes)}
+(end occurred inside a group at level 1)
+(end occurred when if on line 453 was incomplete)
+(end occurred when ifcase on line 430 was incomplete)
+(end occurred when iftrue on line 424 was incomplete)
+(see the transcript file for additional information)
+str_pool write: 40000 bytes
+str_start write: 8800 bytes
+Backing up incremental processing info...done
+Total processing time: 21.600 seconds.
+Transcript written on trip.log.

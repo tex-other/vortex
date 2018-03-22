@@ -1,0 +1,155 @@
+/* 
+ * Copyright (c) 1986-1987 The Regents of the University of California.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, without written agreement and without
+ * license or royalty fees, to use, copy, modify, and distribute this
+ * software and its documentation for any purpose, provided that the
+ * above copyright notice and the following two paragraphs appear in
+ * all copies of this software.
+ * 
+ * IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+ * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+ * OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+ * CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+ * ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+ * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ *
+ * The above licensing information supersedes all licensing information
+ * below.
+ */
+
+
+/*
+ *    Copyright 1986, 1987 Pat Joseph Monardo. All rights reserved.
+ */
+
+
+/*
+ *		char.c
+ */
+
+#include	"tex.h"
+#include	"char.h"
+
+
+extern ascii	xord[];
+extern char	xchr[];
+
+init_char ()
+{
+	int		i;
+
+	xchr[040] = ' ';
+	xchr[041] = '!';
+	xchr[042] = '"';
+	xchr[043] = '#';
+	xchr[044] = '$';
+	xchr[045] = '%';
+	xchr[046] = '&';
+	xchr[047] = '\'';
+	xchr[050] = '(';
+	xchr[051] = ')';
+	xchr[052] = '*';
+	xchr[053] = '+';
+	xchr[054] = ',';
+	xchr[055] = '-';
+	xchr[056] = '.';
+	xchr[057] = '/';
+	xchr[060] = '0';
+	xchr[061] = '1';
+	xchr[062] = '2';
+	xchr[063] = '3';
+	xchr[064] = '4';
+	xchr[065] = '5';
+	xchr[066] = '6';
+	xchr[067] = '7';
+	xchr[070] = '8';
+	xchr[071] = '9';
+	xchr[072] = ':';
+	xchr[073] = ';';
+	xchr[074] = '<';
+	xchr[075] = '=';
+	xchr[076] = '>';
+	xchr[077] = '?';
+	xchr[0100] = '@';
+	xchr[0101] = 'A';
+	xchr[0102] = 'B';
+	xchr[0103] = 'C';
+	xchr[0104] = 'D';
+	xchr[0105] = 'E';
+	xchr[0106] = 'F';
+	xchr[0107] = 'G';
+	xchr[0110] = 'H';
+	xchr[0111] = 'I';
+	xchr[0112] = 'J';
+	xchr[0113] = 'K';
+	xchr[0114] = 'L';
+	xchr[0115] = 'M';
+	xchr[0116] = 'N';
+	xchr[0117] = 'O';
+	xchr[0120] = 'P';
+	xchr[0121] = 'Q';
+	xchr[0122] = 'R';
+	xchr[0123] = 'S';
+	xchr[0124] = 'T';
+	xchr[0125] = 'U';
+	xchr[0126] = 'V';
+	xchr[0127] = 'W';
+	xchr[0130] = 'X';
+	xchr[0131] = 'Y';
+	xchr[0132] = 'Z';
+	xchr[0133] = '[';
+	xchr[0134] = '\\';
+	xchr[0135] = ']';
+	xchr[0136] = '^';
+	xchr[0137] = '_';
+	xchr[0140] = '`';
+	xchr[0141] = 'a';
+	xchr[0142] = 'b';
+	xchr[0143] = 'c';
+	xchr[0144] = 'd';
+	xchr[0145] = 'e';
+	xchr[0146] = 'f';
+	xchr[0147] = 'g';
+	xchr[0150] = 'h';
+	xchr[0151] = 'i';
+	xchr[0152] = 'j';
+	xchr[0153] = 'k';
+	xchr[0154] = 'l';
+	xchr[0155] = 'm';
+	xchr[0156] = 'n';
+	xchr[0157] = 'o';
+	xchr[0160] = 'p';
+	xchr[0161] = 'q';
+	xchr[0162] = 'r';
+	xchr[0163] = 's';
+	xchr[0164] = 't';
+	xchr[0165] = 'u';
+	xchr[0166] = 'v';
+	xchr[0167] = 'w';
+	xchr[0170] = 'x';
+	xchr[0171] = 'y';
+	xchr[0172] = 'z';
+	xchr[0173] = '{';
+	xchr[0174] = '|';
+	xchr[0175] = '}';
+	xchr[0176] = '~';
+	xchr[0177] = xchr[000] = ' ';
+	for (i = 1; i <= 037; incr(i))
+		xchr[i] = ' ';
+	xchr[FORM_FEED] =  '\l';
+	xchr[TAB] = '\t';
+	xchr[NUL] = '\0';
+
+	for (i = FIRST_TEXT_CHAR; i <= LAST_TEXT_CHAR; incr(i))
+		xord[xchr[i]] = INVALID_CODE;
+	
+	for (i = 1; i <= 0176; incr(i))
+		xord[xchr[i]] = i;
+	xord[xchr[NULL_CODE]] = NULL_CODE;
+}

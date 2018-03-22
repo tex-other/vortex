@@ -1,0 +1,367 @@
+% Copyright (c) 1986-1991 The Regents of the University of California.
+% All rights reserved.
+%
+% Permission is hereby granted, without written agreement and without
+% license or royalty fees, to use, copy, modify, and distribute this
+% software and its documentation for any purpose, provided that the
+% above copyright notice and the following two paragraphs appear in
+% all copies of this software.
+% 
+% IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+% DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+% OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+% CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+%
+% THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+% INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+% AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+% ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+% PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+%
+%  Author: Jeff McCarrell at U.C. Berkeley <jwm@Berkeley.EDU>
+%
+%  ohelp.tex - The overview help file for dvitool.
+%
+%
+% this innocuous macro simply expands to its argument text.  It is used
+% to prepare an ``index'' of words which are guaranteed to be in the
+% typeset version of this file.  That index is used for completion when
+% the user wants to look up something in the help file.
+%
+% there is a caveat with it's use, however, due to the regular
+% expressions that are used to extract the index entries.  Since regular
+% expressions cannot balance nested characters like parentheses and curly
+% braces, be sure to write any other macros on the indexed entry with the
+% oidx macro as the inner-most entry, i.e., do this:
+%
+%	{\tt\odix{scroll-down}}
+%
+% not this:
+%
+%	{\odix{\tt scroll-down}}
+%
+% (Astute readers will note that the examples above are misspelled; this
+% is so they will not be indexed).
+%
+\def\oidx#1{#1}%
+%
+%\def\item{\hfill\break$\bullet$\hskip 1em}%
+\def\item{\vskip .4ex$\bullet$\hskip 1em}%
+\def\showit#1{\vskip .6ex\centerline{#1}\vskip .8ex}
+\def\section#1{\vskip 1ex\begingroup\bf #1\hskip .7em\endgroup}
+\def\dtl{\begingroup\tt dvitool\endgroup}%
+\def\Dtl{\begingroup\tt Dvitool\endgroup}%
+\def\DVI{\begingroup\tt DVI\endgroup}%
+\def\\{\char92}%
+\def\{{\char123 }%
+\def\}{\char125 }%
+\def\~{\char126 }%
+\def\^{\char94 }%
+%
+\magnification=\magstep 1
+\centerline{An Overview to {\tt dvitool} 2.0}
+\centerline{by Jeffrey W. McCarrell}
+\centerline{\tt jwm@Berkeley.EDU}
+\vskip 24pt
+
+This file describes \dtl\ version~2.0, an interactive previewer
+for the output files produced by \TeX.  
+It does not describe \TeX,
+nor any of the \TeX\ derivatives, nor how to produce hard copy of your
+\TeX\ files.  The person who is responsible for maintaining 
+\dtl, and who should be your first contact point
+to find out details of your local implementation is: 
+\showit{\oidx{local-contact}:
+{\tt 
+\input contact.file
+}}
+If they are not able to answer your questions, you may direct them
+to me at the electronic mail address listed above.
+
+\Dtl\ was designed to be an efficient, productive tool for
+creating \TeX\ documents; a significant percentage of the development
+time was spent on the user interface.  The resulting system is very
+flexible but it is also somewhat complex.  There are three different
+approaches to understanding the system:  
+\item this overview help file describes the general mechanisms that
+comprise \dtl.  All of the major interfaces and features are
+described here.  After reading this file you should be able to run any
+of the 70 odd commands that \dtl\ has to offer; you should
+understand how the interface that collects the arguments to the
+commands works; and you should understand how \dtl\
+``attaches'' a command to a sequence of keystrokes and 
+where to look to learn
+how to change
+the default attachments.
+\item The command {\tt \oidx{help-commands}} describes each of the
+commands; it can be run from the {\tt help} item in the main menu which
+can be brought up by pushing the right mouse button while in the main
+window of \dtl.
+\item The {\tt \oidx{help-variables}} command is similiar to 
+{\tt help-commands} except that it describes all of \dtl's
+variables.
+
+\section{\oidx{Running Commands}:}
+Every command has a long, mnemonic name.  For example, the
+command to repaint the \DVI\ image so that more of it can be seen is
+called {\tt scroll-down}.  Every command can be executed by the command
+called {\tt exec}, so the general way to run \dtl\ commands is to first
+run {\tt exec}, whose job it is to run other commands, and then to run
+the command you wanted.  But how does one run {\tt exec}?  Some
+commands are associated with, or ``bound to'', sequences of characters.
+In this particular case, \dtl\
+knows that the pattern {\tt <ESC>x} means ``run the {\tt exec}
+command''.  (The string {\tt <ESC>} means the escape key on your
+keyboard, not the five characters 
+{\tt `<'},
+{\tt `E'},
+{\tt `S'},
+{\tt `C'} and
+{\tt `>'}.
+Characters which are symbols for other characters are surrounded by
+angle brackets.
+Control characters will be represented in this document by a {\tt C},
+followed by a dash ({\tt -}), followed by the character.  So control--x
+is written {\tt <C-X>}).
+One way to scroll down is to type:
+\showit{\tt <ESC>xscroll-down<RETURN>}
+Fourteen characters is a lot to have to type to run a command used as
+often as {\tt scroll-down}, so \dtl\ provides a simpler way to do the
+same thing.
+Any command can be ``bound'' to a sequence of 1 or~2 keystrokes.  
+This is how \dtl\ knew that {\tt <ESC>x} meant ``run {\tt exec}.''
+
+Well, that's all well and good, but how do you learn which commands are
+bound to which keys?  There are two approaches:
+\item the command
+{\tt \oidx{bound-to}} describes all of the keystrokes that will run the
+command given as its argument;
+\item the command
+{\tt \oidx{describe-key}} goes the other direction and describes
+what command will be invoked by the keys given as its argument.  
+\hfil\break
+If a keystroke is bound to a command, it is called a ``binding.'' A
+command can have many bindings, but a key can have only one.
+For
+those of you that like to have it all at once, the command
+{\tt \oidx{dump-bindings}} lists each key combination and the
+command it invokes.  This information is written in a file
+named {\tt dvitool.commands} in your current directory
+so you can print it out and keep it handy for easy,
+if voluminous, reference.
+
+Note that mouse input in this context is considered a keystroke.  You
+can bind commands to mouse inputs just like you can bind commands to
+ascii characters.  For more information on how to actually make your
+own bindings, see the help entry for {\tt bind-to-key}.
+One way to do this is to type:
+\showit{\tt <ESC>xhelp-c\char32 <RETURN>bin\char32 <RETURN>}
+
+There is a yet another way to run a command: invoke it from a menu.  The
+right mouse button is bound to a command that produces a menu of
+choices of other commands to run.
+If the command has a key binding, it is listed on the right side of the
+menu,
+the idea being that you can get a good idea of the
+available commands just by popping up a menu and as you become more
+familiar with the command you can note its key-binding and 
+invoke it directly with a single keystroke (or mouse press)
+rather than the several actions menus require.
+
+\section{\oidx{Arguments}:}
+Many of the commands take arguments; for example, the command
+{\tt find-file} takes the name of a \DVI\ file as its argument.
+To show you that it is waiting for you to type an argument, \dtl\ will
+change the cursor tracked by the mouse into the shape of a mouse.
+Should you decide that
+you don't want to run this command after all, you should type {\tt C-G}
+to \oidx{abort} the command.
+In general, the abort character (which can be specified by the
+variable {\tt \oidx{abort-character}}) is a good key to press when
+you are unsure what is going on and you want to get back to the top
+level.  You'll know you're back at the top level when the cursor
+changes to it's default shape (usually a circle with a hole in its
+center).
+
+Arguments have types like integer, string, and so forth.
+\Dtl\ usually gives a clue as to the type of argument it is expecting by
+changing the cursor in the message window.
+The cursor in the message
+window is not the cursor that tracks the mouse, but a cursor to let you
+know where the next characters you type will
+appear.  
+Here's a table of all of the of argument types \dtl\ has,
+and the character
+that is displayed ``under'' the cursor.
+\medskip
+\halign{\indent\hfil#&\hfil#&\hfil#\hfil\indent\hfil&\hfil#&\hfil#\hfil&\hfil#\hfil\cr
+\hfil\sl type\hfil&\sl char&\quad\sl completion&\hfil\sl type\hfil&\sl
+char&\quad\sl completion\cr\noalign{\smallskip}
+command name &`c'&yes&integer &`i'&no\cr
+file name &`f'&yes&font name &`F'&yes\cr
+string &`s'&no&literal string &`S'&no\cr
+variable name &`v'&yes&variable help index &`V'&yes\cr
+command help index &`C'&yes&overview help index &`O'&yes\cr
+others &`{\tt\char32}'&no&\cr}
+\medskip
+The \oidx{completion} column describes whether or not each type is
+capable of the time saving capability to ``complete'' some or all of
+the argument for you.  Completion compares the characters you've
+already typed to the set of possible choices and fills in any
+characters that are common to all the choices or, if what you have
+typed so far uniquely identifies a choice, it completes that choice.
+The space character invokes completion.
+\Dtl\ will do what it can and either complete the argument all the way
+or give you a message about why it failed.
+
+Another special feature of completion is the ability to list all of the
+choices that match the input string you've typed so far, invoked
+with {\tt ?}.
+\Dtl\ uses
+its typeout mechanism to display all of the choices and then it waits
+for you to type some character to show that you've finished reading the
+list and you're ready to proceed.  A space character or a mouse press
+will simply be eaten and ignored; other characters are acted on.
+
+\section{\oidx{Startup File}:} One of the first things
+that \dtl\ does is look
+for a file of commands to execute whose name is
+``{\tt .dvitoolrc}''
+\footnote*{This isn't strictly true.  \Dtl\ actually takes
+the name it was invoked with, prepends a `{\tt .}' and appends {\tt "rc"}
+to create the filename.
+So if your system wizard installed \dtl\ under a different
+name, or you have symbolic links to it, the name of your startup
+file will differ.}.
+It looks for this file in two places: in your home directory, and in
+the current directory.
+If a startup file exists in both places, \dtl\ first reads the one in
+your home directory, then the one in your current directory,
+so the commands in the startup file in the current directory have 
+precedence over the file in your home directory.
+
+The file should contain commands that you want \dtl\ to run
+every time it is invoked.  Common uses of the startup files are to load
+key bindings, personal cursors, icons, etc.  \oidx{Comment lines} begin with
+the sharp character (`{\tt \#}') and end with a newline.  Blank lines
+are ignored.  Every other line is expected to contain a \dtl\ command
+and arguments.  It turns out that there are very few commands that make
+sense when run inside a startup file, so \dtl\ disallows most of them.
+Here is the complete list of commands allowed inside a startup file:
+\medskip
+\halign{\indent\indent\tt #\hfil&\quad #\hfil\cr
+\sl command&\sl description\cr
+bind-to-key&change the command invoked by a key sequence\cr
+cd&change directory\cr
+print&show the value of a variable\cr
+set&change the value of a variable\cr
+version&show the version number\cr}
+\medskip
+Since key bindings don't make a great deal of sense inside a startup
+file, the correct way to refer to a command is by its long mnemonic
+name.  Any arguments the command expects should follow on the same
+line, separated by whitespace.  
+The arguments should appear exactly as you would type them to \dtl\
+interactively, with the exception an argument that has a space
+in it (or a tab) should be surrounded by double quotes.
+There are actually several translations that \dtl\ does just
+when it is reading arguments in a startup file and here is the complete
+list:
+\medskip
+\halign{\indent\indent\tt #\hfil&\quad\tt #\hfil&\quad #\cr
+\sl from&\sl to&\sl comment\cr
+\\\\&\\\cr
+\\"&"\cr
+"& &double quotes are elided\cr
+\\n&<RETURN>&ASCII 13, control-M\cr}
+\medskip\noindent
+Now that all of the rules have been presented, it's time to look at a
+real example.  These 4 lines are syntactically correct; were you to
+put them into a startup file in your home directory, \dtl\ would
+process them without error.\footnote*{Of course, you'd have to define
+the environment variable {\tt DVICURSOR}, and create the cursor file or
+\dtl\ will complain.}
+\medskip
+\halign{\indent\indent\tt #\hfil&\quad\tt #\hfil&\quad\tt #\cr
+set&		init-cursor-file&	\~/lib/cursors/\$DVICURSOR\cr
+set&		init-cursor-xhot&	0\cr
+bind-to-key&	cd&			\\e\\\^D\cr
+bind-to-key&	next-page-positioned&	"\\e\char32"\cr}
+\medskip
+\noindent Some points to note here:
+\item Every filename is always processed for {\tt \~} and
+{\tt \$} characters, so line
+1 expands {\tt \$DVICURSOR} into the value of the environment variable
+named {\tt DVICURSOR}.
+It is an error to reference an undefined environment variable.
+\item The {\tt next-page-positioned} binding requires double quotes so
+the space character will be passed as an argument and not elided as an
+argument separator.
+
+\section{\oidx{Comand Line Switches}:}  There is only one:
+\item {\tt -E} tells \dtl\ to try to use an existing \dtl\ to preview
+the first file name.  If there are no \dtl's running, then~{\tt -E}
+is a no-op.  If there are other \dtl's running, the~{\tt -E} \dtl\
+will start up, send a message to a running \dtl, and then exit.
+This mechanism is most often used inside other programs to provide a
+simple way to invoke \dtl.
+\item The generic {\sl Suntools\/} flags (they all begin with~{\tt -W})
+are ignored by \dtl.
+Their effect is undefined, since \dtl\ has variables to perform nearly
+all of the same functions.  The use of the~{\tt -W} flags is
+discouraged.
+
+\section{\oidx{Help Summary}:}  Here is a complete list of the commands
+which provide information and or help.
+\medskip
+\halign{\indent\indent\tt #\hfil&\quad #\hfil\cr
+\sl command&\sl description\cr
+ascii-of-selection&show the ASCII representation of some {\tt DVI}
+characters\cr
+bound-to&show all the key sequences which invoke a command\cr
+describe-key&displays the command which will be run by a key sequence\cr
+dump-bindings&writes a file of key bindings sorted by keys\cr
+dump-commands&writes a file of all the commands and their arguments\cr
+help-commands&provides interactive help for each of the commands\cr
+help-overview&displays this file\cr
+help-variables&provides interactive help for each of the variables\cr
+list-all-commands&displays all of the command names interactively\cr
+list-all-variables&displays all of the variable names interactively\cr
+print&display the value of a single variable\cr
+version&displays the version number\cr
+which-char&shows the font position of the selection\cr
+which-font&shows the font of the selection\cr}
+\medskip
+\section{\oidx{Bugs}:}  Yes Virginia, there is such a thing as a
+free bug or two in \dtl.  I personally don't think of them as bugs,
+but as facts of life.  All of the bugs that I could correct without
+super-human effort have been squashed.  Nonetheless, \dtl\ does,
+at times,
+behave in unexpected ways.
+Here is the known list:
+\item Syntax errors in generic {\sl Suntools\/} command line arguments
+(they all begin with~{\tt -W})
+are silently ignored.  The use of these arguments is discouraged.
+\item If the mouse cursor is positioned over the message subwindow,
+all input (both keyboard and mouse input) is ignored.  Always position
+the mouse cursor inside the large image window.
+\item When \dtl\ is waiting for you to type some input (when the 
+mouse cursor has changed into an image of the mouse), any input to
+the namestripe (like to close or hide the window) is ignored until
+the local input is completed.  Always make sure \dtl\ is back to the
+top level by typing your abort character (usually control-g)
+before attempting any operations in the namestripe.
+\item Due to resolution rounding, two identical hrules may be displayed
+differently at different places on the page.  The difference will be at
+most 2 pixels.
+\bigskip
+Complex tools such as \TeX\ and to a lesser extent \dtl\ take time
+to master; I have tried to ease that transition with consistent
+interfaces and with several levels of help, but I am always willing
+to hear suggestions, and even criticism.  Good luck!
+\par\vskip 4ex
+\noindent Berkeley, California\hfill --- J. W. M.\break
+\noindent December, 1986\hfill {\tt jwm@Berkeley.EDU}\break
+\hbox{}\hfill {\tt ...!ucbvax!jwm}
+
+\vfill\eject\bye

@@ -1,0 +1,1775 @@
+% Master File: bibtex-mode.tex
+% Document type: TeX
+% 
+% GNU Emacs BibTeX mode documentation
+% 					
+% 					Pehong Chen
+%
+
+% Document preamble
+\input bibtex-mode+
+
+% Title Page
+\pageno=-1986
+\title{GNU Emacs {\Bbf} Mode}
+\bigskip
+\centerline{\medbf --- {\version} ---}
+\vglue 1truein
+\centerline{{\medrm Pehong Chen}\footnote{*}{Sponsored in part by 
+the State of California MICRO Fellowship, by
+the National Science Foundation under Grant MCS-8311787,
+and by the Defense Advanced Research Projects Agency (DoD),
+ARPA Order No. 4871, monitored by Naval Electronic Systems Command,
+under Contract No. N00039-84-C-0089.}}
+\vglue .75truein
+\centerline{\sl Computer Science Division}
+\centerline{\sl University of California}
+\centerline{\sl Berkeley, CA 94720}
+\vglue 3.5truein
+\centerline{\versiondate}
+\vfill\eject
+ 
+% Table of Contents
+% \maketoc
+\setpagenumbers
+\pageno=-1
+\toc
+\input bibtex-mode.toc
+\vfill\eject
+
+\nopagenumbers
+\pageno=1
+\chapter{Introduction}
+
+\noindent
+{\BM} is part of an Emacs-based environment for editing {\TeX} documents~[2].
+It is a GNU Emacs~[6] interface to {\BibTeX} databases.
+A {\BibTeX} database is a file with the name 
+suffix `|.bib|' which contains one or more bibliography entries.
+{\BibTeX} is a system designed jointly by Leslie Lamport, Howard Trickey,
+and Oren Patashnik (implementation is due to Patashnik)
+as a bibliography preprocessor for {\LaTeX} documents~[4,5].
+The GNU Emacs {\TM}~[1] makes it possible for {\BibTeX} to work on plain 
+{\TeX}~[3] and {\AmSTeX}~[7] documents as well.  
+{\BM} supports all fourteen {\BibTeX} bibliography entry types as built-in
+functions so that to insert a new entry the user only has to specify a type.
+A skeleton instance of the specified type will be generated automatically
+with the various fields left empty for the user to fill in.
+A set of supporting functions such as scrolling, field copying,
+entry duplicating, ..., etc. is provided to facilitate this content-filling
+process.  Other major features of the mode include an extended abbreviation 
+mechanism and a draft making facility.
+
+{\BM} comprises four subsystems: |bibtex-mode.el|, |bibtex-ops.el|,
+|bibtex-misc.el|, and |bibtex-abv.el|.
+The first file contains the function |bibtex-mode| which defines such 
+attributes as syntax entry modifications, key bindings, and
+global and buffer-specific variables for {\BM}.  Also included in the file
+is the information for the built-in entries and the basic supporting
+functions shared by programs in other subsystems.  This file will be
+loaded when the first |.bib| file is visited in an Emacs session.
+
+Entry and field operations such as {\it scroll\/},
+{\it copy\/}, {\it delete\/}, etc. are defined in file |bibtex-ops.el|.
+Functions defined in |bibtex-misc.el| fall into two categories:
+(1) A cleanup facility that deletes redundant information contained in the
+entry skeleton, such as banners, trailing commas, etc.
+(2) A draft making facility which prepares a formatted draft
+bibliography out of the current |.bib| file and allows one to preview
+and print it.  Also, this draft making process can be used to debug
+the current |.bib| file.  An error positioning mechanism allows one to
+locate error spots.  Finally, the file |bibtex-abv.el| includes
+an extended abbreviation mechanism which allows one to browse and 
+interpolate abbreviations defined in any files.
+Each of these three files is autoloaded whenever a function defined in it
+is invoked.
+
+This document describes each user-level function available in {\version} of
+{\BM}.  It assumes the reader knows the basics of Emacs and {\BibTeX}.
+The goal is to show you how to use the system with some instructive examples.
+The next chapter gives some general guidelines to making
+{\BM} work under your environment.  Chapters 3 and 4 deal with the various
+entry and field operations, respectively.  Chapter 5 covers
+the extended abbreviation mechanism.  The draft making
+facility is explained in Chapter 6.
+Finally all user level functions are summarized in Chapter 9, followed
+by two sets of indices in the last two chapters.
+
+{\bf Disclaimer}.  Although {\BM} has been extensively tested,
+there is no warranty that the functions described in this document
+are bug-free.  The author does not accept any responsibility to anyone
+for the consequences of using it or for whether it serves any particular
+purpose or works at all.
+
+{\bf Bugs/Comments}.  Bugs and comments on both the code and this
+document are welcome.  Please send them via electronic mail to
+|phc@renoir.berkeley.edu|.
+
+
+
+\chapter{Installation and Startup}
+
+\noindent
+To get {\BM} autoloaded, add the following two lines of code to your
+|.emacs|:
+\begindisplay
+ |(setq auto-mode-alist (cons '("\\.bib\$" . bibtex-mode) auto-mode-alist))|\cr
+ |(autoload 'bibtex-mode "bibtex-mode" "Major mode for editing BibTeX database
+ files" t)|\cr
+\enddisplay
+You can also enter {\BM} manually by loading the file |bibtex-mode| first and
+then invoke the function |bibtex-mode| at the |M-x| prompt.
+
+
+\section{{\Mbf}-mode Hook}
+\noindent
+The variable |bibtex-mode-hook| is the last object that gets evaluated 
+whenever the function |bibtex-mode| is invoked,
+which means whatever defined in the hook overwrites the
+default.  A typical |bibtex-mode-hook| is defined in the following way:
+\begindisplay
+|(setq bibtex-mode-hook|\cr
+|  (function|\cr
+|    (lambda ()|\cr
+|      <BODY>)))|\cr
+\enddisplay
+
+For the convenience of version control (typing |bibtex-mode-version|
+at the |M-x| prompt returns the current {\BM} version),
+the user is advised to put his local changes in the hook
+rather than modifying the various files of {\BM} directly.
+The abbreviation table (see below)
+is one example that goes into the hook, your preferred key bindings may be
+another, and other {\BM} subsystems that you've developed can also be loaded
+from the hook.
+
+
+\section{Minor Mode for Abbreviations}
+\noindent
+There are no abbreviations defined in {\BM},
+but the user can use |bibtex-mode-hook| to define his own abbreviations.
+For instance, a typical |.emacs| may contain a |bibtex-mode-hook| whose
+body is:
+\begindisplay
+|(define-mode-abbrev "tx"  "{\\TeX}")|\cr
+|(define-mode-abbrev "atx" "{\\AmSTeX})|\cr
+|(define-mode-abbrev "btx" "{\\BibTeX}")|\cr
+|(define-mode-abbrev "ltx" "{\\LaTeX}")|\cr
+|(define-mode-abbrev "stx" "{\\SliTeX}")|\cr
+|(abbrev-mode 1))))|\cr
+\enddisplay
+Note that the |Abbrev| minor mode is set by invoking 
+the function |abbrev-mode| with a positive number as argument.
+It can be reset by passing $0$ as the argument.
+
+The command {\b C-c{\s}C-a{\s}SPC} (|bibtex-abbrev-enable|) unconditionally
+enables the |Abbrev| minor mode.  Conversely {\b C-c{\s}C-a{\s}DEL}
+(|bibtex-abbrev-disable|) disables it unconditionally.\
+
+
+\section{Minor Mode for Auto-Filling}
+\noindent
+By default, {\BM} has the |Auto Fill| minor mode turned off.
+If this minor mode is desired, put
+\begindisplay
+|(auto-fill-mode 1)|\cr
+\enddisplay
+in your |tex-mode-hook|.  When the mode is set one
+can keep typing beyond the right margin without any explicit {\b RET} or
+{\b LFD} and the line will wrap around automatically.
+The variable |fill-column| is set to 78 in {\BM} instead of the Emacs default
+value of 70.
+If instead $N$ is desired column boundary, put
+\begindisplay
+|(setq fill-column| $N$|)|\cr
+\enddisplay
+in your hook.
+
+The standard Emacs line wrapping is modified a bit such that
+the wrapped line is indented to the column where the text of the current
+field begins.
+Typing {\b LFD} (|bibtex-newline-indent|) in {\BM} has the same effect.
+We shall find this feature useful in Section 4.5.  Incidently, {\b TAB} is a 
+self-inserting character in {\BM} which simply moves the cursor to the next
+tab position.
+
+The command {\b C-c{\s}LFD{\s}SPC} (|bibtex-autofill-enable|) enables
+the |Auto Fill| minor mode unconditionally.  
+Conversely {\b C-c{\s}LFD{\s}DEL} (|bibtex-autofill-disable|) disables it
+unconditionally.
+
+
+\section{System Dependencies}
+\noindent
+
+There are some system-dependent spots in {\BM}.
+First, a couple of external programs are invoked inside the mode:
+|bibtex|, |tex|, |dvitool|\footnote{$\dag$}{The program
+|dvitool| is a {\TeX} DVI previewer running on the
+SUN workstation.  It is available through 
+Berkeley {\VorTeX} distribution (dist-vortex@berkeley.edu).}, and |lpr|
+are used in |bibtex-misc.el|.
+You need these programs to make {\BM} fully functional.
+
+Second, some of the default settings in {\BM} may not
+be right for your local environments.  You can redefine the variables involved
+in your |bibtex-mode-hook|.  For instance, the last step of 
+{\b C-c{\s}C-\\{\s}d} (|bibtex-make-draft|) will ask you if you want
+the draft printed.  If so, it prompts you for the printer option.  
+The default is the list |(ip, cx, dp, gp)| which represents the names of 
+laser printers available to our group.  If what you have is the list 
+|(a, b, c)| with `|a|' being the one you use most often, you could say
+\begindisplay
+|(setq bibtex-printer-list "(a, b, c)" "Printers available locally")|\cr
+|(setq bibtex-printer-default "a" "Default printer")|\cr
+\enddisplay
+in your hook.  Similarly if you have a different previewer called |previewtool|
+or if you are using a different printing scheme called |print|, you can alter
+the default values by saying
+\begindisplay
+|(setq bibtex-softcopy "previewtool" "My DVI previewer")|\cr
+|(setq bibtex-hardcopy "print" "My printing scheme")|\cr
+\enddisplay
+in your |bibtex-mode-hook|.
+
+\section{Site Initialization}
+\noindent
+It is possible to setup a local {\BM} environment by redefining
+the variables in a startup file called \hbox{|bibtex-init.el|}.
+This file does not come with
+{\BM}.  But if either the file or its compiled form (|bibtex-init.elc|)
+exists in |EMACSLOADPATH|, the command
+\begindisplay
+|(load "bibtex-init")|\cr
+\enddisplay
+will be executed whenever the mode is invoked.  Otherwise the default
+values remain intact unless they are redefined in the user's |bibtex-mode-hook|.
+
+In effect this facility provides a site-wide initialization for everyone
+using the mode.  Site-specific attributes like
+the speller, previewer, printers, etc., which would probably be
+different from the default settings but identical for most users in
+the community, can be redefined in this initialization
+file.  For example, for site X the {\BM} administrator can put
+\begindisplay
+|(setq bibtex-printer-list "(a, b, c)" "Printers available at site X")|\cr
+|(setq bibtex-printer-default "a" "Default printer of site X")|\cr
+|(setq bibtex-softcopy "previewtool" "DVI previewer used at site X")|\cr
+|(setq bibtex-hardcopy "print" "printing/spooling scheme at site X")|\cr
+\enddisplay
+in the file |bibtex-init.el|, thereby alleviating users from having to deal
+with these attributes in their individual |bibtex-mode-hook|'s.
+
+
+\chapter{Entry Operations}
+
+\noindent
+All of {\BibTeX}'s fourteen standard bibliography entry types are
+supported by {\BM}.  The following is a list of these entries.
+$$\vbox{\settabs 4\columns
+\+|@article|&|@book|&|@booklet|&|@conference|\cr
+\+|@inbook|&|@incollection|&|@inproceedings|&|@manual|\cr
+\+|@masterthesis|&|@misc|&|@phdthesis|&|@proceedings|\cr
+\+|@techreport|&|@unpublished|&&\cr
+}$$
+
+\section{Invoking Entries}
+
+\noindent
+To invoke a new entry, specify its type at the |M-x| prompt.
+Command completion can be used here.
+For example, the command |M-x@mi|{\s}{\b RET} will have a new entry of type
+|@MISC| inserted below the current entry.  Here is an instance of the 
+skeleton entry:
+\begindisplay
+|@MISC{|\block|,|\cr
+|=============================== OPTIONAL FIELDS ===============================|\cr
+|     AUTHOR = {},|\cr
+|     TITLE = {},|\cr
+|     HOWPUBLISHED = {},|\cr
+|     MONTH = ,|\cr
+|     YEAR = {},|\cr
+|     NOTE = {}|\cr
+|}|\cr
+\enddisplay
+The cursor will be placed at the comma position in the first line where the 
+entry name is to be entered (as denoted by {\block}).
+
+\section{Setting up Entries}
+
+\noindent
+Some of the entry settings may be changed.  By default, entry and field 
+delimiters are both a pair of curly braces (i.e. |{...}|) and the
+indentation for field labels is 5 places.  Alternatively,
+{\BibTeX} accepts a pair of parentheses as entry 
+delimiters (i.e. |(...)|) and a pair of double quotes (i.e. |"..."|)
+as field delimiters.  The flag |bibtex-entry-use-parens|,
+if set non-nil, instructs {\BM} to use parentheses as entry delimiters.
+Similarly, the flag |bibtex-field-use-quotes|, if set non-nil, tells
+the system to use double quotes as field delimiters.
+The variable |bibtex-field-indent|, if assigned $N$, makes
+field indentation $N$ places instead the default value of 5.
+
+\section{Scrolling Entries}
+
+\noindent
+The command {\b C-c{\s}c} (|bibtex-current-entry|) positions the 
+cursor to the first column of current entry's name field.
+Two other commands having to do with entry scrolling
+are {\b C-c{\s}p} (|bibtex-previous-entry|) and 
+{\b C-c{\s}c} \hbox{(|bibtex-next-entry|)} which move the cursor
+to the previous and the next entry, respectively.
+With prefix argument $N$, the two commands move the cursor to the
+$N^{th}$ previous or next entry.  Thus {\b C-u{\s}2{\s}C-c{\s}n} goes to
+the second next entry.  Furthermore, {\b C-u{\s}0{\s}C-c{\s}n} is
+the same as {\b C-c{\s}c} and {\b C-u{\s}-1{\s}C-c{\s}n} is equivalent
+to {\b C-c{\s}p}.  The command {\b C-c{\s}c} does not take any
+prefix argument.  
+
+Any white space between two entries are associated with the 
+entry sitting above.  Suppose $E_1$, $E_2$, and $E_3$ are consecutive entries
+and the cursor is located in a blank line between $E_2$ and $E_3$.
+The commands {\b C-c{\s}p}, {\b C-c{\s}c}, and {\b C-c{\s}n}
+refer, respectively, to $E_1$, $E_2$, and $E_3$.
+
+\section{Duplicating/Killing Entries}
+
+\noindent
+Entries can be duplicated.  The command {\b C-c{\s}C-d{\s}c}
+(|bibtex-dup-current-entry|) inserts a duplicate of current
+entry right above next entry.
+Similarly {\b C-c{\s}C-d{\s}p} (|bibtex-dup-previous-entry|)
+puts out a copy of the previous entry above current entry and
+{\b C-c{\s}C-d{\s}n} (|bibtex-dup-next-entry|)
+does it for the next entry below current entry.
+Entries can also be killed.  The command prefix {\b C-c{\s}C-k}
+followed by {\b c}, {\b p}, or {\b n} kills the current, previous,
+or next entry.  As before, operations referring to previous and next
+entries take an optional prefix argument.
+
+\section{Renaming Entry Types}
+
+\noindent
+You can also switch the current entry from one type to another.
+This feature is useful when you have entered most fields in an entry
+of type $A$ and discovered that type $B$ is more appropriate.
+At this point, you can either invoke a new entry of type $B$, copy each
+field from the previous entry (see the next section on field operations),
+and kill the previous entry when done, or you can simply invoke
+the command \hbox{\b C-c{\s}C-r} \hbox{(|bibtex-rename-current-entry|)}
+which does all of that
+for you automatically.  You will be prompted for the destination type.
+Remember an entry type must start with an |@| and command completion
+can be used at the prompt.
+
+
+\chapter{Field Operations}
+
+\noindent 
+Fields in a typical {\BibTeX} entry fall into two basic categories:
+{\it required\/} and {\it optional\/}.
+In {\BibTeX} each entry type has a predefined set
+of required fields and another set for optional fields.
+By required, we mean unless those fields are present with legal text
+(non-empty), the entry will be considered erroneous.  In contrast, optional 
+fields may or may not appear in the entry and those with empty text are
+simply discarded.  Required fields have two special cases: {\it exclusive OR\/}
+and {\it inclusive OR\/}.  In the exclusive OR case, exactly one out of a 
+set of two or more fields must appear in the entry.
+In the inclusive case, at least one must be present.
+
+When an entry is invoked in {\BM}, the information with regard to
+the category each field belongs to is also displayed.  The best example
+is perhaps the entry type |@INBOOK| which contains not only ordinary required
+and optional fields, but both variants (exclusive and inclusive OR's) as well.
+Figure 1 is an instance of this type.  The lines giving field category
+information will be deleted when the cleanup operation is invoked.
+Also to be deleted by the cleanup operation are the unfilled optional fields
+and empty exclusive OR field(s), provided exactly one in the set has been 
+entered.  Refer to Section 6 below for more details about the cleanup operation.
+
+\section{Scrolling Fields}
+
+\noindent
+Commands for field scrolling are compatible with the entry operations
+discussed in Section 3.3.  That is, {\b C-c{\s}C-c}
+(|bibtex-current-field|) moves the cursor to the position following
+current field's opening delimiter.  Similarly, {\b C-c{\s}C-p} 
+(|bibtex-previous-field|) moves the cursor to the previous field and 
+{\b C-c{\s}C-n} \hbox{(|bibtex-next-field|)} to the next, both work
+across entry boundaries.
+As usual, an operation referring to a previous or next field takes an optional 
+prefix argument.
+
+There are many different patterns of fields in a {\BibTeX} database.  
+Field scrolling in {\BM} recognizes them all, yielding a set of commands
+that works uniformly on every possible pattern.
+Normally, the content (text) of a field must be quoted by a pair
+of delimiters (either |{...}| or |"..."|).
+But the text may be abbreviated (see Section 5).  Abbreviated fields must
+not be quoted, hence some fields in an entry may not have enclosing delimiters
+for their text.
+Furthermore, every field in an entry must be terminated by a comma,
+with the exception of the last one, which must not be terminated by anything.
+Combining these two scenarios together, we get four different patterns.
+Furthermore, an entry name is considered a field in scrolling, but
+its string pattern is actually different than any of the first four patterns
+--- a fifth pattern.  Moreover, {\BM} allows one to invoke
+abbreviations anywhere in the file which means an abbreviation
+(i.e. the left hand side of `|=|' in |@STRING|) 
+and its text (the RHS) must both be considered as scrollable fields 
+--- two more instances.  
+Complicated pattern matching like this underscores the slowness
+of field scrolling, especially when a system is heavily loaded.
+
+\topinsert
+\begindisplay
+|@INBOOK{,|\cr
+|=============================== REQUIRED FIELDS ===============================|\cr
+|    -------------- Exclusive OR fields: specify exactly one --------------|\cr
+|    AUTHOR = {},|\cr
+|    EDITOR = {},|\cr
+|    -------------- Inclusive OR fields: specify one or both --------------|\cr
+|    CHAPTER = {},|\cr
+|    PAGES = {},|\cr
+|    ------------- Rest of required fields: specify every one -------------|\cr
+|    TITLE = {},|\cr
+|    PUBLISHER = {},|\cr
+|    YEAR = {},|\cr
+|=============================== OPTIONAL FIELDS ===============================|\cr
+|    VOLUME = {},|\cr
+|    SERIES = {},|\cr
+|    ADDRESS = {},|\cr
+|    EDITION = {},|\cr
+|    MONTH = ,|\cr
+|    NOTE = {}|\cr
+|}|\cr
+\enddisplay
+\centerline{{\it Figure 1.\/} A skeleton instance of the entry type |@INBOOK|.}
+\endinsert
+
+\section{Copying Fields}
+
+\noindent
+The content of a field may be copied from a previous or next entry.
+The source field must have a label which is either identical or
+similar (see Section 4.3) to that of the current field.
+For instance, the command {\b C-c{\s}C-t{\s}p} 
+(|bibtex-text-previous-entry|)
+inserts before point the content of the field having the same label from
+previous entry.  Similarly {\b C-c{\s}C-t{\s}n} 
+(|bibtex-text-next-entry|) gets text from the next entry.
+Again, a prefix argument can be specified for these commands.
+
+\section{Equivalent Fields}
+
+\noindent
+Some entries may have different field labels denoting similar things.
+For example, the |JOURNAL| field in an |@ARTICLE| entry probably
+would mean the same thing as the |BOOKTITLE| field in a |@CONFERENCE| entry.
+So when one is copying the |BOOKTITLE| field from an |@ARTICLE| entry,
+he probably would not mind getting text from its |JOURNAL| field, since
+there is no |BOOKTITLE| field available.
+{\BM} has an equivalence table of these similar field labels. 
+While copying text from an source entry to the current field (destination),
+if the current label is not found in the source, the next alternative in the
+equivalence table is used as key in searching.
+If an alternative match is found, the user will be asked to confirm insertion
+(no questions asked if a direct match is found in the first place).
+The same mechanism is used by |bibtex-rename-current-entry| discussed in Section 3.5.
+
+Figure 2 is the equivalence table of {\BM}'s field labels.
+The first column item is considered the primary key.
+In a copying operation, if the primary key is not found in the source entry,
+the alternatives will be tried in the order shown above.
+\topinsert
+$$\vbox{\settabs 3\columns
+\+|AUTHOR|&|EDITOR|&\cr
+\+|BOOKTITLE|&|JOURNAL|&\cr
+\+|EDITOR|&|AUTHOR|&\cr
+\+|INSTITUTION|&|ORGANIZATION|&|SCHOOL|\cr
+\+|JOURNAL|&|TITLE|&\cr
+\+|ORGANIZATION|&|INSTITUTION|&|SCHOOL|\cr
+\+|SCHOOL|&|INSTITUTION|&|ORGANIZATION|\cr
+\+|TITLE|&|BOOKTITLE|&\cr
+}$$
+\centerline{{\it Figure 2\/}.  Field label equivalence table.}
+\endinsert
+
+\section{Erasing Fields}
+
+\noindent
+Field delimiters can be erased using the command
+{\b C-c{\s}C-e{\s}d} (|bibtex-erase-delimiters|).  This is useful
+when an abbreviation is entered as the content of a field,
+therefore the delimiters must be deleted.  Field text can be erased
+by {\b C-c{\s}C-e{\s}t} (|bibtex-erase-text|).  Lastly
+the entire field can be erased by {\b C-c{\s}C-e{\s}f} 
+\hbox{(|bibtex-erase-field|)}.
+
+For example, given the following excerpt from an |@INBOOK| entry,
+\begindisplay
+|    SERIES = {|$\cdots$|},|\cr
+|    ADDRESS = {AWA|\block|},|\cr
+|    EDITION = {|$\cdots$|},|\cr
+\enddisplay
+typing the three erasing commands at the {\block} position each produces
+a different result.
+
+(1) {\b C-c{\s}C-e{\s}d} produces
+\begindisplay
+|        SERIES = {|$\cdots$|},|\cr
+|        ADDRESS = AWA,|\cr
+|        EDITION = {|$\cdots$|},|\cr
+\enddisplay
+
+(2) {\b C-c{\s}C-e{\s}t} produces
+\begindisplay
+|        SERIES = {|$\cdots$|},|\cr
+|        ADDRESS = {},|\cr
+|        EDITION = {|$\cdots$|},|\cr
+\enddisplay
+
+(3) Finally {\b C-c{\s}C-e{\s}f} yields
+\begindisplay
+|        SERIES = {|$\cdots$|},|\cr
+|        EDITION = {|$\cdots$|},|\cr
+\enddisplay
+
+\section{Line Wrapping}
+\noindent
+As mentioned in Section 2.3,
+if the Emacs minor mode |Auto Fill| is turned on in {\BM},
+the typing can go beyond the column |fill-column| and an automatic
+line wrapping mechanism will be triggered when a space is hit.
+The wrapped line will be indented to
+the column where the text of the current field begins.
+For instance, with |Auto Fill| mode set, entering a text string longer than
+|fill-column| for the following |SCHOOL| field without typing any explicit
+{\b RET} or {\b LFD} will trigger automatic line wrapping.
+That is, when the space immediately following |at| is hit
+(the |\| at the right margin marks the continuation of the current line,
+as is done in Emacs, and the word {\it Berkeley\/} is italicized to indicate
+that it is typed after line wrapping), the field
+\begindisplay
+|    SCHOOL = "Computer Science Division, EECS Dept., University of California\|\cr
+|at| {\block}{\it Berkeley\/}|"}|\cr
+\enddisplay
+will become
+\begindisplay
+|    SCHOOL = "Computer Science Division, EECS Dept., University of California|\cr
+|              at| {\block}{\it Berkeley\/}|"},|\cr
+\enddisplay
+where |at| is lined up with the first column of the current field text.
+
+A similar effect can be achieved manually by 
+typing {\b LFD} (|bibtex-newline-indent|) at the end of a line.  It opens a
+new line and indents to the beginning of current text field, as in
+\begindisplay
+|    SCHOOL = "Computer Science Division, University of California, Berkeley,| {\b LFD}\cr
+|              |{\block}|},|\cr
+\enddisplay
+where {\block} is the current cursor position.
+
+Typing {\b ESC{\s}LFD} (|bibtex-newline-indent-label|), on the other hand,
+opens a new line and indents it by the amount of |bibtex-field-indent| (cf.
+Section 3.2).  In the example that follows,
+the {\b ESC{\s}LFD} typed at the end of a line
+opens a new line with the cursor lined up with the other field labels, i.e.
+\begindisplay
+|    SCHOOL = "Computer Science Division, University of California, Berkeley},|{\b ESC{\s}LFD}\cr
+|    |{\block}\cr
+\enddisplay
+Again, {\block} denotes the current cursor position, where a new field label
+may be entered.
+
+By comparison, {\b RET} is not bound to anything special;
+it simply opens a new line but does no indentation at all, that is
+\begindisplay
+|    SCHOOL = "Computer Science Division, University of California at Berkeley},| {\b RET}\cr
+{\block}\cr
+\enddisplay
+where {\block} is physically sitting at the left margin (column 0).
+
+
+\chapter{Abbreviation Facility}
+
+\noindent
+{\BibTeX} has a simple abbreviation scheme that works as follows.
+An abbreviation is specified by |@STRING|, such as:
+\begindisplay
+|@STRING{UCBCS = "Computer Science Division, University of California at Berkeley"}|\cr
+\enddisplay
+The abbreviation |UCBCS| can then be entered as the content of a field,
+as in:
+\begindisplay
+|     SCHOOL = UCBCS,|\cr
+\enddisplay
+Note that abbreviations as field text must not be quoted.
+Also, abbreviations must be defined before used.  
+
+One would normally like to put all abbreviations in a central place
+and not repeat them in each individual |.bib| files.
+{\BibTeX} does not explicitly support the notion of externally defined
+abbreviation entries.  A somewhat kludgy approach is to list
+the file which contains all abbreviations as the {\it first\/} argument
+of the |\bibliography{...}| command in a document.  It is important
+that it be listed first because {\BibTeX} does not allow forward 
+referencing in terms of abbreviations.  Note that the reference to external
+files happens in the document where citations 
+are made.  The |.bib| databases themselves know nothing about
+where the abbreviations are, they just use them.  In other words,
+the program |bibtex| gets the information from the |\bibliography| command
+specified in your |.tex| files, not from any |.bib| files.
+
+In {\BM} abbreviations can be specified by typing |@string| at
+the |M-x| prompt.  The command |@abbreviation| is an alias of |@string|.
+Once invoked using either command, you get
+\begindisplay
+|@STRING{|\block|= ""}|\cr
+\enddisplay
+right above the current field with the cursor sitting on the left hand
+side of the equal sign.  Both sides of |@STRING| are considered
+scrollable fields, as mentioned earlier.
+
+{\BM} makes a number of extensions to {\BibTeX}'s simple abbreviation
+scheme.  The rest of this section discusses each of them.
+
+
+\section{Default Abbreviated Fields}
+
+\noindent
+Notice that by default the field labeled |MONTH| in an entry 
+does not have field delimiters (as shown in the |@MISC| entry of Section 3.1).
+This is because one would normally give an abbreviate
+the |MONTH| field by saying |Jan|, |Feb|, ..., etc.  
+Abbreviated text must not be quoted, according to the
+rule of {\BibTeX}.  The other field which is assumed to be always using
+abbreviations is |JOURNAL|.  The variable |bibtex-abbrev-fields| is bound
+to the list |("JOURNAL" "MONTH")| initially.  Suppose you always
+abbreviate the |ADDRESS| field in the various entry types, you can put
+the following line in your hook:
+\begindisplay
+|(setq bibtex-abbrev-fields (cons "ADDRESS" bibtex-abbrev-fields))|\cr
+\enddisplay
+
+
+\section{Creating Group Abbreviations}
+
+\noindent
+The notion of group abbreviations, {\it a la\/} Unix {\it refer\/},
+is implemented in {\BM}.  {\BibTeX} itself supports abbreviations of
+single fields only.  In {\BM}, chunks of fields may be
+collected to form a group abbreviation under the heading of |%GROUP|.
+Other than the heading, a group abbreviation looks just like a
+regular {\BibTeX} entry.  Facilities are provided to create this type
+of abbreviations as well as for making references to them.  
+This extension takes advantage of the
+{\BibTeX} feature that text not enclosed in |@STRING| or any of the entry
+types is simply ignored in bibliography processing.
+
+There are two ways to create group abbreviations.
+The first method is to make one out of an existing entry using
+the command {\b C-c{\s}C-\\{\s}g} (|bibtex-make-group|).
+It copies the text between mark and point to the space between
+current and previous entries.  The text will be enclosed under
+the |%GROUP| heading whose name is supplied interactively by the user.
+
+The following example demonstrates the idea.  Suppose I want to include
+a number of papers in the conference proceedings of the 1981 ACM SIGPLAN/SIGOA
+Symposium on Text Manipulation in a |.bib| file.  Except for the
+|AUTHOR|, |TITLE|, and |PAGES| fields, all the rest will be identical
+for every paper in that proceedings.  I would invoke a new entry by typing
+|M-x@inp|{\b RET} and then enter the text for each field (see Figure 3.)
+\topinsert
+\begindisplay
+|@CONFERENCE{reid:bib,|\cr
+|     AUTHOR = {Brian K. Reid and David Hanson},|\cr
+|     TITLE = {An Annotated Bibliography of Background Material on Text Manipulation},|\cr
+{\b C-@}|  BOOKTITLE = {Proc. of {SIGPLAN/SIGOA} Symposium on Text Manipulation},|\cr
+|     YEAR = {1981},|\cr
+|     PAGES = {157--160},|\cr
+|     ORGANIZATION = {ACM},|\cr
+|     ADDRESS = {Portland, Oregan},|\cr
+|     MONTH = {June 8--10},|\cr
+|     NOTE = {Available as {\it SIGPLAN Notices\/} 16(6)|\cr
+|             or {\it SIGOA Newsletter\/} 2(1--2).}|\block\cr
+|}|\cr
+\enddisplay
+\centerline{{\it Figure 3.\/} A filled instance of the entry type |@CONFERENCE|.}
+\endinsert
+In addition to entering the text, I have also made a region between
+the beginning of |BOOKTITLE| and the end of |NOTE| (i.e. everything between
+{\b C-@} and \block).  Now if I type {\b C-c{\s}C-\\{\s}g} at the {\block}
+position and answer |TM81| to its prompt, I will get what is shown in Figure 4
+in the space right above the |reid:bib| entry.  This so-called group
+abbreviation will be registered and future references to it will
+have its content inserted.  The |PAGES| field will remain to be that particular
+range, so I need to scroll to that field and replace its content.
+The schemes for interpolating group abbreviations will be discussed later.
+
+\topinsert
+\begindisplay
+|%GROUP{TM81,|\cr
+|     BOOKTITLE = {Proc. of {SIGPLAN/SIGOA} Symposium on Text Manipulation},|\cr
+|     YEAR = {1981},|\cr
+|     PAGES = {157--160},|\cr
+|     ORGANIZATION = {ACM},|\cr
+|     ADDRESS = {Portland, Oregan},|\cr
+|     MONTH = {June 8--10},|\cr
+|     NOTE = {Available as {\it SIGPLAN Notices\/} 16(6)|\cr
+|             or {\it SIGOA Newsletter\/} 2(1--2).}|\cr
+|}|\cr
+\enddisplay
+\centerline{{\it Figure 4\/}.  A group abbreviation made out of Figure 3.}
+\endinsert
+
+The second method is similar to the invocation of regular {\BibTeX} entries.
+Typing |%group| or |@group| at the |M-x| prompt invokes a group
+abbreviation skeleton.  In this case the user has to specify a
+type upon which the group abbreviation is based.
+The type can be any of the entry types {\BibTeX} knows.
+
+For instance, after typing |%gr|{\b RET} at |M-x|, the following
+prompt will appear in the mini-buffer:
+\begindisplay
+|Group abbrev of type:| \block\cr
+\enddisplay
+and answering |@misc|{\b RET} (again, command completion can be used here)
+will have a skeleton group abbreviation inserted as Figure 5.
+A group abbreviation is regarded as a scrollable entry in a |.bib| file.
+Notice that except for |%GROUP|, all field labels in this skeleton
+are exactly those of the entry type |@MISC| (cf. Section 3).
+It is unlikely that fields such as |AUTHOR| and |TITLE| will
+be part of a group abbreviation.  {\BM} isn't clever enough to
+exclude them.  The user is responsible for deleting them using
+the command {\b C-c{\s}C-e{\s}f} (cf. Section 4.4).
+Empty fields can be deleted manually, or by the cleanup command
+{\b C-c{\s}ESC{\s}e} (cf. Section 6).
+\topinsert
+\begindisplay
+|%GROUP{,|\cr
+|=============================== OPTIONAL FIELDS ===============================|\cr
+|     AUTHOR = {},|\cr
+|     TITLE = {},|\cr
+|     HOWPUBLISHED = {},|\cr
+|     MONTH = ,|\cr
+|     YEAR = {},|\cr
+|     NOTE = {}|\cr
+|}|\cr
+\enddisplay
+\centerline{{\it Figure 5\/}.  A skeleton group abbreviation based on the entry type |@MISC|.}
+\endinsert
+
+
+\section{Compiling and Loading}
+
+\noindent
+{\BM} has a ``compiling'' facility that pulls all abbreviations of both types
+to the beginning of the file and converts them to Lisp objects.
+These objects are entered into the Emacs database so that
+they can be browsed efficiently.  At the same time they are also
+saved in a file so that loading them in the future is faster.
+The command {\b C-c{\s}C-s} (|bibtex-save-abbrev|) issued in the buffer
+bound to file |foo.bib| compiles all abbreviations and saves the
+converted objects in file |foo.abv|.  What was originally in that
+file gets overwritten.  
+
+For each |.bib| file visited in {\BM} there is a database which keeps
+track of the abbreviation entries currently active.
+Group abbreviations created by {\b C-c{\s}C-\\{\s}g} (|bibtex-make-gabbrev|)
+are entered into the database automatically.  Other abbreviations created by
+invoking |%group| or |@string| at the |M-x| prompt must be compiled explicitly
+using {\b C-c{\s}C-s} (|bibtex-save-abbrev|), which compiles each
+abbreviation entry in the buffer.
+Since abbreviations under {\BM} tend to be in a central file
+and the compiling command is not frequently invoked anyhow, this
+overhead seems tolerable.
+
+In the database the name of a group abbreviation or 
+the LHS of a field abbreviation is considered the key.
+The same key may be used in both categories with no problems.
+However, if the same key is used more than once in the same type,
+the new overwrites the old.  {\BM} does not complain about multiply-defined
+entries, so it is the user's responsibility to assure a naming uniqueness.
+
+The command {\b C-c{\s}C-l} (|bibtex-load-abbrev|),
+on the other hand, loads a |.abv| file into the database.
+When invoked, the load command prompts the user with:
+\begindisplay
+|Load abbreviations, file name base:| \block\cr
+\enddisplay
+Answering {\b RET} refers to the default case, that is, the base
+of the current file name concatenated with |.abv|.
+In most cases, loading is implied by the {\it browse\/} and {\it insert\/}
+commands, as described below.
+
+
+\section{Browsing/Inserting Group Abbreviations}
+
+\noindent
+The command {\b C-c{\s}C-i{\s}g} (|bibtex-insert-gabbrev|)
+can be used to browse or insert a group abbreviation.
+It starts with the prompt:
+\begindisplay
+|Group abbrev name (default browsing mode):| \block\cr
+\enddisplay
+If the name of the group abbreviation is known, its text is inserted before 
+point.  Otherwise, answering {\b RET} enters {\it browsing mode\/}
+in which the current active group abbreviations are browsed one by one
+in the minibuffer for confirmation.  If there are no abbreviations active,
+files in |bibtex-abbrev-files| as well as |foo.abv| are loaded,
+where |foo.bib| is the current file.
+A typical confirmation prompt
+looks like
+\begindisplay
+|Confirm "FOO" (RET/y, SPC, DEL, s, g, f, C-r, ?=help)? |\cr
+\enddisplay
+where |FOO| is the current key.  The menu has following meaning:
+\item{\bull}{{\b RET}/`|y|' --- Confirm and exit, the abbreviated text is
+inserted.}
+\item{\bull}{{\b SPC} --- Ignore current entry.  Advance to the next.}
+\item{\bull}{{\b DEL} --- Ignore current entry.  Go back to the previous.}
+\item{\bull}{`|s|' --- Show the content of current abbreviation in the other
+window.}
+\item{\bull}{`|g|' --- Go to the abbreviation whose name is greater than the
+specified key.}
+\item{\bull}{`|f|' --- Not in current list of abbreviations.  Read more from
+a new file.}
+\item{\bull}{{\b C-r} --- Enter recursive edit.  Return to browsing by
+{\b ESC C-c}.}
+\item{\bull}{`|?|' -- This help message.}
+
+\noindent
+If the desired entry is not found in the list being browsed,
+skipping the last entry triggers:
+\begindisplay
+|Can't find next abbreviation, exit? (y or n)|\cr
+\enddisplay
+Answering `|n|' or {\b DEL} wraps around and starts the list all over again.
+Answering `|y|' or {\b SPC}, on the other hand, gets
+\begindisplay
+|Group abbreviations not found, read from another file? (y or n)|\cr
+\enddisplay
+This prompt also appears as a result of {\b C-c{\s}C-i{\s}g}
+if no group abbreviations are loaded from the default files.
+A negative answer aborts the operation, whereas
+answering `|y|' or {\b SPC} at this point triggers
+\begindisplay
+|Load file (default path TEXBIB):| \block\cr
+\enddisplay
+Entering a new |.abv| file name at this prompt starts another loading
+process and any group abbreviations found will become active.
+
+Notice that the first time browsing mode is invoked, {\BM} attempts
+to load global abbreviation files from the list |bibtex-abbrev-files|.
+This allows you to put all abbreviations in a |.bib| file which contains
+nothing else but abbreviations.  You can have the following code in your
+|bibtex-mode-hook|:
+\begindisplay
+|(setq bibtex-abbrev-files '(abbrev))|\cr
+\enddisplay
+which tells {\BM} to load abbreviations from |abbrev.abv| the first time
+browsing is invoked.  Furthermore, a hook to {\TM}'s bibliography
+preprocessor is available so that files in |bibtex-abbrev-files| will
+be inserted at the front of the |\bibliography{...}| command.
+
+\section{Browsing/Inserting Field Abbreviations}
+
+\noindent
+The command {\b C-c{\s}C-i{\s}f} (|bibtex-insert-fabbrev|) enters
+browsing mode automatically.   Once invoked, field abbreviations
+will be loaded from the files in |bibtex-abbrev-files| and from |foo.abv|,
+where |foo.bib| is the current file visited.
+When loaded, the abbreviation keys will be displayed in the minibuffer one by
+one in a lexicographical order.
+The options the user has are identical to those available
+in browsing group abbreviations, plus the following:
+\item{\bull}{{\b ESC} --- Confirm and exit.  Instead of inserting the text
+corresponding to the current key as in the case of {\b RET}, the key
+itself is inserted.  The pair of field delimiters, if any, will be erased
+automatically.}
+
+\noindent
+For example, browsing field abbreviations at
+\begindisplay
+|    SCHOOL = {|\block|},|\cr
+\enddisplay
+and confirming |UCBCS| using {\b ESC} produces
+\begindisplay
+|    SCHOOL = UCBCS,|\cr
+\enddisplay
+whereas answering {\b RET} or `|y|' produces
+\begindisplay
+|    SCHOOL = {Computer Science Division, University of California, Berkeley},|\cr
+\enddisplay
+By comparison, group abbreviations are always expanded
+because {\BibTeX} knows nothing about it.
+
+Again, if none of the field abbreviations currently available
+in the database is selected, the user has the option of
+loading another abbreviation file and start the browsing again.
+
+\chapter{Cleanup Mechanism}
+
+\noindent
+The cleanup operation in {\BM} performs the following tasks in sequence:
+\item{1.}{correcting empty fields,}
+\item{2.}{deleting banners,}
+\item{3.}{erasing trailing comma,}
+\item{4.}{pulling abbreviations to the beginning of buffer,}
+\item{5.}{time stamping.}  
+
+Step 1 corrects or deletes empty fields.  Empty optional fields will 
+be deleted, so will empty exclusive OR fields, provided exactly one
+of them has been filled.  Empty required fields will be caught,
+and the user will be asked to fill in the content interactively.
+For instance, let us assume Figure 1 is being cleaned up.
+With every field empty, the first prompt we get is
+\begindisplay
+|AUTHOR -- first XOR field to be filled:| |(RET if none)| \block\cr
+\enddisplay
+If a non-null string is given at the prompt, it will be inserted as
+the text of the |AUTHOR| field and the other exclusive OR field, |EDITOR|,
+will be deleted automatically.  If, however, what we really want is the
+|EDITOR| field, answering {\b RET} will trigger a reconfirmation prompt:
+\begindisplay
+|Killing current field, are you sure?| |(y or n)|\cr
+\enddisplay
+If the answer is positive, the empty |AUTHOR| field will be deleted and the
+next prompt
+\begindisplay
+|EDITOR -- the only XOR field remaining:| \block\cr
+\enddisplay
+will appear in the minibuffer.
+This time it won't let you get away unless a non-empty string
+is given because of the exclusive OR situation.
+
+A similar situation applies to the inclusive OR case except that
+if the text for the first field is entered at prompt, the second will not be
+deleted automatically.  The rest of the required fields (ordinary required
+fields), if empty, will all be prompted
+and you will not get through unless some non-empty text is given.
+Optional fields, on the other hand, are simply discarded.
+Every field in a group abbreviation is considered optional, therefore
+all empty fields get deleted regardless of their labels.
+
+Each iteration of this mechanism searches only for an empty field and
+determines whether it's an exclusive OR, inclusive OR, oridnary required,
+or optional field, and finally what to do with it.
+If an empty field is found in an unknown entry type, the user is warned by
+\begindisplay
+|@FOO -- unknown entry type, kill it?| |(y or n)|\cr
+\enddisplay
+where |@FOO| is the entry type in question.  It is really harmless to
+leave unknown entries in the file because {\BibTeX} will pay no attention
+to them.  But since this detection comes for free from
+the searching, and sometimes the unknown may be the result of typing errors,
+it is implemented anyhow.  The premise here is the empty field.
+Anomalies such as more than one exclusive OR field are filled 
+or some required fields are missing, which happen in an entry with no
+empty fields will not be detected.
+Errors like these can only be caught by {\BibTeX}.
+
+The next step deletes banners which give hints on the category their
+following fields belong to.  Then comes step 3 which erases the trailing
+comma in each entry.  {\BibTeX} requires that fields
+in an entry be separated by a comma, but the last field in an entry
+must not.  Since there is no way of telling which
+of the optional fields will be the last (because some of them may be left
+empty and will thus be deleted), {\BM} simply terminates each field
+with a comma in the skeleton entry and erases the trailing one after all
+empty fields are gone.
+
+Step 4 involves pulling all abbreviations to the top of the file,
+so that they are physically separated from the main entries.
+The operation completes by time stamping the file at the beginning of file.
+
+In {\BM}, one can either clean up the entire buffer using {\b C-c{\s}ESC{\s}b}
+(|bibtex-cleanup-buffer|), or a region in buffer using {\b C-c{\s}ESC{\s}r}
+(|bibtex-cleanup-region|), or consecutive entries using {\b C-c{\s}ESC{\s}e}
+(|bibtex-cleanup-entry|).  In the region case, the starting bound is extended
+to the beginning of an entry implicitly, if it is enclosed in one.
+Similarly the ending bound is extended to the end of an entry, if
+it is inside an entry.
+In the entry case, an optional prefix argument is allowed to clean up
+neighborhood entries altogether.  Thus {\b C-u{\s}3{\s}C-c{\s}ESC{\s}e}
+cleans up current and previous two entries, and
+{\b C-u{\s}-3{\s}C-c{\s}ESC{\s}e} does it for the next three entires,
+excluding the current entry.
+
+
+\chapter{Draft Making and Debugging}
+
+\noindent
+The command {\b C-c{\s}C-\\{\s}d} (|bibtex-make-draft|) invokes a facility
+which prepares a draft bibliography file of all the entries listed
+in the current |.bib| file.  A well-formatted draft can be previewed on a
+display using a {\b DVI} previewer or be sent to a printer for hard copies.
+This process also helps to debug the current |.bib| file
+for if there are errors, {\BibTeX} will catch them before they are
+actually referenced in |.tex| files.  {\BM} supports an error positioning
+mechanism which points the author to the spot in file where the next error
+occurs.
+
+The {\BibTeX} processor |bibtex| expects a |.aux| file as its argument.
+It processes |\citation{...}| entries in the |.aux| file and generates
+a |.bbl| file, the actual bibliography.
+In the original design, {\LaTeX} is supposed to pick up
+|\cite| and |\nocite| entires from source files and turn them into
+|\citation| entries in the |.aux| file.  In {\TM}~[1], the |.aux| file is
+produced by searching through source files directly without invoking
+the formatter.  {\BM} uses the same technique in draft making.
+That is, it lists the name of every entry in the current file |foo.bib|
+as the argument of |\citation| in file |foo+.aux|.  If |foo.bib| has been
+modified when {\b C-c{\s}C-\\{\s}d} is issued, the user will be asked
+to confirm cleanup (see Section 6) first.  The reason for the `|+|'
+attachment is to avoid clobbering |foo.aux| which is likely to
+be there as a result of processing file |foo.tex| by {\LaTeX}.
+
+Before |foo+.aux| can be processed by |bibtex|, one more piece of information
+is needed, namely the style of the bibliography.  The menu
+\begindisplay
+|Style (RET=plain, 1=unsrt, 2=alpha, 3=abbrv, else=your-own-style):| \block\cr
+\enddisplay
+gives the user options for the desired style.
+The first four options correspond to those available in {\BibTeX}.
+The default style |plain| is an order based on the last name of the first
+author using numeric values as actual references (e.g. [1], [2]); |unsrt| is
+also numeric, but the sequence is based on the order the entries appear
+in file; the |alpha| style is very much the same as |plain|
+except the actual references are alphanumeric in terms of author name and year
+of publication (e.g. [Kn84]).
+Finally the |abbrv| style uses a compact form of name, month, etc. in
+the actual bibliography file.  Its reference field is numeric.
+If you have any user-defined style,
+simply type in the name (assuming {\BibTeX} knows about its existence).
+The selected style will be used as the argument of the |\bibstyle| command
+in |foo+.aux|.
+
+Another interesting thing that happens behind the scenes in preparing
+the |.aux| file for {\BibTeX} is the processing of global abbreviation files
+bound to the variable |bibtex-abbrev-files| (cf. Section 5.4).
+Suppose in your |bibtex-mode-hook| you have
+\begindisplay
+|(setq bibtex-abbrev-files '(abbrev))|\cr
+\enddisplay
+which means all your abbreviations are in file |abbrev.bib|.  In |foo+.aux|
+there is one more important command,
+\begindisplay
+|\bibdata{abbrev,foo}|\cr
+\enddisplay
+which informs {\BibTeX} to process the global abbreviation file before
+processing the |.bib| file in question.  This important hook is
+also used by {\TM} in preparing actual bibliographies.
+
+When this |foo+.aux| is done,
+the program |bibtex| is invoked with argument |foo+| in the
+inferior shell process.  During the execution of |bibtex|,
+the prompt
+\begindisplay
+|Continue formatting the draft? [Wait till finish if `y']|\cr
+\enddisplay
+remains in the minibuffer until a command `|y|' or `|n|' ({\b SPC} or
+{\b DEL}) is given.  As the message warns: you must wait till the job
+is finished if your answer is `|y|'.  You can type `|n|' any time
+to abort the {\BibTeX} job, however.
+If there are no errors found when an abort is demanded, you will get the
+following message:
+\begindisplay
+|Making a draft bibliography...abort (temporary files deleted)|\cr
+\enddisplay
+which means the file |foo+.aux| is gone.  If there are errors detected
+and an abort is issued before {\BibTeX} completes, you get
+\begindisplay
+|Making a draft bibliography...abort (use C-c C-@ to locate BibTeX errors)|\cr
+\enddisplay
+
+The command {\b C-c{\s}C-@} positions you to the next error in the current
+|.bib| file.  Meanwhile, the shell window will recenter itself to show you
+the corresponding error message as much as possible.
+
+If you decide to continue even if there are {\BibTeX} errors, you will be
+asked to reconfirm:
+\begindisplay
+|BibTeX errors found, are you sure you want to continue?| |(y or n)|\cr
+\enddisplay
+If `|n|' or {\b DEL} is given this time, it terminates with
+the second abort message shown above.
+
+If {\BibTeX} finishes successfully with no errors and the user decides
+to continue, or if there are errors but the user wants to go on anyway,
+the message will be
+\begindisplay
+|Making a draft bibliography...continuing|\cr
+\enddisplay
+What happens next is the preparation of the actual bibliography file
+|foo+.tex|.  A |.bib| entry like Figure 3 will be converted to
+\begindisplay
+|\bibitem{79}{reid:bib}{|\cr
+|Brian~K. Reid and David Hanson.|\cr
+|\newblock An annotated bibliography of background material on text manipulation.|\cr
+|\newblock In {\it Proc. of the ACM SIGPLAN/SIGOA Symposium on Text|\cr
+|  Manipulation}, pages~157--160, ACM, Portland, Oregan, June 8--10 1981.|\cr
+|\newblock Available as {\it SIGPLAN Notices\/} 16(6)|\cr
+|          or {\it SIGOA Newsletter\/} 2(1--2).}|\cr
+\enddisplay
+in |foo+.tex|.  The macro |\newblock| along with other definitions having to
+do with the format of this draft are given in the preamble of this {\TeX} file
+(see Figure 6).
+\topinsert
+\begindisplay
+|\input misc|\cr
+|\def\newblock{\hskip .11em plus .33em minus -.07em}|\cr
+|\def\bibitem#1#2#3{|\cr
+|  {\bigskip  \advance\leftskip by 1in|\cr
+|   \item{\hbox to 1.25in{\hss$\lbrace#2\rbrace$}|\cr
+|   \quad\hbox to .6in{\hss[#1]}}|\cr
+|   #3\par}}|\cr
+|\font\big=cmbx10 scaled\magstep3|\cr
+|\nopagenumbers|\cr
+|\footline={{\bf Time: }{\sl Fri Sep  5 00:51:50 1986}\hfil|\cr
+|           {\bf File: }``{\tt ~/bib/foo.bib}''\hfil|\cr
+|           {\bf Page: } \folio}|\cr
+|\centerline{\big Bibliography}|\cr
+|\vskip .15truein|\cr
+\enddisplay
+\centerline{{\it Figure 6\/}: Draft bibliography preamble.}
+\endinsert
+
+In addition to defining formatting details, the preamble has in its first
+line an input command which loads the file |misc.tex|.
+This is another hook {\BM} requires to be able to properly format the draft
+for previewing or printing.  In this case, I have the following
+statement in my |bibtex-mode-hook|:
+\begindisplay
+|(setq bibtex-context "misc")|\cr
+\enddisplay
+which implies that I am using something in the |.bib| file whose definitions
+reside in |misc.tex|.  A good example of this is the {\BibTeX} logo,
+which the |plain| package knows nothing about.  Therefore I'm including
+the file |misc.tex| which presumably has the definition for the macro
+|\BibTeX|.
+
+When this |foo+.tex| file is done, |tex| takes over and formats it.
+Similar to the previous |bibtex| job, the prompt
+\begindisplay
+|Preview, print, or save the draft? [Wait till finish if `y']|\cr
+\enddisplay
+will be displayed in the minibuffer with the same protocol.
+If you decide to do either of the three things listed, you must
+wait till the job completes before hitting {\b SPC} or `|y|'.
+If, however, you don't want to proceed, typing {\b DEL} or `|n|' at any moment
+will abort the job, with all temporary files deleted.
+
+When the formatting is finished, the {\b DVI} file is then ready for
+previewing or printing.  If previewing is desired (first prompt), the program
+bound to |bibtex-softcopy| is invoked.  If printing is needed (second prompt),
+the program |bibtex-hardcopy| is used to generate a hard copy in
+the designated printer.  Finally, if you wish to keep these temporary
+files (after all, they are just for proof reading the draft), there
+will be a third prompt asking for your confirmation on saving |foo+.tex|
+and |foo+.dvi|.  If not, all temporary files will be removed.
+Files such as the |.aux|, |.log|, |.blg| get deleted in any case.
+
+
+\chapter{Final Remarks}
+
+\noindent
+In summary, {\BM} commands and their key bindings obey the following
+convention:
+$$\vbox{\settabs 2\columns
+\+\hfil{\it Command\/}&\hfil {\it Meaning\/}\cr
+\+\hfil{\b C-c} |[|{\it cpn\/}|]|&\hfil entry scrolling\cr
+\+\hfil{\b C-c C-k} |[|{\it cpn\/}|]|&\hfil entry killing\cr
+\+\hfil{\b C-c C-d} |[|{\it cpn\/}|]|&\hfil entry duplicating\cr
+\+\hfil{\b C-c C-}|[|{\it cpn\/}|]|&\hfil field scrolling\cr
+\+\hfil{\b C-c C-e} |[|{\it dtf\/}|]|&\hfil field erasing\cr
+\+\hfil{\b C-c C-e} |[|{\it pn\/}|]|&\hfil field copying\cr
+\+\hfil{\b C-c C-i} |[|{\it gf\/}|]|&\hfil abbreviation insertion\cr
+\+\hfil{\b C-c ESC} |[|{\it bre\/}|]|&\hfil cleanup\cr
+\+\hfil|M-x| {\it name\/}&\hfil entry invocation\cr
+}$$
+
+While in {\BM}, the command {\b C-c{\s}C-h} (|bibtex-mode-help|) displays
+in the other window a table of the commands available.
+A version of this document will be translated to {\TeX}Info~[7], the
+official GNU Emacs documentation format.
+When that is available you will be able to run the 
+|info| system in Emacs to consult this manual interactively.
+
+{\bf Acknowledgements}.  I would like to thank the following people
+for making constructive suggestions on {\BM} at various stages of the
+development: Mike Harrison, Art Werschulz, Ben Zorn, and Jim Larus.
+
+
+\chapter{References}
+
+\item{[1]}{Peehong Chen. {\it GNU Emacs {\TeX} Mode}.
+Technical Report, Computer Science Division, University of California,
+Berkeley, California, 1986.}
+
+\item{[2]}{Peehong Chen,  Michael A. Harrison, John Coker, Jeffrey W. McCarrell
+and Steve Procter, ``An improved user environment for {\TeX}'', in 
+{\it Proc. of the 2nd European Conference on {\TeX} for Scientific
+Documentation}, Strasbourg, France, June 19--21, 1986.  To be published
+by Springer-Verlag}.
+
+\item{[3]}{Donald~E. Knuth. {\it The {\TeX} Book}.
+Addison-Wesley Publishing Company, Reading, Massachusetts, 1984.}
+
+\item{[4]}{Leslie Lamport. {\it {\Lit}: A Document Preparation System. 
+User's Guide and Reference Manual}.
+Addison-Wesley Publishing Company, Reading, Massachusetts, 1986.}
+
+\item{[5]}{Oren Patashnik. {\it {\Bit}ing}.
+Computer Science Department, Stanford University, Stanford,
+California, March 1985.}
+
+\item{[6]}{Richard~M. Stallman. {\it {GNU} Emacs Manual}, 4th Edition, 
+Version 17, Free Software Foundation, Cambridge, Massachusetts, February 1986.}
+
+\item{[7]}{Richard~M. Stallman. {\it {\TeX}Info, The GNU Documentation Format}.
+first edition, Free Software Foundation, Cambridge, Massachusetts, June 1985.}
+
+\item{[8]}{Michael~D. Spivak. {\it The Joy of {\TeX}}, American Mathematical
+Society, Providence, RI., 1985.}
+
+
+\chapter{Summary}
+
+\section{Installation and Startup (cf. Chapters 1, 2, and 8)}
+
+\entry{bibtex-mode.el}{file}
+A {\BM} file which defines basic attributes and key bindings for {\BM}.
+Also included is a collection of supporting functions shared by other 
+subsystems.  To begin with only this file is loaded.
+
+\entry{tex-misc.el}{file}
+A {\BM} file which defines the cleanup mechanism as well as the draft
+making facility and the debugging aid.
+This file is autoloaded whenever a function defined in it is invoked.
+
+\entry{tex-ops.el}{file}
+A {\BM} file which defines entry and field operations.
+This file is autoloaded whenever a function defined in it is invoked.
+
+\entry{tex-abv.el}{file}
+A {\BM} file which includes the extended abbreviation facility.
+This file is autoloaded whenever a function defined in it is invoked.
+
+\entry{tex-init.el}{file}
+A file which may be created locally to redefine site-specific attributes.
+This file is loaded whenever the function |bibtex-mode| is invoked.
+
+\entry{bibtex-mode}{major mode function}
+Major mode for editing {\BibTeX} database files.
+
+\entry{bibtex-mode-version}{function}
+Return the current {\BM} version.
+
+\entry{bibtex-mode-help}{C-c{\s}C-h}
+Display a summary of {\BM} commands in the other window.
+
+\entry{bibtex-mode-hook}{variable}
+Variable to be bound to |(function (lambda () <body>))|
+where |<body>| is a sequence of statements having to do with
+abbreviations, redefinition of key bindings, non-default
+settings of {\BM} variables, loading of other functions, etc.
+
+\entry{abbrev-mode}{minor mode function}
+An Emacs minor mode which enables the expansion of abbreviated text.
+By default this mode is turned off in {\BM}.
+Invoking this function with a positive integer turns the mode on.
+
+\entry{bibtex-abbrev-enable}{C-c{\s}C-a{\s}SPC}
+Unconditionally enables the |Abbrev| minor mode.
+
+\entry{bibtex-abbrev-disable}{C-c{\s}C-a{\s}DEL}
+Unconditionally disables the |Abbrev| minor mode.
+
+\entry{auto-fill-mode}{minor mode function}
+An Emacs minor mode which enables auto line wrapping when a space
+is typed beyond column |fill-column|.
+In {\BM} |fill-column| is set to 78 but this mode is turned off by default.
+Invoking this function with a positive integer turns the mode on.
+
+\entry{bibtex-autofill-enable}{C-c{\s}LFD{\s}SPC}
+Unconditionally enables the |Auto Fill| minor mode.
+
+\entry{bibtex-autofill-disable}{C-c{\s}LFD{\s}DEL}
+Unconditionally disables the |Auto Fill| minor mode.
+
+
+\section{Entry Operations (cf. Chapter 3)}
+
+\entry{@article}{function}
+Invoke a new entry skeleton of type |@ARTICLE|,
+an article from a journal or magazine.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@book}{function}
+Invoke a new entry skeleton of type |@BOOK|,
+a book with explicit publisher.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@booklet}{function}
+Invoke a new entry skeleton of type |@BOOKLET|,
+a work that is printed and bound, but without a named publisher or
+sponsoring institution.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@conference}{function}
+Invoke a new entry skeleton of type |@CONFERENCE|,
+the same as type |@INPROCEEDINGS|.
+The entry type |@CONFERENCE| is included for compatibility with {\it Scribe\/}.
+Command completion can be used at the |M-x| prompt.
+ 
+\entry{@inbook}{function}
+Invoke a new entry skeleton of type |@INBOOK|,
+a part of a book, which may be a chapter and/or a range of pages.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@incollection}{function}
+Invoke a new entry skeleton of type |@INCOLLECTION|,
+a part of a book having its own title.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@inproceedings}{function}
+Invoke a new entry skeleton of type |@INPROCEEDINGS|,
+an article in a conference proceedings.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@manual}{function}
+Invoke a new entry skeleton of type |@MANUAL|,
+a technical documentation.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@masterthesis}{function}
+Invoke a new entry skeleton of type |@MASTERTHESIS|,
+a master's thesis.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@misc}{function}
+Invoke a new entry skeleton of type |@MISC|,
+a wild card.  Use this type when nothing else fits.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@phdthesis}{function}
+Invoke a new entry skeleton of type |@PHDTHESIS|,
+a Ph.D. thesis.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@proceedings}{function}
+Invoke a new entry skeleton of type |@PROCEEDINGS|,
+the proceedings of a conference.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@techreport}{function}
+Invoke a new entry skeleton of type |@TECHREPORT|,
+a report published by a school or other institution.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@unpublished}{function}
+Invoke a new entry skeleton of type |@UNPUBLISHED|,
+a document having an author and title, but not formally published.
+Command completion can be used at the |M-x| prompt.
+
+\entry{bibtex-current-entry}{C-c{\s}c}
+Position to the name field of current entry.
+
+\entry{bibtex-previous-entry}{C-c{\s}p}
+Go back to the name field of previous entry.
+With prefix argument $N$, go back to the $N^{th}$ previous entry.
+Report error if the target entry is not found.
+
+\entry{bibtex-next-entry}{C-c{\s}n}
+Advance to the name field of next entry.
+With prefix argument $N$, advance to the $N^{th}$ next entry.
+Report error if the target entry is not found.
+
+\entry{bibtex-dup-current-entry}{C-c{\s}C-d{\s}c}
+Make a duplicate of the current entry above.  Position the cursor at
+the name field of the new entry.
+
+\entry{bibtex-dup-previous-entry}{C-c{\s}C-d{\s}p}
+Make a duplicate of the previous entry above the current one.
+Position the cursor at the name field of the new entry.
+With prefix argument $N$, duplicate the $N^{th}$ previous entry.
+Report error if the target entry is not found.
+
+\entry{bibtex-dup-next-entry}{C-c{\s}C-d{\s}n}
+Make a duplicate of the next entry below the current one.
+Position the cursor at the name field of the new entry.
+With prefix argument $N$, duplicate the $N^{th}$ next entry.
+Report error if the target entry is not found.
+
+\entry{bibtex-kill-current-entry}{C-c{\s}C-k{\s}c}
+Kill the current entry.  The cursor is positioned at the
+name field of next immediate entry, if any.  If current entry
+is the last one in file, position the cursor at the previous entry.
+
+\entry{bibtex-kill-previous-entry}{C-c{\s}C-k{\s}p}
+Kill the previous entry.  Cursor remains at the same place.
+With prefix argument $N$, kill the $N^{th}$ previous entry.
+Report error if the target entry is not found.
+
+\entry{bibtex-kill-next-entry}{C-c{\s}C-k{\s}n}
+Kill the next entry.  Cursor remains at the same place.
+With prefix argument $N$, kill the $N^{th}$ next entry.
+Report error if the target entry is not found.
+
+\entry{bibtex-rename-current-entry}{C-c{\s}C-r}
+Switch the type of current entry to a target type specified at prompt
+(with command completion).  Fields with same labels are copied,
+and those belonging to the same equivalence group will be
+copied upon receiving confirmation from the user.
+Fields whose labels are not in the target type or their
+equivalence set are discarded.
+
+
+\section{Field Operations (cf. Chapter 4)}
+
+\entry{bibtex-current-field}{C-c{\s}C-c}
+Go to the beginning of current field.
+
+\entry{bibtex-previous-field}{C-c{\s}C-p}
+Go to the beginning of the previous field.
+With prefix argument $N$, go to the $N^{th}$ previous field.
+Go across entry boundaries if necessary.
+Report error if the target field is not found.
+
+\entry{bibtex-next-field}{C-c{\s}C-n}
+Go to the beginning of the next field.
+With prefix argument $N$, go to the $N^{th}$ next field.
+Go across entry boundaries if necessary.
+Report error if the target field is not found.
+
+\entry{bibtex-text-previous-entry}{C-c{\s}C-c{\s}p}
+Copy text from previous entry having the same label as the current field.
+Insert the text before point.  If the same label is not found,
+try an equivalent one, if any, and prompt for confirmation.
+With prefix argument $N$, look up in the the $N^{th}$ previous entry.
+Report error if the target field or the target entry is not found.
+
+\entry{bibtex-text-next-entry}{C-c{\s}C-c{\s}n}
+Copy text from next entry having the same label as the current field.
+Insert the text before point.  If identical label is not found,
+try an equivalent one, if any, and prompt for confirmation.
+With prefix argument $N$, look up in the the $N^{th}$ next entry.
+Report error if the target field or the target entry is not found.
+
+\entry{bibtex-erase-delimiters}{C-c{\s}C-e{\s}d}
+Erase the current field delimiter.  This is most useful
+when a field abbreviation is inserted as text.  Since
+abbreviations must not be quoted, this command can be used to
+eliminate them.
+
+\entry{bibtex-erase-text}{C-c{\s}C-e{\s}t}
+Erase the text in the current field.  Field label and field
+delimiter remain intact.
+
+\entry{bibtex-erase-field}{C-c{\s}C-e{\s}f}
+Erase the current field completely.
+
+\entry{bibtex-newline-indent}{LFD}
+open a newline indent to the beginning of the current field text.
+
+\entry{bibtex-newline-indent-label}{ESC{\s}LFD}
+open a newline indent to the beginning of the current field label.
+
+
+\section{Abbreviation Facility (cf. Chapter 5)}
+
+\entry{@abbreviation}{function}
+An alias of |@string|.
+
+\entry{@string}{function}
+Invoke a field abbreviation skeleton.
+Command completion can be used at the |M-x| prompt.
+
+\entry{@group}{function}
+An alias of |%group|.
+
+\entry{\%group}{function}
+Invoke a group abbreviation skeleton of the type specified at prompt,
+which must be one of the 14 entry types defined above.
+Unfilled fields can be cleaned up manually or by {\b C-c{\s}ESC{\s}e}.
+Unwanted entries, if filled, can be eliminated by {\b C-c{\s}C-e{\s}f}.
+Command completion can be used at both |M-x| and the second prompts.
+
+\entry{bibtex-make-gabbrev}{C-c{\s}C-\\{\s}g}
+Make a group abbreviation out of the current region with the
+name given at prompt.  The new group abbreviation is inserted above the
+current entry.  The |[group, name, abbrev]| tuple is 
+entered into a per buffer database at the same time.
+Unwanted fields must be manually erased, and then recompiled.
+
+\entry{bibtex-save-abbrev}{C-c{\s}C-s}
+Compile both field and group abbreviations in current buffer (file) |foo.bib|
+into Lisp objects, enter them in Emacs database, and save these objects
+in file |foo.abv| for efficient loading.
+
+\entry{bibtex-load-abbrev}{C-c{\s}C-l}
+Load all abbreviation files listed in |bibtex-abbrev-files|
+and then the current file.  For each abbreviation file involved,
+if a compiled |.abv| file is found, it is loaded directly;
+else the file is first compiled (and therefore loaded), and a
+new |.abv| file is created.  When loaded, all field and group abbreviations
+defined in those files are entered in a per buffer database.
+
+\entry{bibtex-insert-gabbrev}{C-c{\s}C-i{\s}g}
+Insert the content of a group abbreviation.
+All group abbreviations currently available in database,
+plus those in files list in |bibtex-abbrev-files|, if not already loaded,
+can be browsed.  If none of them is selected, the user has the option to load
+another abbreviation file.
+
+\entry{bibtex-insert-fabbrev}{C-c{\s}C-i{\s}f}
+Insert the content or the name of a field abbreviation.
+Enter browsing mode automatically.
+All field abbreviations currently available in database,
+plus those in files list in |bibtex-abbrev-files|, if not already loaded,
+can be browsed.  If none of them is selected, the user has the option to load
+another abbreviation file.
+
+
+\section{Cleanup Mechanism (cf. Chapter 6)}
+
+\entry{bibtex-cleanup-buffer}{C-c{\s}ESC{\s}b}
+Clean up the current buffer, including (1) deleting and correcting empty
+fields, (2) deleting banners, (3) deleting trailing commas, 
+(4) pulling all abbreviations to the top of file, and (4) time stamping
+the file for the changes.
+
+\entry{bibtex-cleanup-region}{C-c{\s}ESC{\s}r}
+Clean up the current region.  The work involved is the same as in the
+buffer case.  If the region boundary is in the middle of 
+an entry, it gets extended to the beginning or end of that region implicitly.
+
+\entry{bibtex-cleanup-entry}{C-c{\s}ESC{\s}e}
+Clean up the current entry.  The work involved is the same as in the
+buffer case.  With positive prefix argument $N$, clean up the current and the
+previous $N-1$ entries.  If $N$ is negative, clean up the next $N$ entries.
+
+
+\section{Draft Making (cf. Chapter 7)}
+
+\entry{bibtex-make-draft}{C-c{\s}C-\\{\s}d}
+Make a draft bibliography for previewing or printing.
+The final bibliography source will be in |foo+.tex| where
+|foo.bib| is the current file.
+
+\entry{bibtex-context}{variable}
+A list of files with macro definitions used in the current |.bib| file.
+These files will be loaded automatically at the beginning of |foo+.tex|
+so that the formatting of draft can be done smoothly.
+
+\entry{bibtex-softcopy}{variable}
+Name of the DVI previewer (default ``|/usr/local/dvitool -E|'').
+
+\entry{bibtex-hardcopy}{variable}
+Name of the DVI printing and spooling scheme
+(default ``|lpr -d -Pxp|'', where ``|xp|'' is the printer name given
+by the user).
+
+\entry{bibtex-printer-list}{variable}
+List of available printers (default ``|(ip, cx, dp, gp)|").
+
+\entry{bibtex-printer-default}{variable}
+Name of the default printer (default ``|gp|").
+
+
+
+\chapter{Index to Function Names and Variables}
+\ninepoint
+
+\indexn{\%group}{group abbrev invocation}{5.2, 10.4}
+\indexn{@abbreviation}{alias of |@string|}{5.1, 10.4}
+\indexn{@article}{an article from a journal or magazine}{3, 10.2}
+\indexn{@booklet}{a work printed without a named publisher}{3, 10.2}
+\indexn{@book}{a book with explicit publisher}{3, 10.2}
+\indexn{@conference}{alias of |@inproceedings|}{3, 10.2}
+\indexn{@group}{alias of \%group}{5.2, 10.4}
+\indexn{@inbook}{a part of a book}{3, 10.2}
+\indexn{@incollection}{a part of a book having its own title}{3, 10.2}
+\indexn{@inproceedings}{an article in a conference proceedings}{3, 10.2}
+\indexn{@manual}{technical documentation}{3, 10.2}
+\indexn{@masterthesis}{a master's thesis}{3, 10.2}
+\indexn{@misc}{wild card type, use when nothing else fits}{3, 10.2}
+\indexn{@phdthesis}{a Ph.D. thesis}{3, 10.2}
+\indexn{@proceedings}{the proceedings of a conference}{3, 10.2}
+\indexn{@string}{field abbrev invocation}{5, 10.4}
+\indexn{@techreport}{a report published by a school/institution}{3, 10.2}
+\indexn{@unpublished}{a document not formally published}{3, 10.2}
+\indexn{abbrev-mode}{minor mode function}{2.2, 10.1}
+\indexn{auto-fill-mode}{minor mode function}{2.3, 10.1}
+\indexn{bibtex-abbrev-enable}{C-c{\s}C-a{\s}SPC}{2.2, 10.1}
+\indexn{bibtex-abbrev-disable}{C-c{\s}C-a{\s}DEL}{2.2, 10.1}
+\indexn{bibtex-abv.el}{file}{1, 10.1}
+\indexn{bibtex-autofill-enable}{C-c{\s}LFD{\s}SPC}{2.3, 10.1}
+\indexn{bibtex-autofill-disable}{C-c{\s}LFD{\s}DEL}{2.3, 10.1}
+\indexn{bibtex-cleanup-buffer}{C-c{\s}ESC{\s}b}{6, 10.5}
+\indexn{bibtex-cleanup-entry}{C-c{\s}ESC{\s}e}{6, 10.5}
+\indexn{bibtex-cleanup-region}{C-c{\s}ESC{\s}r}{6, 10.5}
+\indexn{bibtex-current-entry}{C-c{\s}c}{3.3, 10.2}
+\indexn{bibtex-current-field}{C-c{\s}C-c}{4.1, 10.3}
+\indexn{bibtex-dup-current-entry}{C-c{\s}C-d{\s}c}{3.4, 10.2}
+\indexn{bibtex-dup-next-entry}{C-c{\s}C-d{\s}n}{3.4, 10.2}
+\indexn{bibtex-dup-previous-entry}{C-c{\s}C-d{\s}p}{3.4, 10.2}
+\indexn{bibtex-erase-delimiters}{C-c{\s}C-e{\s}d}{4.4, 10.3}
+\indexn{bibtex-erase-field}{C-c{\s}C-e{\s}f}{4.4, 10.3}
+\indexn{bibtex-erase-text}{C-c{\s}C-e{\s}t}{4.4, 10.3}
+\indexn{bibtex-init.el}{file}{2.5, 10.1}
+\indexn{bibtex-insert-fabbrev}{C-c{\s}C-i{\s}f}{5.5, 10.4}
+\indexn{bibtex-insert-gabbrev}{C-c{\s}C-i{\s}g}{5.4, 10.4}
+\indexn{bibtex-kill-current-entry}{C-c{\s}C-k{\s}c}{3.4, 10.2}
+\indexn{bibtex-kill-next-entry}{C-c{\s}C-k{\s}n}{3.4, 10.2}
+\indexn{bibtex-kill-previous-entry}{C-c{\s}C-k{\s}p}{3.4, 10.2} 
+\indexn{bibtex-load-abbrev}{C-c{\s}C-l}{5.3, 10.4}
+\indexn{bibtex-make-draft}{C-c{\s}C-\\{\s}d}{7, 10.6}
+\indexn{bibtex-make-gabbrev}{C-c{\s}C-\\{\s}g}{5.2, 10.4}
+\indexn{bibtex-mode}{major mode function}{2, 10.1}
+\indexn{bibtex-mode.el}{file}{1, 10.1}
+\indexn{bibtex-mode-help}{C-c{\s}C-h}{8, 10.1}
+\indexn{bibtex-mode-hook}{variable}{2, 10.1}
+\indexn{bibtex-mode-version}{function}{2, 10.1}
+\indexn{bibtex-misc.el}{file}{1, 10.1}
+\indexn{bibtex-next-entry}{C-c{\s}n}{3.3, 10.2}
+\indexn{bibtex-next-field}{C-c{\s}C-n}{4.1, 10.3}
+\indexn{bibtex-ops.el}{file}{1, 10.1}
+\indexn{bibtex-previous-entry}{C-c{\s}p}{3.3, 10.2}
+\indexn{bibtex-previous-field}{C-c{\s}C-p}{4.1, 10.3}
+\indexn{bibtex-rename-current-entry}{C-c{\s}C-r}{3.5, 10.2}
+\indexn{bibtex-save-abbrev}{C-c{\s}C-s}{5.3, 10.4}
+\indexn{bibtex-text-next-entry}{C-c{\s}C-c{\s}n}{4.2, 10.3}
+\indexn{bibtex-text-previous-entry}{C-c{\s}C-c{\s}p}{4.2, 10.3}
+\tenpoint
+
+
+\chapter{Index to Key Bindings}
+\ninepoint
+
+\goodbreak\bigskip\bigskip 
+\centerline{\bf --- Installation and Startup ---}\par\medskip
+\centerline{(See Chapters {\bf 1}, {\bf 2}, {\bf 8} and Section {\bf 10.1})}
+
+\indexk{file}{bibtex-mode.el}
+\indexk{file}{bibtex-misc.el}
+\indexk{file}{bibtex-ops.el}
+\indexk{file}{bibtex-abv.el}
+\indexk{file}{bibtex-init.el}
+\indexk{major mode function}{bibtex-mode}
+\indexk{function}{bibtex-mode-version}
+\indexk{C-c{\s}C-h}{bibtex-mode-help}
+\indexk{variable}{bibtex-mode-hook}
+\indexk{minor mode function}{abbrev-mode}
+\indexk{C-c{\s}C-a{\s}SPC}{tex-abbrev-enable}
+\indexk{C-c{\s}C-a{\s}DEL}{tex-abbrev-disable}
+\indexk{minor mode function}{auto-fill-mode}
+\indexk{C-c{\s}LFD{\s}SPC}{tex-autofill-enable}
+\indexk{C-c{\s}LFD{\s}DEL}{tex-autofill-disable}
+
+
+\goodbreak\bigskip\bigskip
+\centerline{\bf --- Built-in Entry Types ---}\par\medskip
+\centerline{(See Chapters {\bf 3} and {\bf 10.2})}
+
+\indexk{M-x@article}{an article from a journal or magazine}
+\indexk{M-x@book}{a book with explicit publisher}
+\indexk{M-x@booklet}{a work printed without a named publisher}
+\indexk{M-x@conference}{same as |M-x@inproceedings|}
+\indexk{M-x@inbook}{a part of a book}
+\indexk{M-x@incollection}{a part of a book having its own title}
+\indexk{M-x@inproceedings}{an article in a conference proceedings}
+\indexk{M-x@manual}{technical documentation}
+\indexk{M-x@masterthesis}{a master's thesis}
+\indexk{M-x@misc}{wild card type, use when nothing else fits}
+\indexk{M-x@phdthesis}{a Ph.D. thesis}
+\indexk{M-x@proceedings}{the proceedings of a conference}
+\indexk{M-x@techreport}{a report published by a school/institution}
+\indexk{M-x@unpublished}{a document not formally published}
+
+
+\goodbreak\bigskip\bigskip
+\centerline{\bf --- Entry Operations ---}\par\medskip
+\centerline{(See Chapter {\bf 3} and Section {\bf 10.2})}
+
+\indexk{C-c{\s}c}{bibtex-current-entry}
+\indexk{C-c{\s}p}{bibtex-previous-entry}
+\indexk{C-c{\s}n}{bibtex-next-entry}
+\indexk{C-c{\s}C-d{\s}c}{bibtex-dup-current-entry}
+\indexk{C-c{\s}C-d{\s}p}{bibtex-dup-previous-entry}
+\indexk{C-c{\s}C-d{\s}n}{bibtex-dup-next-entry}
+\indexk{C-c{\s}C-k{\s}c}{bibtex-kill-current-entry}
+\indexk{C-c{\s}C-k{\s}p}{bibtex-kill-previous-entry}
+\indexk{C-c{\s}C-k{\s}n}{bibtex-kill-next-entry}
+\indexk{C-c{\s}C-r}{bibtex-rename-current-entry}
+
+
+\goodbreak\bigskip\bigskip
+\centerline{\bf --- Field Operations ---}\par\medskip
+\centerline{(See Chapters {\bf 4} and {\bf 10.3})}
+
+\indexk{C-c{\s}C-c}{bibtex-current-field}
+\indexk{C-c{\s}C-p}{bibtex-previous-field}
+\indexk{C-c{\s}C-n}{bibtex-next-field}
+\indexk{C-c{\s}C-c{\s}p}{bibtex-text-previous-entry}
+\indexk{C-c{\s}C-c{\s}n}{bibtex-text-next-entry}
+\indexk{C-c{\s}C-e{\s}d}{bibtex-erase-delimiters}
+\indexk{C-c{\s}C-e{\s}t}{bibtex-erase-text}
+\indexk{C-c{\s}C-e{\s}f}{bibtex-erase-field}
+\indexk{LFD}{bibtex-newline-indent}
+\indexk{ESC{\s}LFD}{bibtex-newline-indent-label}
+
+
+
+\goodbreak\bigskip\bigskip
+\centerline{\bf --- Abbreviation Facility ---} \par\medskip
+\centerline{(See Chapter {\bf 5} and Section {\bf 10.4})}
+
+\indexk{M-x@abbreviation}{same as |M-x@string|}
+\indexk{M-x@string}{field abbrev invocation}
+\indexk{M-x@group}{same as |M-x|\%|group|}
+\indexk{M-x\%group}{group abbrev invocation}
+\indexk{C-c{\s}C-\\{\s}g}{bibtex-make-gabbrev}
+\indexk{C-c{\s}C-s}{bibtex-save-abbrev}
+\indexk{C-c{\s}C-l}{bibtex-load-abbrev}
+\indexk{C-c{\s}C-i{\s}g}{bibtex-insert-gabbrev}
+\indexk{C-c{\s}C-i{\s}f}{bibtex-insert-fabbrev}
+
+
+\goodbreak\bigskip\bigskip
+\centerline{\bf --- Cleanup Mechanism ---} \par\medskip
+\centerline{(See Chapter {\bf 6} and Section {\bf 10.5})}
+
+\indexk{C-c{\s}ESC{\s}b}{bibtex-cleanup-buffer}
+\indexk{C-c{\s}ESC{\s}r}{bibtex-cleanup-region}
+\indexk{C-c{\s}ESC{\s}e}{bibtex-cleanup-entry}
+
+
+\goodbreak\bigskip\bigskip
+\centerline{\bf --- Draft Making ---} \par\medskip
+\centerline{(See Chapter {\bf 7} and Section {\bf 10.6})}
+
+\indexk{C-c{\s}C-\\{\s}d}{bibtex-make-draft}
+
+
+\goodbreak\bigskip\bigskip
+\centerline{\bf --- Useful Variables ---}
+
+\indexv{fill-column}{2.3, 10.1}
+\indexv{bibtex-abbrev-fields}{5.1, 10.4}
+\indexv{bibtex-abbrev-files}{5.4, 7, 10.4}
+\indexv{bibtex-context}{7, 10.4}
+\indexv{bibtex-entry-use-parens}{3.2, 10.2}
+\indexv{bibtex-field-use-quotes}{3.2, 10.2}
+\indexv{bibtex-field-indent}{3.2, 10.2}
+\indexv{bibtex-printer-list}{2, 10.6}
+\indexv{bibtex-printer-default}{2, 10.6}
+\indexv{bibtex-hardcopy}{2, 7, 10.6}
+\indexv{bibtex-softcopy}{2, 7, 10.6}
+
+
+% Document postamble
+\input bibtex-mode-

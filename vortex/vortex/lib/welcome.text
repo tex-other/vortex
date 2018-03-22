@@ -1,0 +1,22 @@
+
+Welcome to VorTeX, the Visually ORiented TeX document system.
+
+This wonderful software has been brought to you by
+
+	Pehong Chen
+	John L. Coker
+	Steven Procter
+	Ikuo Minakata
+	Peter Vukovich
+
+through the VorTeX project at U.C. Berkeley under Michael Harrison
+and the Computer Science Division.
+
+You got this message because you didn't specify any files to edit as
+command line arguments, so you may want help.  We assume that at this
+point you are familiar with some visual editor of the emacs type.
+Type `ESC ?' for the on-line help system.  Start editing a file with
+`C-x C-f' or switch to another buffer with `C-x b' to clear this
+message.
+
+Good luck.

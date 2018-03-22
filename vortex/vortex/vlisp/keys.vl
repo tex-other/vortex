@@ -1,0 +1,342 @@
+;; Copyright (c) 1987 The Regents of the University of California.
+;; All rights reserved.
+;;
+;; Permission is hereby granted, without written agreement and without
+;; license or royalty fees, to use, copy, modify, and distribute this
+;; software and its documentation for any purpose, provided that the
+;; above copyright notice and the following two paragraphs appear in
+;; all copies of this software.
+;; 
+;; IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+;; DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+;; OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+;; CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;;
+;; THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+;; INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+;; AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+;; ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+;; PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+;;
+;; The above licensing information supersedes all licensing information
+;; below.
+;
+;  RCS Info: $Header: keys.vl,v 0.1 87/05/01 13:05:43 john Locked $
+;
+;  VorTeX - Visually Oriented TeX
+;  A source-based WYSIWYG editor for beautiful documents
+;
+;  This file is part of the source editor/user interface written
+;  by John Coker for the VorTeX project under the direction of
+;  Prof. Michael A. Harrison of the University of California at
+;  Berkeley.
+;
+;  Copyright (c) 1987 John L. Coker
+;  University of California, Berkeley
+;  john@renoir.Berkeley.EDU
+;  vortex@renoir.Berkeley.EDU
+;
+;  This file intact and any code derived from it are copyright
+;  John Coker and the Regents of the University of California.
+;  All rights reserved by the author.  See the copyright notice
+;  distributed with this software for a complete description of
+;  the conditions under which it is made available.
+;
+;  keys.vl - initial key maps and key bindings
+;
+
+;
+;  First the minibuffer key map.  The only bindings here are those
+;  that are different from the global bindings.  Note that we make
+;  and initialize the minibuffer's keymap here.
+;
+;  DOCUMENTATION
+;
+;  Name: minibuffer-map
+;  Desc: This variable is bound at startup time to a sparse keymap
+;	which holds the few bindings local to the minibuffer.
+;  Side: Since the minibuffer's keymaps can be accessed through this
+;	variable, changing it radically may foul up the minibuffer.
+;  SeeA: *minibuffer* local-map local-set-key make-sparse-keymap
+;
+(setq minibuffer-map (make-sparse-keymap))
+(use-local-map "*minibuffer*" minibuffer-map)
+(set-binding ?   'minibuf-complete minibuffer-map)
+(set-binding ?\t 'minibuf-complete minibuffer-map)
+(set-binding ??  'minibuf-help minibuffer-map)
+(set-binding ?\n 'minibuf-return minibuffer-map)
+(set-binding ?\r 'minibuf-return minibuffer-map)
+
+;
+;  Now the global key map.  This contains all the bindings that
+;  are to be set for all buffers.  These may be overriden by
+;  local bindings, of course.  We create the three global symbols
+;  global-map, ctl-x-map and escape-map which can be accessed
+;  by the user.
+;
+
+;
+;  DOCUMENTATION
+;
+;  Name: escape-map
+;  Desc: This variable contains the array used as the keymap for
+;	searching keystrokes with ESC as the prefix.  This is
+;	bound to an array, since this keymap is used so frequently.
+;  Side: It is probably a bad idea to reset this keymap since
+;	(unless the global keymap is changed) the user will lose
+;	this reference to the ESC keymap.
+;  SeeA: ctl-x-map ctl-c-map global-map
+;
+(setq escape-map (make-keymap))
+
+;
+;  DOCUMENTATION
+;
+;  Name: ctl-x-map
+;  Desc: This variable contains the array used as the keymap for
+;	searching keystrokes with C-x as the prefix.  This is
+;	bound to an array, since this keymap is used so frequently.
+;  Side: It is probably a bad idea to reset this keymap since
+;	(unless the global keymap is changed) the user will lose
+;	this reference to the C-x keymap.
+;  SeeA: ctl-x-4-map escape-map ctl-c-map global-map
+;
+(setq ctl-x-map (make-keymap))
+
+;
+;  DOCUMENTATION
+;
+;  Name: ctl-x-4-map
+;  Desc: This variable contains the array used as the keymap for
+;	searching keystrokes with C-x 4 as the prefix.  This is
+;	bound to a sparse keymap list, since this keymap is used less
+;	frequently.
+;  SeeA: ctl-x-map global-map
+;
+(setq ctl-x-4-map (make-sparse-keymap))
+
+;
+;  DOCUMENTATION
+;
+;  Name: ctl-c-map
+;  Desc: This variable contains the array used as the keymap for
+;	searching keystrokes with C-c as the prefix.  This is
+;	bound to an array, since this keymap is used so frequently.
+;  Side: It is probably a bad idea to reset this keymap since
+;	(unless the global keymap is changed) the user will lose
+;	this reference to the C-c keymap.
+;  SeeA: escape-map ctl-x-map global-map
+;
+(setq ctl-c-map (make-keymap))
+
+(let ((gmap (use-global-map (make-keymap)))
+      (code ? ))
+
+  ; set key bindings in root keymap (no prefix)
+  (set-binding ?\^q 'quoted-insert gmap)
+  (set-binding ?\^@ 'set-mark-at-point gmap)
+  (set-binding ?\^f 'forward-character gmap)
+  (set-binding ?\^b 'backward-character gmap)
+  (set-binding ?\^g 'abort-function gmap)
+  (set-binding ?\^p 'previous-line gmap)
+  (set-binding ?\^n 'next-line gmap)
+  (set-binding ?\^l 'recenter gmap)
+  (set-binding ?\^a 'beginning-of-line gmap)
+  (set-binding ?\^e 'end-of-line gmap)
+  (set-binding ?\^h 'delete-backward-character gmap)
+  (set-binding ?\^d 'delete-forward-character gmap)
+;  (set-binding ?\^s 'search-forward gmap)
+;  (set-binding ?\^r 'search-backward gmap)
+  (set-binding ?\^v 'scroll-forward gmap)
+  (set-binding ?\^w 'kill-region gmap)
+  (set-binding ?\^? 'kill-region gmap)
+  (set-binding ?\^y 'yank-from-kill-ring gmap)
+
+  ; set bindings in the ESC keymap (prefix)
+  (set-binding ?\e  escape-map gmap)
+  (set-binding ?x   'extended-command escape-map)
+  (set-binding ?\e  'eval-expression escape-map)
+;  (set-binding ?\^s 'search-forward-regexp escape-map)
+;  (set-binding ?\^r 'search-backward-regexp escape-map)
+  (set-binding ?v   'scroll-backward escape-map)
+  (set-binding ?,   'beginning-of-window escape-map)
+  (set-binding ?.   'end-of-window escape-map)
+  (set-binding ?<  'beginning-of-buffer escape-map)
+  (set-binding ?>   'end-of-buffer escape-map)
+
+  ; set bindings in the C-x keymap (prefix)
+  (set-binding ?\^x ctl-x-map gmap)
+  (set-binding ?\^c 'exit-vortex ctl-x-map)
+  (set-binding ?\^f 'find-file ctl-x-map)
+  (set-binding ?\^v 'find-file-other-window ctl-x-map)
+  (set-binding ?\^s 'write-file ctl-x-map)
+  (set-binding ?\^m 'write-modified-files ctl-x-map)
+  (set-binding ?\^w 'write-named-file ctl-x-map)
+  (set-binding ?\^i 'insert-file ctl-x-map)
+  (set-binding ?b   'switch-to-buffer ctl-x-map)
+  (set-binding ?\^b 'pop-to-buffer ctl-x-map)
+  (set-binding ?d   'kill-window ctl-x-map)
+  (set-binding ?\^d 'deactivate-window ctl-x-map)
+  (set-binding ?1   'kill-other-windows ctl-x-map)
+  (set-binding ?2   'split-window ctl-x-map)
+  (set-binding ?5   'split-window ctl-x-map)
+  (set-binding ?\^\ 'break-loop ctl-x-map)
+  (set-binding ?\^x 'exchange-point-and-mark ctl-x-map)
+  (set-binding ?.   'proof-to-source-point ctl-x-map)
+
+  ; set bindings in the C-x 4 keymap (prefix)
+  (set-binding ?4   ctl-x-4-map ctl-x-map)
+  (set-binding ?b   'switch-to-buffer-other-window ctl-x-4-map)
+
+  ; set bindings in the C-c keymap (prefix)
+  (set-binding ?\^c ctl-c-map gmap)
+  (set-binding ?d   'fake-document ctl-c-map)
+  (set-binding ?\^d 'fake-document ctl-c-map)
+  (set-binding ?m   'make-document ctl-c-map)
+  (set-binding ?\^m 'make-document ctl-c-map)
+  (set-binding ?c   'close-document ctl-c-map)
+  (set-binding ?\^c 'close-document ctl-c-map)
+  (set-binding ?p   'proof-document ctl-c-map)
+  (set-binding ?\^p 'proof-document ctl-c-map)
+  (set-binding ?f   'format-document ctl-c-map)
+  (set-binding ?\^f 'format-document ctl-c-map)
+
+  ; set all printing ASCII characters to self-insert
+  (set-binding ?\t 'self-insert gmap)
+  (set-binding ?\n 'newline gmap)
+  (set-binding ?\r 'newline gmap)
+  (while (< code ?\^?)
+    (set-binding code 'self-insert gmap)
+    (setq code (add 1 code)))
+
+  ; set up prefix commands
+  (setq code ?0)
+  (while (<= code ?9)
+    (set-binding code 'digit-command gmap)
+    (set-binding code 'meta-digit-command escape-map)
+    (setq code (add 1 code)))
+  (set-binding ?- 'meta-digit-command escape-map)
+  (set-binding ?\^u 'generic-prefix gmap)
+)
+
+;
+;  Now we define the functions that the users will normally use
+;  to change key bindings.  This all can be called interactively
+;
+;  DOCUMENTATION
+;
+;  Name: global-set-key
+;  Call: (global-set-key 'keys 'symbol)
+;  Retu: symbol
+;  Desc: This function sets the global key binding of the key
+;	sequence specified in the first argument to the function
+;	name given by the second.  When the key sequence is typed,
+;	the function will be invoked.
+;
+;	Global key bindings can be overriden by local bindings to
+;	the same key.  Global bindings can be through of as
+;	``defaults'', which are used if there is no local key
+;	binding.
+;  SeeA: global-map global-unset-key local-set-key
+;
+
+(defun global-set-key (keys bound)
+  (interactive "kKey sequence: " "ICommand name: ")
+  (cond ((not (symbolp bound))
+	 (error "Must bind a function name symbol!")))
+  (set-binding keys bound (global-map))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: global-unset-key
+;  Call: (global-unset-key 'keys)
+;  Retu: nil
+;  Desc: This function sets the global key binding of the key
+;	sequence specified in the first argument to ``unbound''.
+;	When the key sequence is typed, an unbound key error
+;	will occur.
+;  SeeA: global-map global-set-key local-unset-key
+;
+
+(defun global-unset-key (keys)
+  (interactive "kKey sequence: ")
+  (set-binding keys nil (global-map))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: local-set-key
+;  Call: (local-set-key 'keys 'symbol)
+;  Retu: symbol
+;  Desc: This function sets the key binding of the key sequence
+;	specified in the first argument to the function name given
+;	by the second, but only for the current buffer.  When the
+;	key sequence is typed while in the current buffer, the function
+;	will be invoked.
+;  SeeA: local-map local-unset-key global-set-key
+;
+
+(defun local-set-key (keys bound)
+  (interactive "kKey sequence: " "ICommand name: ")
+  (cond ((not (symbolp bound))
+	 (error "Must bind a function name symbol!"))
+	((nullp (local-map))
+	 (use-local-map (make-keymap))))
+  (set-binding keys bound (local-map))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: local-unset-key
+;  Call: (local-unset-key 'keys)
+;  Retu: nil
+;  Desc: This function sets the global key binding of the key
+;	sequence specified in the first argument to ``unbound''.
+;	When the key sequence is typed, an unbound key error
+;	will occur (unless the key sequence is bound globally).
+;  SeeA: local-map local-set-key global-unset-key
+;
+
+(defun local-unset-key (keys)
+  (interactive "kKey sequence: ")
+  (cond ((not (nullp (local-map)))
+	 (set-binding keys nil (local-map))))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: show-bindings
+;  Call: (show-bindings)
+;  Retu: buffer
+;  Desc: This function pops up a window with the list of bindings
+;	active from the current buffer in the buffer \lit{*bindings*}.
+;  SeeA: dump-bindings
+;
+
+(defun show-bindings ()
+  (interactive)
+  (dump-bindings)
+  (pop-to-buffer "*bindings*")
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: print-bindings
+;  Call: (print-bindings)
+;  Retu: nil
+;  Desc: This function prints the bindings active from the current
+;	using \sym{print-buffer}.
+;  SeeA: dump-bindings print-buffer
+;
+
+(defun print-bindings ()
+  (interactive)
+  (dump-bindings)
+  (print-buffer "*bindings*")
+)

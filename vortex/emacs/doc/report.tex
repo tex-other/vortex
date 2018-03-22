@@ -1,0 +1,259 @@
+\catcode`@=11 % borrow the private macros of PLAIN (with care)
+\font\sixrm=cmr6
+\font\ninerm=cmr9
+\font\ninei=cmmi9
+\font\sixi=cmmi6
+\skewchar\ninei='177 \skewchar\sixi='177
+\font\ninesy=cmsy9
+\font\sixsy=cmsy6
+\skewchar\ninesy='60 \skewchar\sixsy='60
+\font\ninebf=cmbx9
+\font\sixbf=cmbx6
+\font\ninett=cmtt9
+\hyphenchar\ninett=-1
+\font\ninesl=cmsl9
+\font\nineit=cmti9
+\font\tenu=cmu10 % unslanted text italic
+
+\newskip\ttglue
+\def\tenpoint{\def\rm{\fam0\tenrm}%
+  \textfont0=\tenrm \scriptfont0=\sevenrm \scriptscriptfont0=\fiverm
+  \textfont1=\teni \scriptfont1=\seveni \scriptscriptfont1=\fivei
+  \textfont2=\tensy \scriptfont2=\sevensy \scriptscriptfont2=\fivesy
+  \textfont3=\tenex \scriptfont3=\tenex \scriptscriptfont3=\tenex
+  \def\it{\fam\itfam\tenit}%
+  \textfont\itfam=\tenit
+  \def\sl{\fam\slfam\tensl}%
+  \textfont\slfam=\tensl
+  \def\bf{\fam\bffam\tenbf}%
+  \textfont\bffam=\tenbf \scriptfont\bffam=\sevenbf
+   \scriptscriptfont\bffam=\fivebf
+  \def\tt{\fam\ttfam\tentt}%
+  \textfont\ttfam=\tentt
+  \tt \ttglue=.5em plus.25em minus.15em
+  \normalbaselineskip=12pt
+  \let\sc=\eightrm
+  \let\big=\tenbig
+  \setbox\strutbox=\hbox{\vrule height8.5pt depth3.5pt width\z@}%
+  \normalbaselines\rm}
+
+\def\ninepoint{\def\rm{\fam0\ninerm}%
+  \textfont0=\ninerm \scriptfont0=\sixrm \scriptscriptfont0=\fiverm
+  \textfont1=\ninei \scriptfont1=\sixi \scriptscriptfont1=\fivei
+  \textfont2=\ninesy \scriptfont2=\sixsy \scriptscriptfont2=\fivesy
+  \textfont3=\tenex \scriptfont3=\tenex \scriptscriptfont3=\tenex
+  \def\it{\fam\itfam\nineit}%
+  \textfont\itfam=\nineit
+  \def\sl{\fam\slfam\ninesl}%
+  \textfont\slfam=\ninesl
+  \def\bf{\fam\bffam\ninebf}%
+  \textfont\bffam=\ninebf \scriptfont\bffam=\sixbf
+   \scriptscriptfont\bffam=\fivebf
+  \def\tt{\fam\ttfam\ninett}%
+  \textfont\ttfam=\ninett
+  \tt \ttglue=.5em plus.25em minus.15em
+  \normalbaselineskip=11pt
+  \let\sc=\sevenrm
+  \let\big=\ninebig
+  \setbox\strutbox=\hbox{\vrule height8pt depth3pt width\z@}%
+  \normalbaselines\rm}
+
+% macros for verbatim scanning
+\chardef\other=12
+\def\ttverbatim{\begingroup
+  \catcode`\\=\other
+  \catcode`\{=\other
+  \catcode`\}=\other
+  \catcode`\$=\other
+  \catcode`\&=\other
+  \catcode`\#=\other
+  \catcode`\%=\other
+  \catcode`\~=\other
+  \catcode`\_=\other
+  \catcode`\^=\other
+  \obeyspaces \obeylines \tt}
+
+% macros for non-centered displays
+\outer\def\begindisplay{\obeylines\startdisplay}
+{\obeylines\gdef\startdisplay#1
+  {\catcode`\^^M=5$$#1\halign\bgroup\indent##\hfil&&\qquad##\hfil\cr}}
+\outer\def\enddisplay{\crcr\egroup$$}
+
+\newskip\ttglue
+\catcode`\|=\active
+{\obeylines \gdef|{\ttverbatim \spaceskip\ttglue \let^^M=\  \let|=\endgroup}}
+
+% Useful little macros
+
+\def\\{$\backslash$}
+%\def\{{\char123 }
+%\def\}{\char125 }
+\def\bull{\vrule height .9ex width .8ex depth -.1ex}	% square bullet
+\def\block{\vrule height 2ex width 1.1ex depth .2ex}	% rectangular block
+\def\|{\leavevmode\hbox{\tt\char`\|}} 			% vertical line
+\def\{{\leavevmode\hbox{\tt\char`\{}} 			% left brace
+\def\}{\leavevmode\hbox{\tt\char`\}}} 			% right brace
+\def\s{\thinspace}
+\def\r{\hfill$\longrightarrow$\hfill}
+\def\entry#1#2{\goodbreak\bigskip\line{\strut{\tt #1}\hfill{\b #2}}}
+
+% Index format
+\countdef\counter=255
+\def\diamondleaders{\global\advance\counter by 1
+  \ifodd\counter \kern-10pt \fi
+    \leaders\hbox to 20pt{\ifodd\counter \kern13pt \else\kern3pt \fi
+        .\hss}}
+\def\indexn#1#2#3{\medskip\line{\strut
+	{\tt #1} ({\bf #2})\diamondleaders\hfil\hbox to 3em{\hss\bf #3}}}
+\def\indexk#1#2{\medskip\line{\strut
+	{\bf #1}\diamondleaders\hfil\hbox to 8em{\hss\tt #2}}}
+\def\indexv#1#2{\medskip\line{\strut
+	{\tt #1}\diamondleaders\hfil\hbox to 3em{\hss\bf #2}}}
+
+% Special fonts
+\font\mf=manfnt
+\font\b=cmb10
+\font\Bigbf=cmbx10 scaled\magstep3
+\font\bigbf=cmbx10 scaled\magstep2
+\font\medbf=cmbx10 scaled\magstep1
+\font\medrm=cmr10 scaled\magstep1
+\font\ssl=cmsl8
+\font\sit=cmmi8
+\font\sbf=cmbx8
+\font\sc=cmcsc10
+
+
+% Various TeX logos
+
+\def\PS{P{\sc OST}S{\sc RIPT}}
+\def\MF{\mf METAFONT}
+\def\AmSTeX{$\cal A$\kern-.1667em\lower.5ex\hbox{$\cal M$}\kern-.125em
+            $\cal S$-\TeX}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+            T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\def\LaTeX{{\rm L\kern-.36em\raise.3ex\hbox{\sc a}\kern-.15em
+           T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\def\SliTeX{S\kern-.065em L\kern-.18em\raise.32ex\hbox{i}\kern-.03em\TeX}
+\def\VorTeX{V\kern-2.7pt\lower.5ex\hbox{O\kern-1.4pt R}\kern-2.6pt
+            T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}
+\def\TM{\sl {\TeX}-mode\/}
+\def\BM{\sl B\kern-.05em{\ssl I\kern-.025em B}\kern-.08em
+            T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX-mode}
+\def\Lit{\it L\kern-.25em\raise.3ex\hbox{\sit a}\kern-.15em
+           T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}
+\def\Lbf{\bf L\kern-.25em\raise.3ex\hbox{\sbf a}\kern-.15em
+           T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}
+\def\Lsl{\sl L\kern-.25em\raise.3ex\hbox{\ssl a}\kern-.15em
+           T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}
+\def\Bit{\it B\kern-.05em{\sit I\kern-.025em B}\kern-.08em
+           T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}
+\def\Bbf{\Bigbf B\kern-.05em{\bigbf I\kern-.025em B}\kern-.08em{\TeX}}
+\def\Mbf{\medbf B\kern-.05em{\sbf I\kern-.025em B}\kern-.08em{\TeX}}
+\def\Bsl{\ssl B\kern-.05em{\sit I\kern-.025em B}\kern-.08em{\TeX}}
+
+% \special (PostScript Pictures)
+\def\pspicture#1#2{\indent\vskip#2\special{#1}}
+\def\pscaption#1{\hbox to \hsize{\hss{#1}\hss}}
+
+% Chapter/Section/Subsection Formats
+\def\makeatletter{\catcode`\@=11\relax}
+\def\makeatother{\catcode`\@=12\relax}
+\makeatletter
+\newif\if@tocfile \@tocfilefalse
+\def\newwrite{\alloc@7\write\chardef\sixt@@n}
+\newwrite\@unused
+\def\typeout#1{{\let\protect\string\immediate\write\@unused{#1}}}
+
+\newcount\chapno
+\chapno=0
+\newcount\secno
+\newcount\subsecno
+\newcount\subsubsecno
+
+\def\maketoc{\@tocfiletrue \if@tocfile \newwrite\@toc
+  \immediate\openout\@toc=\jobname.toc
+  \def\chapter{\@@chapter\@toc}
+  \def\section{\@@section\@toc}
+  \def\subsection{\@@subsection\@toc}
+  \def\subsubsection{\@@subsubsection\@toc}
+  \typeout{Writing table of contents \jobname.toc}\fi}
+
+\def\toc{\centerline{\Bigbf Contents}\bigskip\bigskip\bigskip}
+
+\def\chapter{\@chapter}
+\def\@chapter#1{				% Chapter format
+	\secno=0
+	\advance\chapno by 1
+	\vfill\eject		
+	\vglue 1.5truein
+	\ifodd\pageno{\hfill\Bigbf\the\chapno\enspace#1}
+	\else\leftline{\Bigbf\the\chapno\enspace#1\hfill}\fi
+        \bigskip\bigskip}
+\def\@@chapter#1#2{\@chapter{#2}
+  \xdef\tmp{\write#1{\string\chaptoc{\the\chapno}{#2}{\the\pageno}}}
+  \tmp}
+\def\chaptoc#1#2#3{\ifnum#1>1 \bigskip\fi \line{\strut
+ \hbox to 25pt{{\bf #1}\hss}{\bf #2}\diamondleaders\hfil\hbox to 2em{\hss #3}}\medskip}
+
+\def\section{\@section}
+\def\@section#1{				% Section format
+	\subsecno=0
+	\advance\secno by 1
+	\goodbreak\bigskip\bigskip\bigskip
+	\leftline{\medbf\ifnum\chapno>0{\the\chapno.}\fi
+		  \the\secno\enspace#1\enspace}
+	\nobreak\smallskip}
+\def\@@section#1#2{\@section{#2}
+   \xdef\tmp{
+   \write#1{\string\sectoc{\ifnum\chapno>0 \the\chapno.\fi
+   \the\secno}{#2}{\the\pageno}{\the\chapno}}}
+   \tmp}
+\def\sectoc#1#2#3#4{\line{
+   \ifnum#4>0 \hskip 25pt \else\ifnum#1>1 \bigskip\fi\fi \strut
+   \hbox to 30pt{{\bf #1}\hss}#2\diamondleaders\hfil\hbox to 2em{\hss #3}}\medskip}
+
+\def\subsection{\@subsection}
+\def\@subsection#1{			% Subsection format
+        \subsubsecno=0
+	\advance\subsecno by 1
+	\goodbreak\bigskip\bigskip
+	\leftline{\bf\ifnum\chapno>0{\the\chapno.}\fi
+		  \the\secno.\the\subsecno\enspace#1\enspace}
+	\nobreak\smallskip}
+\def\@@subsection#1#2{\@subsection{#2}
+  \xdef\tmp{
+  \write#1{\string\subsectoc{\ifnum\chapno>0 \the\chapno.\fi
+  \the\secno.\the\subsecno}{#2}{\the\pageno}{\the\chapno}}}
+  \tmp}
+\def\subsectoc#1#2#3#4{\line{\hskip 35pt
+   \ifnum#4>0 \hskip 25pt\fi \strut
+   \hbox to 40pt {{\bf #1}\hss}#2\diamondleaders\hfil\hbox to 2em{\hss #3}}\medskip}
+
+\def\subsubsection{\@subsubsection}
+\def\@subsubsection#1{			% Subsubsection format
+	\advance\subsubsecno by 1
+	\goodbreak\bigskip\bigskip
+	\leftline{\b\ifnum\chapno>0 \the\chapno.\fi
+	          \the\secno.\the\subsecno.\the\subsubsecno\enspace#1\enspace}
+	\nobreak\smallskip}
+\def\@@subsubsection#1#2{\@subsubsection{#2}
+   \xdef\tmp{
+   \write#1{\string\subsubsectoc{\ifnum\chapno>0 \the\chapno.\fi
+   \the\secno.\the\subsecno.\the\subsubsecno}{#2}{\the\pageno}{\the\chapno}}}
+   \tmp}
+\def\subsubsectoc#1#2#3#4{\line{\hskip 80pt
+   \ifnum#4>0 \hskip 20pt\fi \strut
+   \hbox to 40pt{{\bf #1}\hss}#2\diamondleaders\hfil\hbox to 2em{\hss #3}}\medskip}
+
+\outer\def\highlight#1{
+	\bigskip
+	\leftline{\bf #1}\nobreak}
+
+\outer\def\title#1{
+	\vglue .5truein
+	\centerline{\Bigbf #1}
+	\bigskip}
+
+\def\setpagenumbers{\footline={\hss\tenrm\folio\hss}}
+
+\makeatother

@@ -1,0 +1,21 @@
+#!/bin/csh
+#  Copyright (c) 1992 Regents of the University of California
+#  All rights reserved.
+#set echo
+
+set path=(. ../bin $path)
+ln -s ../bin/ilplain.fmt
+cp sample.tex.1 sample.tex
+
+echo '----------Run 1----------'
+
+ilatex sample
+cp sample.tex.2 sample.tex
+
+echo ''
+echo ''
+echo '----------Run 2----------'
+ilatex sample
+\rm -f ilplain.fmt
+echo ''
+echo 'done'

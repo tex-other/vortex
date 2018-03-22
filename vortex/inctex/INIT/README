@@ -1,0 +1,5 @@
+The .o files here in INIT are empty to save tape space.
+The Makefile has a trick in it so that the
+first time it will compile these .o files.
+These .o's will be different than the normal .o's;;
+all other .o's will be picked up from the parent directory.

@@ -1,0 +1,13 @@
+#Make directory contents small by squishing objects,
+#Makefile will recompile these objects if flagfirst is not around. DLP.
+echo '' > cmds.o
+echo '' > def.o
+echo '' > eq.o
+echo '' > fmt.o
+echo '' > hash.o
+echo '' > heap.o
+echo '' > hyph.o
+echo '' > scan.o
+echo '' > tex.o
+echo '' > token.o
+\rm -f    flagfirst

@@ -1,0 +1,65 @@
+This directory is for running an
+incremental version of the TeX TRIP acceptance test
+(god help you if you want to!).  This readme assumes you are
+familiar with the standard TRIP test.
+The cononical batch trip test is in the subdirectory TeXTrip.
+
+1. If you are going to change any memory parameters, go
+into INIT and do a make to build a new initex.
+Now make a new trip.fmt file with the command
+
+    initex -b trip
+
+(You will get a bunch of normal error messages, ones that
+the trip test is designed to test.  It is also cleverly designed
+to dump trip.fmt if it sees initex is executing.
+initex's purpose is now done, but you may want to wait
+until you have finished all the tests before deleting it)
+
+Now, cd .. back to the original directory.  
+
+2. now, do a make in the trip directory to build a new virtex.
+Now, undump a incremental version of triptex from this virtex:
+
+    virtex -b \&trip
+
+When it gives you a * prompt press CTRL \ (backslash)
+After a while it will say that it has dumped core.
+Now type:
+
+    undump triptex virtex core
+    rm core
+
+3. Now, examine the file tripmakefile.  Note that
+   the trip.tex file here has some extra comments
+   compared to the normal trip.tex file; line numbers
+   in the log will differ from the canonical "good" log.
+   To compare a complete run vs. the good run,
+   see the comments about "compare vs. batch run" in
+   tripmakefile on how to change the makefile, then say
+   
+   make -f tripmakefile
+  
+   To check how inctex is restarting, edit trip.tex and
+   make some kind of change to one of the comment lines
+   that starts with %%%%%% Incremental formatting test
+   and write the file.  Do make -f tripmakefile again.
+   (Disable the "compare vs. batch run" steps)
+
+   triptex will reformat pages n..16, depending on
+   which comment you changed.  Tripmakefile then
+   checks that each dvi page written in INC contains
+   the proper information...
+   - check that INC/trip.*.typ.diff has 0 length
+   - check that tripos.diff shows no diff's in the tripos.log file
+   - check that trip.log.diff  shows no diff's in the trip.log file
+   - finally, it will show you what new dvi files were created (1 for
+     each new page), make sure this makes sense.
+
+4. You can use ../bin/mergepages to put the dvi files together and
+   check against the canonical trip.dvi in TeXTrip.  There is one
+   tricky thing.  inctex keeps the current page in INC/tmp.dvi,
+   and the last page in trip.tex is actually aborted, so a compare
+   will actually show the tail is missing.  To get the last page for
+   comparison, use dbx to stop triptex in wrapup_inc, copy
+   INC/tmp.dvi to INC/trip.17.dvi, then continue.

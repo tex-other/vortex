@@ -1,0 +1,730 @@
+#
+#  RCS Info: $Header$
+#
+#  VorTeX - Visually Oriented TeX
+#  A source-based WYSIWYG editor for beautiful documents
+#
+#  This file is part of the source editor/user interface written
+#  by John Coker for the VorTeX project under the direction of
+#  Prof. Michael A. Harrison of the University of California at
+#  Berkeley.
+#
+# Copyright (c) 1987 The Regents of the University of California.
+# All rights reserved.
+#
+# Permission is hereby granted, without written agreement and without
+# license or royalty fees, to use, copy, modify, and distribute this
+# software and its documentation for any purpose, provided that the
+# above copyright notice and the following two paragraphs appear in
+# all copies of this software.
+# 
+# IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+# DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+# OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+# CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+# AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+# ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+# PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+#
+#  Makefile.gen - makefile for VorTeX source editor
+#
+ 
+DEST	      = ../bin
+
+PROGRAM	      = vortex
+
+EXTHDRS	      = ../h/gl_comm.h \
+		../h/ps_comm.h \
+		../h/ts_comm.h \
+		bitmaps/arrow_image \
+		bitmaps/arrow_mask \
+		bitmaps/gray50% \
+		bitmaps/lr_image \
+		bitmaps/lr_mask \
+		bitmaps/ul_image \
+		bitmaps/ul_mask \
+		bitmaps/vortex_logo
+
+HDRS	      = buffer.h \
+		catch.h \
+		channel.h \
+		dirs.h \
+		docstr.h \
+		document.h \
+		fmtcode.h \
+		fmtdecl.h \
+		format.h \
+		function.h \
+		parser.h \
+		process.h \
+		psinfo.h \
+		symtab.h \
+		tsinfo.h \
+		value.h \
+		vlisp.h \
+		vse.h \
+		window.h
+
+VLSRC	      = ../vlisp/*.vl
+
+VAXCOPTS      =
+
+SUNCOPTS      = -f68881
+
+SUN10COPTS    = -f68881 -m68010
+
+COPTS	      = -g %COPTS%
+
+CFLAGS	      = -I../h -DDEBUG
+
+IFLAGS	      = -o john -g tex -m g+rw -c
+
+SYMDB	      = ../lib/STDSYMS
+
+SYMSRC	      = _syms.c
+
+SYMOBJ	      = _syms.o
+
+TMPSRC	      = _temp.c
+
+TMPOBJ	      = _temp.o
+
+EXSYMS	      = ../bin/exsyms
+
+MKSYMS	      = ../bin/mksyms
+
+DOCSTR	      = ../lib/DOCSTRS
+
+MANUAL	      = manual.tex
+
+DOCSRC	      = $(SRCS) $(VLSRC)
+
+MANSRC	      = $(SRCS) $(VLSRC)
+
+MKDOC	      = ../bin/mkdoc
+
+VAXLDFLAGS    = $(COPTS)
+
+SUNLDFLAGS    = $(COPTS)
+
+SUN10LDFLAGS  = $(COPTS) -L/usr.MC68010/lib -Qpath /usr.MC68010/cstart
+
+LDFLAGS	      = %LDFLAGS%
+
+LIBS	      = ../lib/libutil.a -lm -lX
+
+CC	      = cc
+
+LINT	      = ../bin/lint
+
+LINKER	      = $(CC)
+
+MAKEFILE      = Makefile.gen
+
+OBJS	      = alloc.o \
+		args.o \
+		array.o \
+		bind.o \
+		bufchars.o \
+		bufcmds.o \
+		buffer.o \
+		bufstat.o \
+		ccell.o \
+		checkpoint.o \
+		child.o \
+		command.o \
+		connect.o \
+		copy.o \
+		debug.o \
+		defaults.o \
+		delete.o \
+		doabort.o \
+		doabs.o \
+		doaccess.o \
+		doadd.o \
+		doand.o \
+		doarray.o \
+		doatomp.o \
+		dobeep.o \
+		dobopen.o \
+		dobreak.o \
+		docadr.o \
+		docat.o \
+		docatch.o \
+		doccmds.o \
+		dochmod.o \
+		doclose.o \
+		docompl.o \
+		doconcat.o \
+		docond.o \
+		doconfirm.o \
+		docons.o \
+		docopen.o \
+		docopy.o \
+		docstr.o \
+		dodefun.o \
+		dodirs.o \
+		doequal.o \
+		doerror.o \
+		doeval.o \
+		doexec.o \
+		doexit.o \
+		doexplode.o \
+		doflock.o \
+		doflush.o \
+		dofopen.o \
+		doforall.o \
+		doformat.o \
+		dofuncall.o \
+		dogc.o \
+		dogensym.o \
+		dogetenv.o \
+		dointeract.o \
+		dokill.o \
+		dolambda.o \
+		dolength.o \
+		dolet.o \
+		dolexpr.o \
+		dolist.o \
+		doload.o \
+		doloop.o \
+		domacro.o \
+		domapcar.o \
+		domemberp.o \
+		domenu.o \
+		domessage.o \
+		donlambda.o \
+		donotify.o \
+		donth.o \
+		donumberp.o \
+		dopipe.o \
+		dopopup.o \
+		dopp.o \
+		doprint.o \
+		doprog.o \
+		doputprop.o \
+		doquote.o \
+		doread.o \
+		doremob.o \
+		doreverse.o \
+		dorplaca.o \
+		dosearch.o \
+		doseek.o \
+		doset.o \
+		dosopen.o \
+		dostat.o \
+		dostatus.o \
+		dostrlen.o \
+		dosyntax.o \
+		dotime.o \
+		douwprotect.o \
+		dowait.o \
+		edit.o \
+		eval.o \
+		fcomm.o \
+		filecompl.o \
+		findchar.o \
+		findfile.o \
+		fmtutil.o \
+		formatcmds.o \
+		formatops.o \
+		function.o \
+		gcmark.o \
+		init.o \
+		insert.o \
+		interactive.o \
+		intersect.o \
+		iochan.o \
+		lisp.o \
+		main.o \
+		minbcmds.o \
+		minibuf.o \
+		modeline.o \
+		move.o \
+		nextline.o \
+		paint.o \
+		pcomm.o \
+		prcheck.o \
+		prefix.o \
+		print.o \
+		process.o \
+		proof.o \
+		proofcmds.o \
+		proofops.o \
+		read.o \
+		recenter.o \
+		scroll.o \
+		sizewin.o \
+		source.o \
+		strings.o \
+		switch.o \
+		symbols.o \
+		symcompl.o \
+		symtab.o \
+		syscall.o \
+		tblock.o \
+		tty.o \
+		util.o \
+		value.o \
+		wincmds.o \
+		window.o \
+		write.o \
+		xcmds.o \
+		xutil.o
+
+PRINT	      = tgrind -Pgp
+
+SRCS	      = alloc.c \
+		args.c \
+		array.c \
+		bind.c \
+		bufchars.c \
+		bufcmds.c \
+		buffer.c \
+		bufstat.c \
+		ccell.c \
+		checkpoint.c \
+		child.c \
+		command.c \
+		connect.c \
+		copy.c \
+		debug.c \
+		defaults.c \
+		delete.c \
+		doabort.c \
+		doabs.c \
+		doaccess.c \
+		doadd.c \
+		doand.c \
+		doarray.c \
+		doatomp.c \
+		dobeep.c \
+		dobopen.c \
+		dobreak.c \
+		docadr.c \
+		docat.c \
+		docatch.c \
+		doccmds.c \
+		dochmod.c \
+		doclose.c \
+		docompl.c \
+		doconcat.c \
+		docond.c \
+		doconfirm.c \
+		docons.c \
+		docopen.c \
+		docopy.c \
+		docstr.c \
+		dodefun.c \
+		dodirs.c \
+		doequal.c \
+		doerror.c \
+		doeval.c \
+		doexec.c \
+		doexit.c \
+		doexplode.c \
+		doflock.c \
+		doflush.c \
+		dofopen.c \
+		doforall.c \
+		doformat.c \
+		dofuncall.c \
+		dogc.c \
+		dogensym.c \
+		dogetenv.c \
+		dointeract.c \
+		dokill.c \
+		dolambda.c \
+		dolength.c \
+		dolet.c \
+		dolexpr.c \
+		dolist.c \
+		doload.c \
+		doloop.c \
+		domacro.c \
+		domapcar.c \
+		domemberp.c \
+		domenu.c \
+		domessage.c \
+		donlambda.c \
+		donotify.c \
+		donth.c \
+		donumberp.c \
+		dopipe.c \
+		dopopup.c \
+		dopp.c \
+		doprint.c \
+		doprog.c \
+		doputprop.c \
+		doquote.c \
+		doread.c \
+		doremob.c \
+		doreverse.c \
+		dorplaca.c \
+		dosearch.c \
+		doseek.c \
+		doset.c \
+		dosopen.c \
+		dostat.c \
+		dostatus.c \
+		dostrlen.c \
+		dosyntax.c \
+		dotime.c \
+		douwprotect.c \
+		dowait.c \
+		edit.c \
+		eval.c \
+		fcomm.c \
+		filecompl.c \
+		findchar.c \
+		findfile.c \
+		fmtutil.c \
+		formatcmds.c \
+		formatops.c \
+		function.c \
+		gcmark.c \
+		init.c \
+		insert.c \
+		interactive.c \
+		intersect.c \
+		iochan.c \
+		lisp.c \
+		main.c \
+		minbcmds.c \
+		minibuf.c \
+		modeline.c \
+		move.c \
+		nextline.c \
+		paint.c \
+		pcomm.c \
+		prcheck.c \
+		prefix.c \
+		print.c \
+		process.c \
+		proof.c \
+		proofcmds.c \
+		proofops.c \
+		read.c \
+		recenter.c \
+		scroll.c \
+		sizewin.c \
+		source.c \
+		strings.c \
+		switch.c \
+		symbols.c \
+		symcompl.c \
+		symtab.c \
+		syscall.c \
+		tblock.c \
+		tty.c \
+		util.c \
+		value.c \
+		wincmds.c \
+		window.c \
+		write.c \
+		xcmds.c \
+		xutil.c
+
+nomach:;	@echo "Run \`make <machine>' for \`sun', \`vax' or \`sun10'"\
+		    as appropriate. >&2
+		@false
+
+$(PROGRAM):     $(OBJS) $(SYMOBJ)
+		@rm -f $(PROGRAM) core $(TMPSRC)
+		@echo "Linking \`$(PROGRAM)' ..."
+		@$(LINKER) $(LDFLAGS) $(OBJS) $(SYMOBJ) $(LIBS) -o $(PROGRAM)
+		@size $(PROGRAM)
+
+gloat:;		@echo "VorTeX source files:"
+		@echo "`echo $(SRCS) | wc -w` source files here."
+		@echo "`echo $(HDRS) | wc -w` header files here."
+		@echo "`echo $(EXTHDRS) | wc -w` other header files."
+		@cstat -s $(SRCS) $(HDRS) $(EXTHDRS)
+
+lint:;		@echo "Linting VorTeX source files..."
+		@csh -c '$(LINT) -hxz $(CFLAGS) $(SRCS) |& ./etc/lfilter'
+
+tags:;		@echo "Remaking EMACS tags database..."
+		@etags -w $(SRCS) $(HDRS)
+
+install::	$(DEST)/$(PROGRAM)
+
+$(DEST)/$(PROGRAM): $(PROGRAM)
+		install $(IFLAGS) $(PROGRAM) $(DEST)
+		@ls -lgs $(DEST)/$(PROGRAM)
+
+docstr::	$(DOCSTR)
+
+$(DOCSTR):	$(DOCSRC)
+		@echo "Making on-line documentation..."
+		@rm -f $(DOCSTR)
+		@$(MKDOC) -f docstr -o $(DOCSTR) $(DOCSRC)
+
+man::		$(MANUAL)
+
+$(MANUAL):	$(MANSRC)
+		@echo "Making typeset manual TeX source..."
+		@$(MKDOC) -f tex -o $(MANUAL) $(MANSRC)
+
+SOURCE	      = src/vortex/source
+
+INCLUDE	      = src/vortex/h
+
+VLISP	      = src/vortex/vlisp
+
+OTHERS	      = bitmaps etc
+
+renoir:;	@rdist -c $(MAKEFILE) $(SRCS) $(HDRS) $@:$(SOURCE)
+		@(cd ../vlisp ; rdist -c *.vl $@:$(VLISP))
+		@rdist -w -c $(OTHERS) $@:$(SOURCE)
+
+eros:;		@rdist -c $(MAKEFILE) $(SRCS) $(HDRS) $@:$(SOURCE)
+		@(cd ../vlisp ; rdist -c *.vl $@:$(VLISP))
+		@rdist -w -c $(OTHERS) $@:$(SOURCE)
+
+fir:;		@rdist -c $(MAKEFILE) $(SRCS) $(HDRS) $@:$(SOURCE)
+		@(cd ../vlisp ; rdist -c *.vl $@:$(VLISP))
+		@rdist -w -c $(OTHERS) $@:$(SOURCE)
+
+clean:;		@rm -f $(OBJS) $(PROGRAM) core *.out .#* \
+			$(DOCSTR) $(TMPSRC) $(SYMSRC) $(SYMOBJ) $(SYMDB).*
+
+depend:;	@mkmf -f $(MAKEFILE) PROGRAM=$(PROGRAM) DEST=$(DEST)
+
+vax:;		@sed -e '/^COPTS/s/%COPTS%/\$$(VAXCOPTS)/' \
+		     -e '/^LDFLAGS/s/%LDFLAGS%/\$$(VAXLDFLAGS)/' \
+		     -e '/^vax:/,/^$$/d' -e '/^sun[01]*:/,/^$$/d' \
+		     -e '/^nomach:/,/^$$/d' \
+		     -e '/^depend:/s/@.*$$/@make -f $$(MAKEFILE) depend vax/' \
+		     -e '/^#  Makefile/s/\.gen/.vax/' \
+			< $(MAKEFILE) > Makefile
+
+sun:;		@sed -e '/^COPTS/s/%COPTS%/\$$(SUNCOPTS)/' \
+		     -e '/^LDFLAGS/s/%LDFLAGS%/\$$(SUNLDFLAGS)/' \
+		     -e '/^vax:/,/^$$/d' -e '/^sun[01]*:/,/^$$/d' \
+		     -e '/^nomach:/,/^$$/d' \
+		     -e '/^depend:/s/@.*$$/@make -f $$(MAKEFILE) depend sun/' \
+		     -e '/^#  Makefile/s/\.gen/.sun/' \
+			< $(MAKEFILE) > Makefile
+
+sun10:;		@sed -e '/^COPTS/s/%COPTS%/\$$(SUN10COPTS)/' \
+		     -e '/^LDFLAGS/s/%LDFLAGS%/\$$(SUN10LDFLAGS)/' \
+		     -e '/^vax:/,/^$$/d' -e '/^sun[01]*:/,/^$$/d' \
+		     -e '/^nomach:/,/^$$/d' \
+		     -e '/^depend:/s/@.*/@make -f $$(MAKEFILE) depend sun10/' \
+		     -e '/^#  Makefile/s/\.gen/.sun10/' \
+			< $(MAKEFILE) > Makefile
+
+index:;		@ctags -wx $(HDRS) $(SRCS)
+
+print:;		@$(PRINT) $(HDRS) $(SRCS)
+
+.c.o:;		@echo "Compiling \`$*.c' $(COPTS) ..."
+		@rm -f $@
+		@$(CC) -E -DPASS1 $(CFLAGS) $*.c | \
+			$(EXSYMS) -d $(SYMDB) > $(TMPSRC)
+		@$(CC) -DPASS2 -c $(CFLAGS) $(COPTS) $(TMPSRC)
+		@mv $(TMPOBJ) $@
+
+$(SYMOBJ):	$(SYMSRC)
+		@echo "Compiling builtin symbol references..."
+		@$(CC) -c $(CFLAGS) $(COPTS) $(SYMSRC)
+
+$(SYMSRC):	$(SYMDB).dir $(SYMDB).pag
+		@echo "Creating builtin symbol references..."
+		@$(MKSYMS) -d $(SYMDB) -o $(SYMSRC)
+
+symdb::		$(SYMDB).pag
+
+$(SYMDB)::	$(SYMDB).pag
+
+$(SYMDB).pag:;	@echo "Re-building standard symbol database..."
+		@rm -f $(SYMDB).*
+		@-for f in $(SRCS); do \
+			$(CC) -E $(CFLAGS) -DPASS1 $$f | \
+				$(EXSYMS) -d $(SYMDB) > /dev/null; \
+		done
+
+$(SYMDB).dir:	$(SYMDB).pag
+
+.DEFAULT:;	co $@
+
+.SUFFIXES:;
+.SUFFIXES:	.o .c
+###
+alloc.o: vse.h
+args.o: vse.h vlisp.h value.h function.h symtab.h
+array.o: vse.h value.h
+bind.o: vse.h vlisp.h value.h function.h symtab.h buffer.h parser.h
+bufchars.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+bufcmds.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+buffer.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+bufstat.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+ccell.o: vse.h value.h
+checkpoint.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+child.o: vse.h process.h channel.h
+command.o: vse.h vlisp.h value.h function.h symtab.h
+connect.o: vse.h vlisp.h value.h function.h symtab.h document.h \
+	../h/gl_comm.h
+copy.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+debug.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+defaults.o: vse.h vlisp.h value.h function.h symtab.h window.h
+delete.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+doabort.o: vse.h vlisp.h value.h function.h symtab.h
+doabs.o: vse.h vlisp.h value.h function.h symtab.h
+doaccess.o: vse.h vlisp.h value.h function.h symtab.h
+doadd.o: vse.h vlisp.h value.h function.h symtab.h
+doand.o: vse.h vlisp.h value.h function.h symtab.h
+doarray.o: vse.h vlisp.h value.h function.h symtab.h
+doatomp.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+dobeep.o: vse.h vlisp.h value.h function.h symtab.h window.h channel.h
+dobopen.o: vse.h vlisp.h value.h function.h symtab.h channel.h buffer.h
+dobreak.o: vse.h vlisp.h value.h function.h symtab.h window.h channel.h
+docadr.o: vse.h vlisp.h value.h function.h symtab.h
+docat.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+docatch.o: vse.h vlisp.h value.h function.h symtab.h catch.h
+doccmds.o: vse.h vlisp.h value.h function.h symtab.h ../h/gl_comm.h \
+	../h/ts_comm.h document.h
+dochmod.o: vse.h vlisp.h value.h function.h symtab.h
+doclose.o: vse.h vlisp.h value.h function.h symtab.h process.h channel.h
+docompl.o: vse.h vlisp.h value.h function.h symtab.h
+doconcat.o: vse.h vlisp.h value.h function.h symtab.h
+docond.o: vse.h vlisp.h value.h function.h symtab.h
+doconfirm.o: vse.h vlisp.h value.h function.h symtab.h window.h
+docons.o: vse.h vlisp.h value.h function.h symtab.h
+docopen.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+docopy.o: vse.h vlisp.h value.h function.h symtab.h
+docstr.o: vse.h vlisp.h value.h function.h symtab.h docstr.h
+dodefun.o: vse.h vlisp.h value.h function.h symtab.h
+dodirs.o: vse.h vlisp.h value.h function.h symtab.h dirs.h
+doequal.o: vse.h vlisp.h value.h function.h symtab.h
+doerror.o: vse.h vlisp.h value.h function.h symtab.h catch.h format.h \
+	channel.h fmtdecl.h fmtcode.h
+doeval.o: vse.h vlisp.h value.h function.h symtab.h
+doexec.o: vse.h vlisp.h value.h function.h symtab.h process.h channel.h
+doexit.o: vse.h vlisp.h value.h function.h symtab.h
+doexplode.o: vse.h vlisp.h value.h function.h symtab.h
+doflock.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+doflush.o: vse.h vlisp.h value.h function.h symtab.h channel.h buffer.h \
+	process.h
+dofopen.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+doforall.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+doformat.o: vse.h vlisp.h value.h function.h symtab.h format.h
+dofuncall.o: vse.h vlisp.h value.h function.h symtab.h
+dogc.o: vse.h vlisp.h value.h function.h symtab.h
+dogensym.o: vse.h vlisp.h value.h function.h symtab.h
+dogetenv.o: vse.h vlisp.h value.h function.h symtab.h
+dointeract.o: vse.h vlisp.h value.h function.h symtab.h
+dokill.o: vse.h vlisp.h value.h function.h symtab.h process.h channel.h
+dolambda.o: vse.h vlisp.h value.h function.h symtab.h
+dolength.o: vse.h vlisp.h value.h function.h symtab.h
+dolet.o: vse.h vlisp.h value.h function.h symtab.h
+dolexpr.o: vse.h vlisp.h value.h function.h symtab.h
+dolist.o: vse.h vlisp.h value.h function.h symtab.h
+doload.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+doloop.o: vse.h vlisp.h value.h function.h symtab.h
+domacro.o: vse.h vlisp.h value.h function.h symtab.h
+domapcar.o: vse.h vlisp.h value.h function.h symtab.h
+domemberp.o: vse.h vlisp.h value.h function.h symtab.h
+domenu.o: vse.h vlisp.h value.h function.h symtab.h window.h
+domessage.o: vse.h vlisp.h value.h function.h symtab.h format.h channel.h \
+	fmtdecl.h fmtcode.h
+donlambda.o: vse.h vlisp.h value.h function.h symtab.h
+donotify.o: vse.h vlisp.h value.h function.h symtab.h process.h channel.h
+donth.o: vse.h vlisp.h value.h function.h symtab.h
+donumberp.o: vse.h vlisp.h value.h function.h symtab.h
+dopipe.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+dopopup.o: vse.h vlisp.h value.h function.h symtab.h window.h
+dopp.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+doprint.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+doprog.o: vse.h vlisp.h value.h function.h symtab.h catch.h
+doputprop.o: vse.h vlisp.h value.h function.h symtab.h
+doquote.o: vse.h vlisp.h value.h function.h symtab.h
+doread.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+doremob.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+doreverse.o: vse.h vlisp.h value.h function.h symtab.h
+dorplaca.o: vse.h vlisp.h value.h function.h symtab.h
+dosearch.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+doseek.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+doset.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+dosopen.o: vse.h vlisp.h value.h function.h symtab.h channel.h
+dostat.o: vse.h vlisp.h value.h function.h symtab.h
+dostatus.o: vse.h vlisp.h value.h function.h symtab.h process.h channel.h
+dostrlen.o: vse.h vlisp.h value.h function.h symtab.h
+dosyntax.o: vse.h vlisp.h value.h function.h symtab.h
+dotime.o: vse.h vlisp.h value.h function.h symtab.h
+douwprotect.o: vse.h vlisp.h value.h function.h symtab.h
+dowait.o: vse.h vlisp.h value.h function.h symtab.h process.h channel.h
+edit.o: vse.h vlisp.h value.h function.h symtab.h buffer.h catch.h \
+	channel.h process.h window.h
+eval.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+fcomm.o: vse.h document.h process.h channel.h ../h/gl_comm.h ../h/ts_comm.h \
+	tsinfo.h
+filecompl.o: vse.h vlisp.h value.h function.h symtab.h
+findchar.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+findfile.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+fmtutil.o: vse.h vlisp.h value.h function.h symtab.h format.h parser.h
+formatcmds.o: vse.h vlisp.h value.h function.h symtab.h document.h \
+	../h/gl_comm.h ../h/ts_comm.h
+formatops.o: vse.h buffer.h value.h document.h ../h/gl_comm.h \
+	../h/ts_comm.h
+function.o: vse.h vlisp.h value.h function.h symtab.h
+gcmark.o: vse.h vlisp.h value.h function.h symtab.h
+init.o: vse.h vlisp.h value.h function.h symtab.h
+insert.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h \
+	format.h fmtdecl.h fmtcode.h
+interactive.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h \
+	document.h
+intersect.o: vse.h window.h
+iochan.o: vse.h vlisp.h value.h function.h symtab.h channel.h buffer.h \
+	process.h
+lisp.o: vse.h vlisp.h value.h function.h symtab.h catch.h channel.h
+main.o: vse.h vlisp.h value.h function.h symtab.h catch.h channel.h
+minbcmds.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h \
+	format.h fmtdecl.h fmtcode.h
+minibuf.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h \
+	format.h
+modeline.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+move.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+nextline.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+paint.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+pcomm.o: vse.h window.h process.h channel.h ../h/gl_comm.h ../h/ps_comm.h \
+	psinfo.h
+prcheck.o: vse.h value.h channel.h process.h
+prefix.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+print.o: vse.h vlisp.h value.h function.h symtab.h channel.h parser.h \
+	format.h fmtdecl.h fmtcode.h
+process.o: vse.h process.h channel.h
+proof.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h \
+	document.h ../h/gl_comm.h ../h/ps_comm.h
+proofcmds.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h \
+	document.h ../h/gl_comm.h ../h/ps_comm.h
+proofops.o: vse.h buffer.h value.h window.h ../h/gl_comm.h ../h/ps_comm.h
+read.o: vse.h vlisp.h value.h function.h symtab.h parser.h channel.h
+recenter.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+scroll.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+sizewin.o: vse.h window.h bitmaps/ul_image bitmaps/ul_mask bitmaps/lr_image \
+	bitmaps/lr_mask
+source.o: vse.h vlisp.h value.h function.h symtab.h window.h buffer.h
+strings.o: vse.h vlisp.h value.h function.h symtab.h
+switch.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+symbols.o: vse.h value.h
+symcompl.o: vse.h vlisp.h value.h function.h symtab.h
+symtab.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+syscall.o: vse.h vlisp.h value.h function.h symtab.h
+tblock.o: vse.h value.h buffer.h
+tty.o: vse.h
+util.o: vse.h vlisp.h value.h function.h symtab.h format.h fmtdecl.h \
+	fmtcode.h
+value.o: vse.h value.h function.h
+wincmds.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h
+window.o: vse.h vlisp.h value.h function.h symtab.h process.h channel.h \
+	buffer.h window.h parser.h bitmaps/gray50% bitmaps/arrow_image \
+	bitmaps/arrow_mask
+write.o: vse.h vlisp.h value.h function.h symtab.h buffer.h
+xcmds.o: vse.h vlisp.h value.h function.h symtab.h window.h
+xutil.o: vse.h vlisp.h value.h function.h symtab.h buffer.h window.h \
+	bitmaps/vortex_logo

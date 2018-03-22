@@ -1,0 +1,32 @@
+This is BibTeX, Version 0.99c for Berkeley UNIX
+The top-level auxiliary file: internals.aux
+The style file: plain.bst
+Database file #1: docproc.bib
+Warning--string name "aw" is undefined
+--line 88 of file docproc.bib
+Warning--string name "rm" is undefined
+--line 90 of file docproc.bib
+Warning--string name "stm" is undefined
+--line 552 of file docproc.bib
+Warning--string name "po" is undefined
+--line 555 of file docproc.bib
+Warning--string name "et2" is undefined
+--line 1371 of file docproc.bib
+Warning--string name "sf" is undefined
+--line 1374 of file docproc.bib
+Warning--string name "et2n" is undefined
+--line 1376 of file docproc.bib
+Warning--string name "uc" is undefined
+--line 1627 of file docproc.bib
+Warning--string name "bc" is undefined
+--line 1630 of file docproc.bib
+Warning--string name "uc" is undefined
+--line 1648 of file docproc.bib
+Warning--string name "bc" is undefined
+--line 1650 of file docproc.bib
+Warning--empty school in phc:phd
+Warning--empty booktitle in phc:vortex
+Warning--empty institution in phc:int
+Warning--empty publisher in knuth:tex
+Warning--empty booktitle in stallman:emacs
+(There were 16 warnings)

@@ -1,0 +1,12 @@
+This directory contains a paper which describes design and implementation
+issues of the TeX-mode/BibTeX-mode environment.
+It is written in LaTeX.
+Run latex on the file ie.tex to obtain a DVI file.
+
+This paper has been published as Computer Science Tech. Report 87/349,
+University of California, Berkeley, April 1987.
+It has also been submitted for journal publication.
+
+							Pehong Chen
+							phc@renoir.berkeley.edu
+							5/12/1987

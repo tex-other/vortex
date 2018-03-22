@@ -1,0 +1,278 @@
+#ifndef _ALLIR_
+#define _ALLIR_
+
+/*
+ *  IRd is organized as an ordinary binary tree.
+ *  IRf is organized as an ordinary binary tree.
+ *  IRs is organized as a doubly-linked list.  Empty file is one that has
+ *  a single node of struct _char containing EOF
+ */
+
+typedef struct _doc {
+	unsigned long	id;		/* unique document identifier */
+	struct _doc	*lt;		/* left sibling */
+	struct _doc	*rt;		/* right sibling */
+	struct _file	*hd;		/* document root file */
+	struct _file	*pt;		/* current file within IRf */
+} _Doc;
+
+typedef struct _file {
+	unsigned long	id;		/* unique file identifier */
+	unsigned long	cn;		/* TeX string table pointer cur_name */
+	struct _file	*lt;		/* left sibling */
+	struct _file	*rt;		/* right sibling */
+	struct _char	*hd;		/* head of IRs */
+	struct _char	*pt;		/* current update point within IRs */
+} _File;
+
+
+/*
+ *  Node types, these all have their own structures above, among
+ *  the interior nodes of the IRi or the text nodes for character
+ *  leaves.  These numbers must all be distinct, of course, as they
+ *  are the only way of telling what (size) structure makes up a
+ *  particular node.
+ */
+
+#define NODE_DIRTY	-1		/* dirty node */
+#define NODE_NONE	0		/* unallocated node */
+#define NODE_CHAR	1		/* a character leaf */
+#define NODE_LIG	2		/* a ligature node */
+#define NODE_WORD	3		/* an word delimiting node */
+#define NODE_PAR	4		/* an paragraph, as with \par */
+#define NODE_PAGE	5		/* an page delimiting node */
+#define NODE_GROUP	6		/* group node, as with {} */
+#define NODE_CSEQ	7		/* a control sequence (call) */
+#define NODE_MATH	8		/* a math shift node (group) */
+#define NODE_DISPLAY	9		/* a display math node */
+#define NODE_INPUT	10		/* an \input node */
+#define NODE_SPACE	11		/* a space/comment node */
+#define NODE_SPECIAL	12		/* \special node */
+#define NODE_TBLOCK	13		/* left end of a text block */
+#define NODE_PAR_X	14		/* pseudo par node (paginated) */
+#define NODE_WORD_X	15		/* pseudo word node (hyphenated) */
+
+/*
+ *  One of these structure is used for all nodes in the IRi that
+ *  are not leaf nodes.  Leaf nodes (letters) are really text
+ *  structures in the IRs (not the same as the interior nodes).
+ *  All these structures have a first byte which tells their
+ *  type so that one may guarantee being able to tell the type
+ *  by examining the first byte.  Note that each different node
+ *  type has a different (sized!) structure, but all references
+ *  are through the (pointer) type, so this is somewhat less
+ *  of a problem than it might otherwise be.
+ *
+ *  The tree is stored as a sort of directed graph.  Since
+ *  nodes may have arbitrary numbers of children, we keep
+ *  a pointer to the linked list of children, although each
+ *  child has a direct ``up'' pointer to the parent.  The
+ *  list of children is doubly-linked so that one may reach
+ *  any sibling quickly.  Some nodes, however, don't use
+ *  this scheme.  Nodes that sit directly on the IRs (don't
+ *  have interior nodes for children) have begin and end
+ *  pointers to the IRs directly.  An example of this is the
+ *  (struct _word) for the word node type.
+ *
+ *  The (struct _node) is the basis for all interior tree
+ *  nodes, they are all the same in the fields that appear
+ *  in the (struct _node); type dependent information
+ *  appears later on.  All the other node types contain a
+ *  (struct _node) so that changes will be less likely to
+ *  mess something up, but to avoid extra work, all the
+ *  fields are defined so as to make them appear to be
+ *  in the top level structure.
+ */
+
+#define	_ty		com.nd_type
+#define	_ch		com.nd_char
+
+typedef struct _node {
+	char		nd_type;		/* type of node in tree */
+	char		nd_char;		/* char in ACII */
+} _Node;
+
+typedef struct _char {
+	struct _node	com;			/* common node info. */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node	*re;			/* box reference in IRt */
+	unsigned long	id;			/* unique identifier */
+} _Char;
+
+typedef struct _lig {
+	struct _node	com;	/* common node info. lt/_rt point to boc/eoc*/
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node	*re;			/* box reference in IRt */
+} _Lig;
+
+typedef struct _word {
+	struct _node	com;			/* common node info. */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node   	*dn;       		/* beginning in IRs */ 
+	struct _node	*re;			/* box reference in IRt */
+} _Word;
+
+typedef struct _par {
+	struct _node	com;			/* common node info. */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*dn;			/* list of children */
+	struct _node	*re;			/* box reference in IRt */
+} _Par;
+
+typedef struct _group {
+	struct _node	com;			/* common node info. */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node	*dn;			/* list of children */
+	short		level;			/* nesting level */
+} _Group;
+
+typedef struct _cseq {
+	struct _node	com;			/* common node info. */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node	*bon;			/* beginning of cs name */
+	struct _node	*eon;			/* end of cs name */
+	struct _node	*boc;			/* beginning of char params */
+	struct _node	*eoc;			/* end of char params */
+	struct _node	*re;			/* crodd reference to IRt */
+} _Cseq;
+	
+typedef struct _math {
+	struct _node	com;			/* common node info. */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node	*dn;			/* list of children */
+	struct _node	*re;			/* box reference in IRt */
+} _Math;
+	
+typedef struct _display {
+	struct _node	com;			/* common node info. */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node	*dn;			/* list of children */
+	struct _node	*re;			/* box reference in IRt */
+} _Display;
+	
+typedef struct _input {
+	struct _node	com;			/* common node info. */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node	*dn;			/* list of children */
+	struct _node	*bon;			/* name of file input from */
+	struct _file	*fp;			/* pointer to IRf */
+} _Input;
+	
+typedef struct _space {
+	struct _node	com;			/* common node info. */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node	*boc;			/* beginning in IRs */
+	struct _node	*eoc;			/* end in IRs */
+} _Space;
+
+typedef struct _special {
+	struct _node	com;			/* common node info */
+	struct _node	*rt;			/* right (next) child */
+	struct _node	*lt;			/* left (prevous) child */
+	struct _node	*up;       		/* parent of this node */
+	struct _node	*boc;			/* beginning in IRs */
+	struct _node	*eoc;			/* end in IRs */
+	struct _node	*re;			/* box reference in IRt */
+} _Special;
+
+
+/*
+ * Box structure
+ */
+
+#define BOX_CHAR	67	/* C: box of a letter matching a IRs node */
+#define BOX_LIG		76	/* L: box of a ligature matching a IRi node */
+#define BOX_EXP		69	/* E: box of a letter matching no IR node */
+#define BOX_HYPH	72	/* H: box of `-' introduced by hyphenation */
+#define BOX_WORD	87	/* W: box of single word in IRt */
+#define BOX_PAR		81	/* Q: box of a paragraph in IRt */
+#define BOX_PAGE	80	/* P: box of whole page in IRt */
+
+typedef struct _cbox {			/* terminal char box */
+	struct _node	com;		/* common node info */
+	struct _node	*rt;		/* right (next) child */
+	struct _node	*up;		/* parent of this node */
+	struct _node	*re;		/* pointer to IRs+IRi */
+	long		id;		/* box id */
+	long		bx;		/* baseline x coordinate of box */
+	long		by;		/* baseline y coordinate of box */
+	long		ft;		/* current font number */
+} _Cbox;
+
+typedef struct _wbox {			/* nonterminal intermediate box */
+	struct _node	com;		/* common node info */
+	struct _node	*rt;		/* right (next) child */
+	struct _node	*up;		/* parent of this node */
+	struct _node	*dn;		/* down pointer */
+	struct _node	*re;		/* pointer to IRs+IRi */
+	long		id;		/* box id */
+	long		cx;		/* upper-left cornor x coordinate */
+	long		cy;		/* upper-left cornor y coordinate */
+	long		hw;		/* horizontal width of word box */
+	long		vh;		/* vertical height+depth of word box */
+} _Wbox;
+
+typedef struct _qbox {			/* nonterminal intermediate box */
+	struct _node	com;		/* common node info */
+	struct _node	*rt;		/* right (next) child */
+	struct _node	*up;		/* parent of this node */
+	struct _node	*dn;		/* down pointer */
+	struct _node	*re;		/* pointer to IRs+IRi */
+	long		id;		/* box id */
+	long		cx;		/* upper-left cornor x coordinate */
+	long		cy;		/* upper-left cornor y coordinate */
+	long		hw;		/* horizontal width of par box */
+	long		vh;		/* vertical height+depth of par box */
+} _Qbox;
+
+typedef struct _pbox {			/* nonterminal intermediate box */
+	struct _node	com;		/* common node info */
+	struct _node	*rt;		/* right (next) child */
+	struct _node	*dn;		/* down pointer */
+	long		cx;		/* upper-left cornor x coordinate */
+	long		cy;		/* upper-left cornor y coordinate */
+	long		hw;		/* horizontal width of page box */
+	long		vh;		/* vertical height+depth of page box */
+	short		no;		/* physical page number */
+	short		tb;		/* total number of boxes */
+	long		ct[10];		/* TeX's 10 count registers */
+	char		ft[FONT_MAX];	/* used fonts */
+} _Pbox;
+
+typedef struct _tbox {			/* terminal char box in trnasmission */
+	long		id;		/* box id */
+	long		ch;		/* char in ascii */
+	long		ft;		/* font number */
+	long		bx;		/* baseline x coordinate */
+	long		by;		/* baseline y coordinate */
+} _Tbox;
+
+typedef struct _nbox {			/* nonterminal box in trnasmission*/
+	long		id;		/* box id */
+	long		cx;		/* upperleft cornor x coordinate */
+	long		cy;		/* upperleft cornor x coordinate */
+	long		hw;		/* horizontal width */
+	long		vh;		/* vertical height */
+} _Nbox;
+
+#endif !_ALLIR_
+

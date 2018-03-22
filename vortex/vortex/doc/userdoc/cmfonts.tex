@@ -1,0 +1,34 @@
+\font\tensm=cmr8
+
+\font\elevenrm=cmr10 scaled \magstephalf
+\font\elevenbf=cmbx10 scaled \magstephalf
+\font\elevenit=cmti10 scaled \magstephalf
+\font\elevensm=cmr10
+\font\eleventt=cmtt10 scaled \magstephalf
+
+\font\twelverm=cmr10 scaled \magstep1
+\font\twelvebf=cmbx10 scaled \magstep1
+\font\twelveit=cmti10 scaled \magstep1
+\font\twelvesm=cmr10 scaled \magstephalf
+\font\twelvett=cmtt10 scaled \magstep1
+
+\font\eightrm=cmr8
+\font\eightit=cmr8
+\font\eightbf=cmr8
+\font\eightsm=cmr6
+\font\eighttt=cmtt8
+
+\def\tenpoint{%
+  \let\rm=\tenrm \let\it=\tenit \let\bf=\tenbf \let\sm=\tensm
+  \tenrm}
+\def\elevenpoint{%
+  \let\rm=\elevenrm \let\it=\elevenit \let\bf=\elevenbf \let\sm=\elevensm
+  \elevenrm}
+\def\twelvepoint{%
+  \let\rm=\twelverm \let\it=\twelveit \let\bf=\twelvebf \let\sm=\twelvesm
+  \twelverm}
+\def\eightpoint{%
+  \let\rm=\eightrm \let\it=\eightit \let\bf=\eightbf \let\sm=\eightsm
+  \eightrm}
+
+\tenpoint

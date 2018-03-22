@@ -1,0 +1,40 @@
+\documentstyle[palatino]{article}
+
+\input vortex
+\input psfig
+
+% some system names
+\def\EMACS{{\sm EMACS}}
+\def\UNIX{{\sm UNIX}}
+\def\ASCII{{\sm ASCII}}
+
+% some characters we want to print
+\def\\{{\tt\char92}}
+\def\_{{\tt\char95}}
+\def\{{{\tt\char123}}
+\def\}{{\tt\char125}}
+
+% some terminology
+\def\tbox{{\it t\/}-box}
+\def\nbox{{\it n\/}-box}
+\def\IRS{IR\lower2pt\hbox{\sm S}}
+\def\IRT{IR\lower2pt\hbox{\sm T}}
+\def\IRI{IR\lower2pt\hbox{\sm I}}
+
+% title page & abstract
+
+% body of document
+\input intro
+\input paradigm
+\input pieces
+\input commands
+\input proto
+\input misc
+\newpage
+
+% table of contents
+\endtoc
+\pageno=-2
+\input toc.tex
+
+\bye

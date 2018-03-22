@@ -1,0 +1,593 @@
+/* 
+ * Copyright (c) 1986-1991 The Regents of the University of California.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, without written agreement and without
+ * license or royalty fees, to use, copy, modify, and distribute this
+ * software and its documentation for any purpose, provided that the
+ * above copyright notice and the following two paragraphs appear in
+ * all copies of this software.
+ * 
+ * IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+ * DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+ * OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+ * CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+ * ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+ * PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ */
+
+static char copyright_notice[] = "Copyright (c) 1986 - 1991 Regents of the University of California.\nAll rights reserved.";
+
+#ifndef lint
+	static char rcsid[] = "$Source: /home/yew/yew4/vortex/newdist/dvitool/RCS/keymaps.defs,v $  (Berkeley)";
+#endif not lint
+
+/*
+ * Author: Jeff McCarrell at U.C. Berkeley <jwm@Berkeley.EDU>
+ * $Date: 1993/09/16 02:29:01 $
+ * $State: Exp $
+ */
+
+#include "structs.h"
+
+/* from funcdefs.c */
+extern func commands[];
+
+func *main_map[] = {
+	"unbound",			/* ^@ */
+	"left-edge",			/* ^A */
+	"bottom-edge",			/* ^B */
+	"exit",				/* ^C */
+	"unbound",			/* ^D */
+	"right-edge",			/* ^E */
+	"scroll-down",			/* ^F */
+	"unbound",			/* ^G */
+	"unbound",			/* ^H */
+	"unbound",			/* ^I */
+	"next-page",			/* ^J */
+	"unbound",			/* ^K */
+	"redraw-tool",			/* ^L */
+	"next-page",			/* ^M */
+	"next-page-positioned",		/* ^N */
+	"unbound",			/* ^O */
+	"previous-page-positioned",	/* ^P */
+	"unbound",			/* ^Q */
+	"search-backward",		/* ^R */
+	"search-forward",		/* ^S */
+	"top-edge",			/* ^T */
+	"unbound",			/* ^U */
+	"scroll-down",			/* ^V */
+	"unbound",			/* ^W */
+	"Prefix-2",			/* ^X */
+	"unbound",			/* ^Y */
+	"unbound",			/* ^Z */
+	"Prefix-1",			/* ^[ */
+	"unbound",			/* ^\ */
+	"unbound",			/* ^] */
+	"unbound",			/* ^^ */
+	"unbound",			/* ^_ */
+	"next-page",			/*    */
+	"unbound",			/* !  */
+	"unbound",			/* "  */
+	"unbound",			/* #  */
+	"unbound",			/* $  */
+	"unbound",			/* %  */
+	"unbound",			/* &  */
+	"unbound",			/* '  */
+	"unbound",			/* (  */
+	"unbound",			/* )  */
+	"unbound",			/* *  */
+	"unbound",			/* +  */
+	"unbound",			/* ,  */
+	"numeric-arg",			/* -  */
+	"unbound",			/* .  */
+	"unbound",			/* /  */
+	"numeric-arg",			/* 0  */
+	"numeric-arg",			/* 1  */
+	"numeric-arg",			/* 2  */
+	"numeric-arg",			/* 3  */
+	"numeric-arg",			/* 4  */
+	"numeric-arg",			/* 5  */
+	"numeric-arg",			/* 6  */
+	"numeric-arg",			/* 7  */
+	"numeric-arg",			/* 8  */
+	"numeric-arg",			/* 9  */
+	"unbound",			/* :  */
+	"unbound",			/* ;  */
+	"unbound",			/* <  */
+	"unbound",			/* =  */
+	"unbound",			/* >  */
+	"help-overview",		/* ?  */
+	"unbound",			/* @  */
+	"unbound",			/* A  */
+	"bottom-left",			/* B  */
+	"close-window",			/* C  */
+	"scroll-down",			/* D  */
+	"right-edge",			/* E  */
+	"full-screen",			/* F  */
+	"goto-physical-page",		/* G  */
+	"help",				/* H  */
+	"unbound",			/* I  */
+	"unbound",			/* J  */
+	"unbound",			/* K  */
+	"unbound",			/* L  */
+	"magstep",			/* M  */
+	"next-page-positioned",		/* N  */
+	"unbound",			/* O  */
+	"previous-page-positioned",	/* P  */
+	"unbound",			/* Q  */
+	"reread-file",			/* R  */
+	"unbound",			/* S  */
+	"top-edge",			/* T  */
+	"scroll-up",			/* U  */
+	"version",			/* V  */
+	"unbound",			/* W  */
+	"unbound",			/* X  */
+	"unbound",			/* Y  */
+	"zoom-horizontal",		/* Z  */
+	"unbound",			/* [  */
+	"unbound",			/* \  */
+	"unbound",			/* ]  */
+	"unbound",			/* ^  */
+	"unbound",			/* _  */
+	"unbound",			/* `  */
+	"unbound",			/* a  */
+	"bottom-left",			/* b  */
+	"close-window",			/* c  */
+	"scroll-down",			/* d  */
+	"exit",				/* e  */
+	"full-screen",			/* f  */
+	"goto-manuscript-page",		/* g  */
+	"help",				/* h  */
+	"unbound",			/* i  */
+	"unbound",			/* j  */
+	"unbound",			/* k  */
+	"scroll-left",			/* l  */
+	"magstep",			/* m  */
+	"next-page",			/* n  */
+	"unbound",			/* o  */
+	"previous-page",		/* p  */
+	"exit",				/* q  */
+	"scroll-right",			/* r  */
+	"unbound",			/* s  */
+	"top-left",			/* t  */
+	"scroll-up",			/* u  */
+	"version",			/* v  */
+	"unbound",			/* w  */
+	"unbound",			/* x  */
+	"unbound",			/* y  */
+	"zoom-vertical",		/* z  */
+	"unbound",			/* {  */
+	"unbound",			/* |  */
+	"unbound",			/* }  */
+	"unbound",			/* ~  */
+	"unbound"			/* ^? */
+	"select-char",			/* ml */
+	"next-page",			/* mL */
+	"next-page-positioned",		/* ^ml */
+	"unbound",			/* ^mL */
+	"extend-selection",		/* mm */
+	"previous-page",		/* mM */
+	"ascii-of-selection",		/* ^mm */
+	"unbound",			/* ^mM */
+	"mouse-menus",			/* mr */
+	"unbound",			/* mR */
+	"unbound",			/* ^mr */
+	"unbound",			/* ^mR */
+	(func *) -1
+};
+
+func *pref1_map[] = {
+	"unbound",			/* esc ^@ */
+	"top-left",			/* esc ^A */
+	"unbound",			/* esc ^B */
+	"exit",				/* esc ^C */
+	"unbound",			/* esc ^D */
+	"top-right",			/* esc ^E */
+	"unbound",			/* esc ^F */
+	"unbound",			/* esc ^G */
+	"unbound",			/* esc ^H */
+	"unbound",			/* esc ^I */
+	"unbound",			/* esc ^J */
+	"unbound",			/* esc ^K */
+	"redraw-tool",			/* esc ^L */
+	"unbound",			/* esc ^M */
+	"unbound",			/* esc ^N */
+	"unbound",			/* esc ^O */
+	"unbound",			/* esc ^P */
+	"unbound",			/* esc ^Q */
+	"unbound",			/* esc ^R */
+	"unbound",			/* esc ^S */
+	"unbound",			/* esc ^T */
+	"unbound",			/* esc ^U */
+	"unbound",			/* esc ^V */
+	"unbound",			/* esc ^W */
+	"unbound",			/* esc ^X */
+	"unbound",			/* esc ^Y */
+	"unbound",			/* esc ^Z */
+	"unbound",			/* esc ^[ */
+	"unbound",			/* esc ^\ */
+	"unbound",			/* esc ^] */
+	"unbound",			/* esc ^^ */
+	"unbound",			/* esc ^_ */
+	"unbound",			/* esc    */
+	"unbound",			/* esc !  */
+	"unbound",			/* esc "  */
+	"unbound",			/* esc #  */
+	"unbound",			/* esc $  */
+	"unbound",			/* esc %  */
+	"unbound",			/* esc &  */
+	"unbound",			/* esc '  */
+	"unbound",			/* esc (  */
+	"unbound",			/* esc )  */
+	"unbound",			/* esc *  */
+	"unbound",			/* esc +  */
+	"unbound",			/* esc ,  */
+	"numeric-arg",			/* esc -  */
+	"unbound",			/* esc .  */
+	"unbound",			/* esc /  */
+	"numeric-arg",			/* esc 0  */
+	"numeric-arg",			/* esc 1  */
+	"numeric-arg",			/* esc 2  */
+	"numeric-arg",			/* esc 3  */
+	"numeric-arg",			/* esc 4  */
+	"numeric-arg",			/* esc 5  */
+	"numeric-arg",			/* esc 6  */
+	"numeric-arg",			/* esc 7  */
+	"numeric-arg",			/* esc 8  */
+	"numeric-arg",			/* esc 9  */
+	"unbound",			/* esc :  */
+	"unbound",			/* esc ;  */
+	"beginning-of-file",		/* esc <  */
+	"unbound",			/* esc =  */
+	"end-of-file",			/* esc >  */
+	"unbound",			/* esc ?  */
+	"unbound",			/* esc @  */
+	"unbound",			/* esc A  */
+	"bottom-right",			/* esc B  */
+	"unbound",			/* esc C  */
+	"unbound",			/* esc D  */
+	"unbound",			/* esc E  */
+	"unbound"			/* esc F  */
+	"goto-physical-page",		/* esc G  */
+	"help",				/* esc H  */
+	"unbound",			/* esc I  */
+	"unbound",			/* esc J  */
+	"unbound",			/* esc K  */
+	"unbound",			/* esc L  */
+	"unbound",			/* esc M  */
+	"unbound",			/* esc N  */
+	"unbound",			/* esc O  */
+	"print",			/* esc P  */
+	"unbound",			/* esc Q  */
+	"unbound",			/* esc R  */
+	"set",				/* esc S  */
+	"top-right",			/* esc T  */
+	"unbound",			/* esc U  */
+	"unbound",			/* esc V  */
+	"unbound",			/* esc W  */
+	"unbound",			/* esc X  */
+	"unbound",			/* esc Y  */
+	"unbound",			/* esc Z  */
+	"ansi-keys",			/* esc [  */
+	"unbound",			/* esc \  */
+	"unbound",			/* esc ]  */
+	"unbound",			/* esc ^  */
+	"unbound",			/* esc _  */
+	"unbound",			/* esc `  */
+	"unbound",			/* esc a  */
+	"bottom-right",			/* esc b  */
+	"unbound",			/* esc c  */
+	"unbound",			/* esc d  */
+	"unbound",			/* esc e  */
+	"unbound",			/* esc f  */
+	"goto-manuscript-page",		/* esc g  */
+	"help",				/* esc h  */
+	"unbound",			/* esc i  */
+	"unbound",			/* esc j  */
+	"unbound",			/* esc k  */
+	"unbound",			/* esc l  */
+	"unbound",			/* esc m  */
+	"unbound",			/* esc n  */
+	"unbound",			/* esc o  */
+	"print",			/* esc p  */
+	"unbound",			/* esc q  */
+	"unbound",			/* esc r  */
+	"set",				/* esc s  */
+	"top-right",			/* esc t  */
+	"unbound",			/* esc u  */
+	"scroll-up",			/* esc v  */
+	"unbound",			/* esc w  */
+	"exec",				/* esc x  */
+	"unbound",			/* esc y  */
+	"unbound",			/* esc z  */
+	"unbound",			/* esc {  */
+	"unbound",			/* esc |  */
+	"unbound",			/* esc }  */
+	"unbound",			/* esc ~  */
+	"unbound"			/* esc ^? */
+	"unbound",			/* esc ml */
+	"unbound",			/* esc mL */
+	"unbound",			/* esc ^ml */
+	"unbound",			/* esc ^mL */
+	"unbound",			/* esc mm */
+	"unbound",			/* esc mM */
+	"unbound",			/* esc ^mm */
+	"unbound",			/* esc ^mM */
+	"unbound",			/* esc mr */
+	"unbound",			/* esc mR */
+	"unbound",			/* esc ^mr */
+	"unbound",			/* esc ^mR */
+	(func *) -1
+};
+
+func *pref2_map[] = {
+	"unbound",			/* c-x ^@ */
+	"unbound",			/* c-x ^A */
+	"unbound",			/* c-x ^B */
+	"exit",				/* c-x ^C */
+	"dump-bindings",		/* c-x ^D */
+	"unbound",			/* c-x ^E */
+	"find-file",			/* c-x ^F */
+	"unbound",			/* c-x ^G */
+	"exit-help",			/* c-x ^H */
+	"unbound",			/* c-x ^I */
+	"unbound",			/* c-x ^J */
+	"unbound",			/* c-x ^K */
+	"unbound",			/* c-x ^L */
+	"unbound",			/* c-x ^M */
+	"unbound",			/* c-x ^N */
+	"unbound",			/* c-x ^O */
+	"unbound",			/* c-x ^P */
+	"unbound",			/* c-x ^Q */
+	"search-backward-by-font",	/* c-x ^R */
+	"search-forward-by-font",	/* c-x ^S */
+	"unbound",			/* c-x ^T */
+	"unbound",			/* c-x ^U */
+	"unbound",			/* c-x ^V */
+	"unbound",			/* c-x ^W */
+	"unbound",			/* c-x ^X */
+	"unbound",			/* c-x ^Y */
+	"unbound",			/* c-x ^Z */
+	"unbound",			/* c-x ^[ */
+	"unbound",			/* c-x ^\ */
+	"unbound",			/* c-x ^] */
+	"unbound",			/* c-x ^^ */
+	"unbound",			/* c-x ^_ */
+	"unbound",			/* c-x    */
+	"unbound",			/* c-x !  */
+	"unbound",			/* c-x "  */
+	"unbound",			/* c-x #  */
+	"unbound",			/* c-x $  */
+	"unbound",			/* c-x %  */
+	"unbound",			/* c-x &  */
+	"unbound",			/* c-x '  */
+	"unbound",			/* c-x (  */
+	"unbound",			/* c-x )  */
+	"unbound",			/* c-x *  */
+	"unbound",			/* c-x +  */
+	"unbound",			/* c-x ,  */
+	"unbound",			/* c-x -  */
+	"unbound",			/* c-x .  */
+	"unbound",			/* c-x /  */
+	"unbound",			/* c-x 0  */
+	"unbound",			/* c-x 1  */
+	"unbound",			/* c-x 2  */
+	"unbound",			/* c-x 3  */
+	"unbound",			/* c-x 4  */
+	"unbound",			/* c-x 5  */
+	"unbound",			/* c-x 6  */
+	"unbound",			/* c-x 7  */
+	"unbound",			/* c-x 8  */
+	"unbound",			/* c-x 9  */
+	"unbound",			/* c-x :  */
+	"unbound",			/* c-x ;  */
+	"unbound",			/* c-x <  */
+	"unbound",			/* c-x =  */
+	"unbound",			/* c-x >  */
+	"unbound",			/* c-x ?  */
+	"unbound",			/* c-x @  */
+	"unbound",			/* c-x A  */
+	"unbound",			/* c-x B  */
+	"unbound",			/* c-x C  */
+	"unbound",			/* c-x D  */
+	"unbound",			/* c-x E  */
+	"unbound",			/* c-x F  */
+	"unbound",			/* c-x G  */
+	"hide-tool",			/* c-x H  */
+	"unbound",			/* c-x I  */
+	"unbound",			/* c-x J  */
+	"unbound",			/* c-x K  */
+	"unbound",			/* c-x L  */
+	"unbound",			/* c-x M  */
+	"unbound",			/* c-x N  */
+	"unbound",			/* c-x O  */
+	"unbound",			/* c-x P  */
+	"unbound",			/* c-x Q  */
+	"unbound",			/* c-x R  */
+	"unbound",			/* c-x S  */
+	"unbound",			/* c-x T  */
+	"unbound",			/* c-x U  */
+	"unbound",			/* c-x V  */
+	"unbound",			/* c-x W  */
+	"expose-tool",			/* c-x X  */
+	"unbound",			/* c-x Y  */
+	"unbound",			/* c-x Z  */
+	"unbound",			/* c-x [  */
+	"unbound",			/* c-x \  */
+	"unbound",			/* c-x ]  */
+	"unbound",			/* c-x ^  */
+	"unbound",			/* c-x _  */
+	"unbound",			/* c-x `  */
+	"unbound",			/* c-x a  */
+	"unbound",			/* c-x b  */
+	"unbound",			/* c-x c  */
+	"unbound",			/* c-x d  */
+	"unbound",			/* c-x e  */
+	"unbound",			/* c-x f  */
+	"unbound",			/* c-x g  */
+	"hide-tool",			/* c-x h  */
+	"unbound",			/* c-x i  */
+	"unbound",			/* c-x j  */
+	"unbound",			/* c-x k  */
+	"unbound",			/* c-x l  */
+	"unbound",			/* c-x m  */
+	"unbound",			/* c-x n  */
+	"unbound",			/* c-x o  */
+	"unbound",			/* c-x p  */
+	"unbound",			/* c-x q  */
+	"unbound",			/* c-x r  */
+	"unbound",			/* c-x s  */
+	"unbound",			/* c-x t  */
+	"unbound",			/* c-x u  */
+	"unbound",			/* c-x v  */
+	"unbound",			/* c-x w  */
+	"expose-tool",			/* c-x x  */
+	"unbound",			/* c-x y  */
+	"unbound",			/* c-x z  */
+	"unbound",			/* c-x {  */
+	"unbound",			/* c-x |  */
+	"unbound",			/* c-x }  */
+	"unbound",			/* c-x ~  */
+	"unbound",			/* c-x ^? */
+	"unbound",			/* c-x ml */
+	"unbound",			/* c-x mL */
+	"unbound",			/* c-x ^ml */
+	"unbound",			/* c-x ^mL */
+	"unbound",			/* c-x mm */
+	"unbound",			/* c-x mM */
+	"unbound",			/* c-x ^mm */
+	"unbound",			/* c-x ^mM */
+	"unbound",			/* c-x mr */
+	"unbound",			/* c-x mR */
+	"unbound",			/* c-x ^mr */
+	"unbound",			/* c-x ^mR */
+	(func *) -1
+};
+
+/*
+ * this mapping must correspond to the order of the typdef enum in mouse.c.
+ * if i was really hip, i'd write a notify proc to look these up or
+ * something...
+ */
+
+func	*menu_map[] = {
+	"scroll-up",			/* UpCmd */
+	"scroll-down",			/* DownCmd */
+	"scroll-right",			/* RightCmd */
+	"scroll-left",			/* LeftCmd */
+	"top-left",			/* HomeCmd */
+	"bottom-left",			/* BottomCmd */
+	"next-page",			/* NextPageCmd */
+	"previous-page",		/* PreviousPageCmd */
+	"next-page-positioned",		/* NextPPCmd */
+	"previous-page-positioned",	/* PrevPPCmd */
+	"full-screen",			/* FullScreenCmd */
+	"exit",				/* QuitCmd */
+	"magstep-0",			/* Mag0Cmd */
+	"magstep-1",			/* Mag1Cmd */
+	"magstep-2",			/* Mag2Cmd */
+	"magstep-3",			/* Mag3Cmd */
+	"magstep-4",			/* Mag4Cmd */
+	"magstep-5",			/* Mag5Cmd */
+	"reread-file",			/* FileReReadCmd */
+	"which-font",			/* WhichFont */
+	"magstep-minus-1",		/* Shr1Cmd */
+	"magstep-minus-2",		/* Shr2Cmd */
+	"magstep-minus-3",		/* Shr3Cmd */
+	"magstep-minus-4",		/* Shr4Cmd */
+	"magstep-minus-5",		/* Shr5Cmd */
+	"help-overview",		/* OverHelpCmd */
+	"help-commands",		/* CmdHelpCmd */
+	"help-variables",		/* VarHelpCmd */
+	"print",			/* PrintVarCmd */
+	"set",				/* SetVarCmd */
+	"search-forward",		/* ForSearchCmd */
+	"search-backward",		/* RevSearchCmd */
+	"find-file",			/* FindFileCmd */
+	"beginning-of-file",		/* FirstPageCmd */
+	"end-of-file",			/* LastPageCmd */
+	"close-window",			/* WinCloseCmd */
+	"expose-tool",			/* WinExposeCmd */
+	"hide-tool",			/* WinHideCmd */
+	"redraw-tool",			/* RefreshCmd */
+	"top-left",			/* TopLeftCmd */
+	"top-right",			/* TopRightCmd */
+	"bottom-left",			/* BotLeftCmd */
+	"bottom-right",			/* BotRightCmd */
+	"left-edge",			/* LeftEdgeCmd */
+	"right-edge",			/* RightEdgeCmd */
+	"top-edge",			/* TopEdgeCmd */
+	"bottom-edge"			/* BotEdgeCmd */
+	"goto-manuscript-page",		/* LogPageCmd */
+	"goto-physical-page",		/* PhysPageCmd */
+	"which-char",			/* CharInfoCmd */
+	"list-all-commands",		/* ListCmdsCmd */
+	"list-all-variables",		/* ListVarsCmd */
+	"cd",				/* cdCmd */
+	"zoom-vertical",		/* ZoomCmd */
+	"bound-to",			/* BoundToCmd */
+	(func *) -1
+};
+
+/*
+ * this keymap is used when the user hits one of the function keys, or
+ * the left keys, or the right keys.  It is laid out in a somewhat
+ * peculiar fashion:  the first 4 positions are mapped to the arrow keys
+ * on the right keypad because they generate a distinct sequence of
+ * characters from all the rest.  The rest of the positions are
+ * identified by their sequences and by the symbol on the keytop of my
+ * Sun 3-50 workstation.  The only ones I care about are L5 and L7 so I
+ * can emulate the behavior of those keys in my shelltool windows.
+ */
+func	*ansi_map[] = {
+	"scroll-up",			/* \e[A		R8 */
+	"scroll-down",			/* \e[B		R14 */
+	"scroll-right",			/* \e[A		R12 */
+	"scroll-left",			/* \e[A		R10 */
+	"unbound",			/* \e[193z	L2 */
+	"unbound",			/* \e[194z	L3 */
+	"unbound",			/* \e[195z	L4 */
+	"toggle-tool",			/* \e[196z	L5 */
+	"unbound",			/* \e[197z	L6 */
+	"close-window",			/* \e[198z	L7 */
+	"unbound",			/* \e[199z	L8 */
+	"unbound",			/* \e[200z	L9 */
+	"unbound",			/* \e[201z	L10 */
+	"unbound",			/* \e[202z	??? */
+	"unbound",			/* \e[203z	??? */
+	"unbound",			/* \e[204z	??? */
+	"unbound",			/* \e[205z	??? */
+	"unbound",			/* \e[206z	??? */
+	"unbound",			/* \e[207z	??? */
+	"unbound",			/* \e[208z	R1 */
+	"unbound",			/* \e[209z	R2 */
+	"unbound",			/* \e[210z	R3 */
+	"unbound",			/* \e[211z	R4 */
+	"unbound",			/* \e[212z	R5 */
+	"unbound",			/* \e[213z	R6 */
+	"top-left",			/* \e[214z	R7 */
+	"scroll-up",			/* \e[215z	R8 */
+	"top-right",			/* \e[216z	R9 */
+	"scroll-left",			/* \e[217z	R10 */
+	"unbound",			/* \e[218z	R11 */
+	"scroll-right",			/* \e[219z	R12 */
+	"bottom-left",			/* \e[220z	R13 */
+	"scroll-down",			/* \e[221z	R14 */
+	"bottom-right",			/* \e[222z	R15 */
+	"unbound",			/* \e[223z	??? */
+	"unbound",			/* \e[224z	F1 */
+	"unbound",			/* \e[225z	F2 */
+	"unbound",			/* \e[226z	F3 */
+	"unbound",			/* \e[227z	F4 */
+	"unbound",			/* \e[228z	F5 */
+	"unbound",			/* \e[229z	F6 */
+	"unbound",			/* \e[230z	F7 */
+	"unbound",			/* \e[231z	F8 */
+	"unbound",			/* \e[232z	F9 */
+	(func *) -1
+};

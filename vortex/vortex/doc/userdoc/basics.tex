@@ -1,0 +1,285 @@
+\input vortex
+%\input lwfonts
+\input cmfonts
+\input papermac
+
+\def\\{\char92}
+\settabs 10\columns
+
+\def\desc#1{\smallskip\leftline{\tt #1}\parskip=0pt\nobreak\noindent}
+
+\parskip=4pt
+\tenpoint
+
+
+\section{Introduction}
+
+{\VorTeX} is a source-based document preparation system (built on
+Donald~Knuth's {\TeX} typesetting language) which allows some of
+the functions of direct-manipulation systems as well.  This report
+describes the prototype system as currently implemented.
+
+The system runs under X version 10, and appears to be another of the
+EMACS family of visual editors.  The command structure and invocation
+is based on that of EMACS.  The source editing paradigm is also that
+of EMACS with point (the left edge of the text cursor) and mark
+(an invisible text marker) used to delimit text.
+
+{\VorTeX} is actually implemented as several processes.  The one the
+user starts up (which is called {\tt vortex}) implements the source
+editor.  The source editor contains a Lisp interpreter which is used
+to invoke the other processes, although this is typically done by the
+system when needed.  From the user's point of view, he interacts
+solely with the source editor since its Lisp interpreter performs all
+interpretation and executes commands at the higher levels.
+
+
+\section{Running the System}
+
+First of all, some basic familiarization: the source editor (the part of
+the system which the user interacts with) is modeled loosely on the EMACS
+editor originally written by Richard Stallman.  Uses of EMACS should find
+the {\VorTeX}, although much less rich in commands than EMACS has become.
+
+To get started, make yourself a {\tt \~/.vortexrc} containing at least the
+following lines:
+\par
+\+&\tt ; set up paths to proof editor and formatter programs\cr
+\+&\tt (setq proof-editor-program "/yew2/vortex/bin/vpe")\cr
+\+&\tt (setq formatter-program "/yew2/vortex/bin/tex")\cr
+
+You must be running X10 for {\VorTeX} to work.  Run the program {\tt vortex}
+in {\tt /yew2/vortex/bin}, which should bring up a single X window
+showing a welcome message.
+
+To start editing a {\TeX} document (plain {\TeX} for now),
+run the following commands\note{This terminology is borrowed from
+Stallman's EMACS documentation.}
+(in this example, the file d.tex contains the
+entire {\TeX} source for the document):
+\par
+\+&\tt C-x C-f d.tex\cr
+\+&\tt M-x make-document d.tex\cr
+\+&\tt M-x proof-docuent\cr
+\par
+
+After some processing (and assuming there are no errors), you should have
+both the source buffer {\tt d.tex} viewing the {\TeX} source and the buffer
+{\tt *proof*} showing the formatted output.  As you edit in the source buffer,
+the changes are sent to the formatter, which continuously reformats the
+immediately surrounding document.  To see the changes reflected in the
+proof window, move the mouse into it and type space.
+
+\section{Basic Editing Paradigm}
+
+In the source window, key strokes have the normal text editing functions.
+However, in the proof window, quite different commands make sense.  The
+{\tt C-c} keymap is used globally for special {\VorTeX} commands (for example,
+{\tt C-c f} is bound to {\tt proof-change-font} so, when typed in a proof
+window, it will allow you to change the font of the current selection
+(see below) in the style of a WYSIWYG system, mapping the change into
+changes to the {\TeX} source.
+
+Most proof editor commands operate on the current selection, which is
+defined with the mouse buttons in the proof window or the EMACS point/mark
+paradigm in the source.  The left button marks the structure underneath
+the mouse cursor as the start of the selection (any previous selection is
+un-selected).  Successive clicks of the left button with the cursor at the
+same location, cause successivly larger (more enclosing) units of structure
+to become selected.
+
+For example, one click selects a letter, two a word, three a paragraph.
+The middle button extends the current selection to include the area under
+the mouse cursor at the same level of structure as selected by left button.
+Thus, clicking the left button twice will select a word, then moving the
+mouse and clicking the middle button once will increase the selection by
+all words up to and including the one under the current cursor position.
+
+The current selection can also be set from the source buffer.  The command
+{\tt C-c .} selects the letter in the proof window which corresponds to the
+text character just before the source window cursor.  This selection is
+just like the left button and can be enlarged and extended with the mouse
+buttons as described above.  This is typically used to show the proofed
+version of the current source position.  {\tt C-c .} also scrolls the source
+buffer to the {\TeX} source which corresponds to the current selection.
+
+With {\VorTeX}, the majority of editing should be done in the source editor.
+The formatted output can be used to check for errors and for locating the
+source text quickly, but is not meant for extensive editing.  We have
+implemented a few functions in Lisp ({\tt proof-change-font} for example)
+which all operate on the current proof selection by translating it back
+into a source region and performing some text manipulations there.  Whether
+this approach will be used in the later system, it allows most (if not all)
+of the functions we wished to see without the need for writing them into
+the system or predefining them into the protocol.
+
+
+\section{The Built-In Commands}
+
+A certain number of Lisp functions are written in C (thus ``built-in'' to
+{\VorTeX}), while most of the directly used functions are written in Lisp
+based on these built-ins.  Of course, there are the usual Lisp functions
+such as {\tt cons} and {\tt apply}, but here we describe the functions
+which relate the do communications and document preparation paradigm on
+which the system is based.
+
+
+\subsection{Proof Editor Commands}
+
+The proof editor appears to be identical to the source editor in terms
+of paradigm--it's windows operate as do source buffer windows.  Any
+{\VorTeX} buffer window may visit a proof buffer; the differences
+between a source and a proof window are all implemented at the buffer
+level.  The commands listed in this section are the lowest level of
+all (they generally translate directly into low-level communications
+operations).  The functions used for the majority of editing will be
+more complex functions written in Lisp and invoked through key strokes
+in the normal EMACS manner.
+
+\desc{start-proof-editor}%
+starts up the proof editor on the specified host if necessary and
+connects to it.  The function returns {\bf t} if a sucessful
+connection was made and nil otherwise.  If there is a serious
+low-level communications failure, an error may occur.
+
+The proof editor is run on the machine given by the value of {\tt
+proof-editor-host} by exec'ing the program given by {\tt
+proof-editor-program} on that host ({\tt "localhost"} by default).
+
+If the proof editor is already running when this function
+is called, the current proof editor is killed (as with
+{\tt kill-proof-editor}) and a new one is started.
+
+\desc{kill-proof-editor}%
+kills the proof editor if one is running.  If a formatter is running,
+it loses its connection to the proof editor also.
+
+\desc{proof-document}%
+creates a proof window on the given document at the specified physical
+page number, or at page one if none is specified.
+
+\desc{proof-goto-page}%
+changes the page being viewed in the current window (or the window
+specified by the second argument if there is one) to the specified
+physical page number.
+
+The physical page number has nothing to do with the page number {\TeX}
+prints on the bottom of each page, it refers to the order of the pages
+as laid out in the document.  The first page formatter is page one,
+the second page two.
+
+If the specified page does not exist, the closest possible page is
+gone to.  Thus, both zero and one go to the first page and numbers
+greater than the length of the document go to the end.
+
+\desc{proof-next-page}%
+changes the page being viewed in the current window (or the window
+specified by the second argument if there is one) forward or backward
+by the specified count.
+
+\desc{proof-move-absolute}%
+moves the current window (or the window specified by the second
+argument if there is one) to the given proof editor position.
+A proof buffer window position is specified in units of screen pixels.
+These routines are normally not needed by the user.
+
+\desc{proof-move-relative}%
+moves the current window (or the window specified by the second
+argument if there is one) in the given proof editor relative to the
+current position.
+
+\desc{proof-select}%
+causes the area under or the current mouse position (it must be
+invoked interactively) to be selected at the next higher level of
+structure.
+
+This function and the other selection functions below, cause {\VorTeX}
+to translate the selected structure in the proof window into a source
+buffer/region pair as returned from {\tt proof-selected-region}.
+
+\desc{proof-select-more}%
+causes the area under the mouse cursor (it must be invoked
+interactively) and all the text between it and the current selection
+(begun with {\tt proof-select}) to become the current selection.
+It always operates at the granularity established by {\tt proof-select}.
+
+\desc{proof-selected-region}%
+returns the region selected by the user using the proof editor.  The
+first element in the list is the source buffer name, the other two are
+offsets into the buffer defining the region.
+
+If no region has been selected with the proof editor, this function
+returns nil.
+
+\desc{proof-moveto}%
+scrolls the specified proof window to the given offset in the buffer.
+If no buffer and window are specified, the last used source and proof
+window buffers are used.
+
+
+\subsection{{\TeX} Formatter Commands}
+
+The formatter does not appear to the user directly.  It is responsible
+for formatting the document and performing translation functions in
+both directions, but the user never needs to interact with it.  As with
+the proof editor, all functionality is implemented through a set of
+remote procedure calls.
+
+\desc{start-formatter}%
+starts up the formatter on the specified host if necessary and
+connects to it.  The function returns t if a sucessful connection was
+made and nil otherwise.  If there is a serious low-level
+communications failure, an error may occur.
+
+The formatter is run on the machine given by the value of {\tt
+formatter-host} by exec'ing the program given by {\tt
+formatter-program} on that host ({\tt "localhost"} by default).
+
+If we're already connected to the proof editor and a sucessful
+connection is made to the formatter, a connection between the
+formatter and the proof editor is established
+
+\desc{kill-formatter}%
+kills the formatter if one is running.  If a proof editor is running,
+it loses its connection to the formatter also (but doesn't necessarily
+die itself).
+
+\desc{make-document}%
+creates a new document whose master file is that specified by the
+given {\TeX} source file.  If the file is not being visited in any
+buffer, it is visited.  Buffers which are visiting {\TeX} source files
+become special in several ways--changes to them need to be
+communicated to the remote {\TeX} formatter and the user is not allowed
+to kill the buffer until the document is closed.
+
+The contents of this master file buffer will be scanned by the
+formatter and processed as {\TeX} source code.  Note that changes to
+the source buffer are sent to the formatter program when (or before)
+the buffer is written or when a {\tt format-document} command is
+invoked.
+
+Since only one document is allowed at a time in the current system,
+{\tt make-document} will implicitly call {\tt close-document} if
+there is a current document when it starts.  To reformat the current
+document, use {\tt format-document}.
+
+If a formatter is not running when this function is called, one is
+started.  {\tt make-document} implicitly calls {\tt start-formatter}
+in this case.  See the documentation on the latter function for more
+information.
+
+The contents of the buffer are sent immediately.  If other files are
+required (via a {\tt \\input} statement), they will be sent as
+requested by the formatter.
+
+\desc{format-document}%
+sends a message to the incremental {\TeX} process to begin
+reformatting the current document.  There must be a current document
+previously opened with {\tt make-document}.
+
+\desc{close-document}%
+closes down the formatter connection which has the effect of freeing
+all resources used by the document.
+
+
+\bye

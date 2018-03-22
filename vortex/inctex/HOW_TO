@@ -1,0 +1,7 @@
+Given a virtex, you make specify versions by:
+
+1) Run "virtex -b"
+2) At ** prompt type "&<fmt file name>"
+3) At * prompt, type Control-\ (dumps core)
+4) At shell level, run undump.  For latex, type "undump latex virtex core"
+

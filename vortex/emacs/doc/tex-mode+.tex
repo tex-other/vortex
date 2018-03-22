@@ -1,0 +1,18 @@
+%\input paper
+\input report
+
+\def\version{version 1.6}
+\def\versiondate{February 1, 1987}
+\headline={
+   \ifnum\pageno>0
+      \ifodd\pageno
+           {\ssl GNU Emacs {\TeX} Mode (\version)}\hfill{\hss\bf -- \folio\/ --}
+      \else {\bf -- \folio\/ --}\hfill{\hss\ssl GNU Emacs {\TeX} Mode (\version)}
+      \fi
+   \else\hfill
+   \fi}
+\parindent=2pc
+\parskip=8pt minus 3pt
+\nopagenumbers
+
+%\magnification=\magstep1

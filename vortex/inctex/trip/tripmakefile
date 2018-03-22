@@ -1,0 +1,48 @@
+#
+#   Makefile for the =trip subdirectory of the UNIX TeX82 distribution
+#
+#   This makefile runs the nefarious trip test.
+#
+
+FONTDIR= ./fonts
+
+test: triptex trip.tex $(FONTDIR)/trip.tfm
+	-echo '' > trigger
+#	...trigger is used to help figure out which files are new.
+#	-triptex trip
+#	-triptex -b trip
+#	-triptex -b < tripin.1
+#	mv trip.log tripin.log
+#	-diff tripin.log SAVEtripin.log > tripin.diff
+#	-triptex \&trip trip            > trip.fot
+#	-triptex -b \&trip trip            > trip.fot
+#	-b option for non-incremental formating test
+#	-triptex -b trip            > trip.fot
+#	-triptex trip            
+	-triptex -i trip            
+#	Comment the above line out, uncomment the next one to compare vs. batch run
+#	One more set of changes is needed further down.
+#	-triptex -v trip            
+#	-diff trip.fot   TeXtrip/SAVEtrip.fot   > tripfot.diff
+#	-diff trip.log   TeXtrip/SAVEtrip.log   > trip.log.diff
+	-diff SAVEtrip.log trip.log   	> trip.log.diff
+#	To compare vs batch run uncomment the next 3 lines, comment the previous one
+#	-../bin/vline < SAVEtrip.log.batch > log.batch.stripped
+#	-../bin/vline < trip.log > log.stripped
+#	-diff log.batch.stripped log.stripped  	> trip.log.diff
+#
+	-diff tripos.tex TeXtrip/SAVEtripos.tex > tripos.diff
+#	dvitype trip.dvi                < TeXtrip/SAVEdvitype.in > /dev/null
+#	mv dvitype.out trip.typ
+#	-diff trip.typ   TeXtrip/SAVEtrip.typ   > trip.typ.diff
+	@echo 'Check dvi files, all diffs should have 0 length:'
+	-csh ../bin/dvicompare
+	@ls -l trip*.diff
+	cat tripos.diff
+	@echo 'check log transcript - try searching on /^[-0-9]:'
+	@echo -n 'Ready?';line > /dev/null
+	more trip.log.diff
+	@echo -n 'Ready?';line > /dev/null
+	@echo 'check new dvi pages (above trigger) make sense:'
+#ls dvi pages in time order, "trigger" used as time watermark
+	@ls -l -t trigger INC/*.dvi

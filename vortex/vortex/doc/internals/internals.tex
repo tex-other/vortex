@@ -1,0 +1,52 @@
+\documentstyle[regmar,12pt]{article}
+
+\input vortex
+\input psfig
+
+% some system names
+\def\EMACS{{\small EMACS}}
+\def\UNIX{{\small UNIX}}
+\def\ASCII{{\small ASCII}}
+\def\WYSIWYG{{\small WYSIWYG}}
+
+% some characters we want to print
+\def\bsl{{\tt\char92}}
+\def\_{{\tt\char95}}
+\def\{{{\tt\char123}}
+\def\}{{\tt\char125}}
+
+% some terminology
+\def\tbox{{\em t\/}-box}
+\def\nbox{{\em n\/}-box}
+\def\IRS{IR\lower2pt\hbox{\small S}}
+\def\IRT{IR\lower2pt\hbox{\small T}}
+\def\IRI{IR\lower2pt\hbox{\small I}}
+
+% title page
+\title{Internals of \VorTeX: The Source Editor\thanks{Sponsored
+by the Defense Advanced Research Projects Agency (DoD),
+monitored by Space and Naval Warfare Systems Command,
+under Contract No. N00039-88-C-0292.}}
+
+\author{John Coker\\
+\em Computer Science Division,\\
+University of California,\\
+Berkeley, CA 94720}
+
+\begin{document}
+
+\maketitle
+\pagestyle{regular}
+
+% body of document
+\input intro
+\input paradigm
+\input pieces
+\input commands
+\input proto
+\input misc
+
+\bibliographystyle{plain}
+\bibliography{docproc}
+
+\end{document}

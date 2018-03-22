@@ -1,0 +1,382 @@
+\settabs 9\columns
+\def\elt#1#2#3{\tabalign&\bf #1&\rm #2&&\it #3\cr}
+
+\section{Communications Protocols}
+
+Along each edge of the process triangle, a separate communications
+protocol has been defined.  The source editor-formatter and
+source editor-proof editor connections are described in detail here.
+Each of the three protocols include a global protocol, which
+implements rendezvous and common functionality.
+
+All numbers are transmitted in network byte order.  Two sizes are
+used: {\bf long} (32 bytes) and {\bf short} (16 bytes) either signed
+or unsigned.  Other data ({\ASCII} strings) is sent as a byte stream.
+There are no padding requirements for messages, although we have been
+careful to lay out the data within each message to avoid architecture
+differences so that the data can be easily read into a C structure or
+array.  Strings are not necessarily terminated with a NUL character
+({\ASCII} 0).
+
+Each packet begins with a constant format header.  The eight bytes of
+header may make up the entire message.  These headers are constant,
+however the trailing data is defined by each request.
+
+\smallskip
+\elt{u\_short}{request}{the request code}
+\elt{u\_short}{datalen}{the trailing data length (bytes)}
+\elt{u\_long}{commdata}{communications specific data}
+\smallskip
+
+The ``communications specific data'' is not used in the global
+protocol, but stores the window~ID and file~ID for the proof editor
+and formatter communications respectively.  These IDs allow the two
+processes to pass the most common piece of information without
+needing to define additional protocol.
+
+\subsection{Global Protocol}
+
+The basic format of all messages and the messages common to all three
+edges of the triangle are listed in the include file {\tt "gl\_comm.h"}.
+A copy of this file and the other three message sets are appended to
+this report.  See those files for a more concise description of
+the byte layout of the individual messages.
+
+\subsubsection{Process Rendezvous}
+
+Each of the two daemon processes needs to connect to the source editor
+and to each other.  Upon start-up, each daemon examines its argument
+list to determine how to call the source editor back.  Two non-option
+arguments are expected, the host name and internet port number on which
+the source editor is listening.  In addition, the proof editor takes the
+X~display name as a third argument.  (Both programs should also allow
+options to be passed in, particularly the {\tt -d} option for debugging.)
+
+Once a daemon has successfully connected, it should send a {\tt VERIFY}
+request on the new connection.  The source editor will respond with a
+{\tt WELCOME} or {\tt GOAWAY}.  The {\tt VERIFY} packet contains an
+identifier (a ``magic number'') and the protocol versions of the global
+and specific local communications.  Assuming the identifier is correct
+and the versions match, a {\tt WELCOME} is sent with no data, otherwise
+it responds with a {\tt GOAWAY} message and the data contains an error
+message (text string).  Once the {\tt WELCOME} message has been received,
+the daemon is officially connected to the source editor and no more
+hand-shaking is necessary.
+
+\subsubsection{Connecting the Formatter and Proof Editor}
+
+There is one other rendezvous task that must be done; connecting the
+formatter and proof editor to one another.  The protocol we've implemented
+to perform this is necessary because of the possibility of running more
+than one {\VorTeX} on a single machine; we could not just assign
+the internet port numbers.
+
+The protocol used for this rendezvous involves a three step process:
+1) the source editor instructs one daemon to listen for a connection
+from the other with a {\tt LISTENAT} request, 2) the daemon responds
+with a {\tt LISTENING} reply when it is ready, and 3) the source editor
+instructs the other daemon to connect to the first one with a
+{\tt CONNECT} request.
+
+The {\tt LISTENAT} request includes an internet port number and a
+time-out value.  However, the port number it specifies need not be
+the one used by the daemon.  It must attempt to bind internet ports
+starting with the number specified and incrementing until the operation
+succeeds (or fails with some error other than ``port already in use'').
+Once it has successfully bound the port, it returns the port number to
+the source editor and waits for at most the given time-out for a
+connection from the other daemon.
+
+Once the two daemons have established the TCP/IP connection, all of the
+system is in proper communication.  Whenever the second of the two daemons
+successfully connects back to it, the source editor attempts to establish
+a connection between the daemons as described above.\note{The Lisp programmer
+may also explicitly establish the connection with the function
+{\tt make-connection}.}
+
+\subsubsection{Error Handling}
+
+There are two main jobs involved in error handling; reporting and
+re-synchronization.  The first is obvious, but the second requires
+some throughout.  Since we've implemented the {\VorTeX} protocol on
+TCP/IP streams (which have no message boundaries), we need some method
+of marking the stream for re-synchronization.
+
+This resynchronization is done with the ``out of band data'' facility
+of {\UNIX} sockets.  The {\tt FLUSH} request sets a mark (using an
+out of band character) and the receiver flushes all bytes up to that
+mark.  In practice it has not happened that the programs lost their
+position in the byte stream (since the headers are regular), but it
+may be necessary at some time in the future.
+
+There is an additional request, {\tt ERROR}, which sends an {\ASCII}
+error message destined for the user.  These requests are really only
+used to send errors back to the user to be displayed by the source
+editor.  {\tt ERROR} is a request just like any other and does not
+imply {\tt FLUSH} or {\tt ABORT}.
+
+There are two messages which terminate the connections (and the daemon
+processes when sent from the source editor).  {\tt QUIT} signals
+termination (usually due to a user command) of a daemon and {\tt ABORT}
+is considered an error termination.  Both have the same semantics
+(no trailing data) and are handled the same way by the current source
+editor.  When sent from the source editor, they command the specified
+daemon to quit and when sent from a daemon, signal that the daemon is
+quitting.  The daemons cannot command the source editor to terminate.
+
+\subsection{Proof/Source Protocol}
+
+The Lisp functions which implement proof editor functionality are all
+executed by the source editor and presumably result in calls to the
+lowest-level proof operations.  In addition to these, there are many
+implicit operations which are not visible to the user such as {\it
+create window\/}, {\it expose window\/} and {\it destroy
+window}.\note{These implicit requests mirror the X version 10 window
+management paradigm.} See the include file {\tt "ps\_comm.h"} for the
+exact format of all the proof editor procedure calls.
+
+In all proof/source requests which require one, the {\it window ID} of
+the proof window in question is passed in the {\tt commdata} field of
+the message header (bytes 4 through 8).  The ID passed is actually the
+X window~ID of the proof window (which corresponds to a proof window
+and buffer for the source editor).  For all requests other than
+{\tt CREATE} any system of unique identifiers would have
+sufficed, but we chose the X window~ID for convenience.
+
+\subsubsection{Window Management}
+
+The first of the requests in this link of the system implement window
+management functions.  The most obvious place to start is window
+creation.  The request {\tt CREATE} sends the information on a newly
+made X~window which the source editor is using to display the
+particular buffer.  The window has already been created and mapped
+and this request includes an implicit {\tt EXPOSE} of its entire
+surface.
+
+\smallskip
+\elt{u\_short}{Xoffset}{X offset on window}
+\elt{u\_short}{Yoffset}{Y offset on window}
+\elt{u\_short}{width}{width of valid portion of window}
+\elt{u\_short}{height}{height of valid portion of window}
+\elt{u\_long}{fg\_pixel}{pixel value of foreground}
+\elt{u\_long}{fg\_pixmap}{tile for foreground}
+\elt{u\_long}{bg\_pixel}{pixel value of background}
+\elt{u\_long}{bg\_pixmap}{tile for background}
+\elt{u\_long}{hl\_pixel}{pixel value for high-light}
+\elt{u\_long}{hl\_pixmap}{tile for high-lighting}
+\smallskip
+
+The first four arguments define the region on the X window which is
+owned by the proof editor.  The region (X, Y to X+width, Y+height)
+is the only area on the X window which may be painted by the proof
+editor.  The proof editor is not allowed to change the window in any
+way other than repainting its designated region.  It may not even
+use {\tt XClear} to erase the window since the title bar is drawn on
+the same X window by the source editor.
+
+The last six arguments are used as the X color handles (more~IDs) for
+painting.  These are specified individually for each window since it
+may be useful for different proof windows to have different colors
+schemes.  The comments given after the element definitions should be
+enough explanation to the X programmer.
+
+The obvious accompaniment to create is {\tt DESTROY}, which is sent
+with no trailing data.  A window may only be destroyed by the source
+editor and no X access may be made to the window after the request
+has been sent (and the editor once more reaches the top level).  All
+proof editor data structures used for this window should be discarded
+although cached page data should be expired by some other means for
+efficiency when the user opens another window.
+
+The two remaining functions for window management are {\tt RESIZE}
+and {\tt EXPOSE}.  These both pass a rectangle although the rectangle
+has different meanings in each.  The rectangle in {\tt RESIZE} is
+just like that in {\tt CREATE}; it re-defines the drawing area on a
+particular window.  For {\tt EXPOSE} the rectangle is offset from the
+offset specified by the most recent {\tt RESIZE} or the {\tt CREATE}
+(e.g., an {\tt EXPOSE} of the entire window would result in 0, 0 for
+the exposed area's origin).  The area should always be within the
+defined drawing area.
+
+\subsubsection{Operation Batching}
+
+A less important enhancement to the protocol is the notion of batching
+requests.  The source editor will surround a set of requests which
+form a single user command with a {\tt BSTART}/{\tt BEND} pair.  This
+allows the proof editor to maintain state about flushing the X output
+queue or improving the ``feel'' of the system by making the single
+conceptual operation appear to occur all at once.
+
+These batching groups may nest (for the sake of generality) although
+groups deeper than one level will have the same significance as one.
+The current source editor never uses more than one group at a time.
+
+Each batch level applies to the window specified in the packet header
+only, although in the current implementation no other messages will appear
+during the batch grouping.
+
+\subsubsection{Document Commands}
+
+Each window has a notion of the current document (as well as page and
+position) and the request {\tt DOCUMENT} requests that a different
+document be displayed in the specified window.  The proof editor then
+uses the document~ID given as the trailing data to query the formatter
+for the page's formatted version.
+
+The proof editor implicitly displays the document, displaying the
+upper-left hand corner of the first (physical) page.  In the current
+{\VorTeX}, the formatter can only handle one document, so any instance
+of the proof editor will always be called with a single document~ID
+for all windows.  As soon as the global document information
+has been successfully gotten from the formatter, the proof editor must
+send the source editor a {\tt DOCPAGES} request to inform it of the
+number of formatted pages in the document.
+
+The source editor requests to move between pages fall into two major
+categories: physical and logical page specification.  Physical pages
+are those established by the order in which {\TeX} writes pages into a
+{\tt dvi} file.  To move between physical pages in a document, two
+requests are used: {\tt GOTOABS} and {\tt GOTOREL}.  {\tt GOTOABS}
+takes the physical page number and moves to that page, numbered from
+one through the number of printed pages.  {\tt GOTOREL} just moves
+forward the specified number or pages (negative numbers move backward).
+
+Logical page specifications are defined by the numbers stored into the
+ten {\tt \\count} registers.  The {\tt \\count0} register is used to
+store the number to be printed at the bottom of the page ({\tt
+\\pageno} is a synonym for {\tt \\count0}).  The other count registers
+are used by various macro packages for other formatting counters.
+Since there are ten count registers, a logical page specification may
+have as many as 10 components, which match the numbers in the
+{\tt\\count}s explicitly (as a number or range) or implicitly by being
+omitted.  See the user document for the exact format of this page
+specification (the source editor never needs to generate these
+specifications itself--they always come from the user directly).
+The {\tt LOGICAL} request passes a string to the proof editor for
+interpretation.
+
+The other layer of movement commands are those to move the page being
+displayed in the window under the visible portion of the editor window.
+There are two of these commands: {\tt MOVEABS} and {\tt MOVEREL}.
+Both commands take an X and Y distance in pixels and cause motion
+of the specified amount (for {\tt MOVEREL}, negative X and Y
+mean left and up respectively).
+
+There is one last positioning command, although currently it is the only
+one of a one of a number of similar function.  The {\tt POSITION} request
+specifies an {\nbox} in the document being displayed and merely instructs
+the proof editor to ``make that box visible.''  This usually entails
+moving to another page or moving on the current page, but is a very
+unstructured command and is one of the major places where the proof
+editor defines the feel of the system.
+
+\subsubsection{Manipulating the Proof Selection}
+
+``The proof selection'' is a concept which has a simple meaning to
+the user and a complex one within the system.  In general, such a
+selection is a list of \nbox es which happen to make up some logical
+piece of structure on the page.  However, in the current implementation,
+the current selection is a range of characters in the source buffer
+which limits it to contiguous pieces of text which do not overlap
+document structure (letters, words and paragraphs).
+
+The selection is established (or re-established) with the {\tt SELECT}
+request from the source editor.  The source editor specifies the
+position of the mouse cursor and the proof editor must decide what
+piece of the document this signifies.  To define a (new) selection,
+the X and Y position of the mouse within the drawing area of the
+window is sent.  To un-define the selection a {\tt SELECT} with no
+trailing data is sent.
+
+Once a selection has been defined, it may be expanded in two ways,
+either by moving to a higher level of document structure or by
+selecting a range of objects at the current level.  When the proof
+editor receives a {\tt SELECT} at the same mouse position as the last,
+it moves up a level (from a character to a word to a paragraph).  When
+the mouse position changes, a new selection is made, starting again at
+the character level.  Expanding a selection which involves more
+structure at the same level as the current selection is done by
+sending a {\tt SELECTMORE} request with a new mouse position.  All the
+pieces of structure from the old selection through the unit defined by
+the new mouse position become the current selection.
+
+Whenever a selection is established or expanded, the proof editor must
+return the first and last {\it character} in the selection using a
+{\tt SELECTION} request, with the first and last \tbox~IDs as the
+trailing data.  If there was an error, or the selection is undefined
+for some reason, a {\tt SELECTION} request with no trailing data is
+returned.
+
+\subsection{Formatter/Source Protocol}
+
+The Lisp functions which implement formatter commands are executed by
+the source editor and result in remote procedure calls to the
+formatter.  See the include file {\tt "ts\_comm.h"} for the exact
+format of the formatter remote procedure calls.
+
+In all formatter/source requests which require one, the {\it file~ID}
+of the affected source file is passed in the {\tt commdata} field of
+the message header (bytes 4 through 8).  The ID passed is constructed
+by the source editor and can only range from 1 to 127.  These file~IDs
+are assigned by the source editor at the time a {\TeX} buffer is first
+dealt with and the file~ID is encoded into each character~ID it contains.
+
+\subsubsection{Document Handling}
+
+Currently, the {\VorTeX} formatter can only handle one document, so the
+source editor closes down the formatter connection when a document is
+closed and creates a new one when a new document is created.  Because of
+this, there is no explicit request to create a new document.  The first
+{\tt FORMAT} request contains an implicit document creation command.
+The {\tt FORMAT} request contains the name of the master file (and the
+corresponding file~ID in the packet header).  This establishes the
+correspondence between the {\it master} or {\it root} file of the
+document and its file~ID.
+
+When the source editor creates a new document, it justs asks the formatter
+to format the document.  The formatter then queries for the contents of
+the file with a {\tt TEXINPUT} request, which specifies the file name in
+the trailing data.  A {\tt TEXINPUT} is also sent when the formatter
+encounters an {\tt \\input} command in the {\TeX} source.  Assuming the
+file can be found, the source editor replies with a {\tt OPENFILE}
+request which contains the contents of the source file.
+
+The file~IDs and character~IDs within those files are assigned by the
+source editor at the time the file is loaded into the system.  Each
+character is represented by four bytes (the character~ID) internally.
+This code contains the file~ID, the character code and a ``unique
+number'' for that character code over all files.
+
+In the present system, the source editor is the only piece that
+directly changes the contents of the document.  This is done
+(as the user edits a buffer) by sending {\tt INSERT} and {\tt DELETE}
+requests to the formatter.  The {\tt DELETE} request just specifies
+a range of characters (in the source buffer) to be deleted.  The
+{\tt INSERT} request passes a position and a list of characters
+to be inserted before that position.
+
+\subsubsection{The Mapping Facility}
+
+The source editor is constantly translating box~IDs and buffer/offset
+values to perform the mapping functions.  These requests are implemented
+as the only two cases of a more general facility, {\tt EXECUTE}.
+An {\tt EXECUTE} request specifies a sub-request code and any trailing
+data it requires and expects to receive a {\tt RETURN} reply.
+The {\tt RETURN} contains the results of the {\tt EXECUTE} or no
+data at all on error.  The two functions used for the mapping are
+{\tt TGT2SRC} and {\tt SRC2TGT}.  The ``source'' representation of
+a character is the file~ID and offset within that file.  The
+``target'' representation is the \tbox~ID used in the formatter/proof
+editor communications.\note{This is {\bf not} the same as the
+character~ID assigned by the source editor.}
+
+To implement the function ``scroll proof window to point,'' the source
+editor queries the formatter for the {\tbox} which corresponds to the
+text cursor in the source (using {\tt SRC2TGT}) and issues a
+{\tt POSITION} command to the proof editor with the resulting box~ID.
+
+To implement the proof selection in terms of the source editor model,
+the first and last \tbox~IDs are translated into source buffer
+positions (using {\tt TGT2SRC}).  Assuming the files are the same
+and the positions in order, it can then assign the current point and
+mark to the region defined by the proof selection.

@@ -1,0 +1,74 @@
+#!/bin/csh
+#
+#   Copyright (C) 1992 by Regents of the University of California
+#
+# This macro builds IncTeX.  The environment variables
+# TEXFONTS TEXFORMATS TEXINPUTS TEXPOOL are set below, modify them as
+# appropriate (and save your current settings as appropriate).
+#
+# This directory contains copies of latex's lplain.tex and tex plain.tex
+# You may wish to use your own copies.  If so, copy them into this
+# directory.  Note that IncTeX is only based on TeX 2.9 and can not
+# use plain tex 3.0
+set echo
+
+#If you don't have a TeX environment, the .fmt files cannot be generated
+#because input will be missing.  However, you can build all the binaries by
+#commenting out the section which starts with the message "Building .fmt files"
+#
+#Set these vars so it knows which dir's to search for formatting input
+setenv TEXFONTS   ".:/usr/sww/lib/tex/fonts/tfm"
+setenv TEXFORMATS ".:/usr/local/lib/tex/formats:/usr/local/lib/tex/inctex/bin"
+setenv TEXINPUTS  ".:/usr/local/lib/tex/inputs:/usr/sww/lib/tex/inputs"
+setenv TEXPOOL    "/usr/local/lib/tex"
+
+set saveinitex="N"
+# set this to "Y" if you want initex saved (so you can
+#have an incremental slitex.fmt for example)
+
+#make IncTeX binary & initex, which will build .fmt files
+make
+mv virtex bin/inctex
+cd INIT
+make
+
+#make patchdvi utility
+echo "Building library for patchdvi"
+cd ..
+cd bin/merge/lib
+make
+cd ../dvi
+echo ''
+echo "Building patchdvi"
+make
+#move patchdvi into bin directory after we build it
+mv patchdvi ../..
+make clean
+cd ../lib
+make clean
+
+cd ../../..
+#Note: if you want to use your own copies of lplain.tex & plain.tex,
+#copy them into this directory.
+echo ''
+echo "Building .fmt files"
+INIT/initex -b lplain '\dump'
+mv lplain.fmt bin/ilplain.fmt
+INIT/initex -b plain '\dump'
+mv plain.fmt bin/iplain.fmt
+
+cd INIT
+if ("$saveinitex" == "Y") then
+  mv initex save.initex
+endif
+make clean
+if ("$saveinitex" == "Y") then
+  mv save.initex initex
+endif
+cd ..
+make clean
+
+echo ""
+echo ""
+echo "Remove bin/{inctex,patchdvi,*.fmt} if you are just testing this build"
+echo "Done"

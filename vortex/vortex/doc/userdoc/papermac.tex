@@ -1,0 +1,49 @@
+\newcount\footno\footno=0
+\def\note#1{\global\advance\footno by 1%
+  \footnote{$^{\the\footno}$}%
+  {\eightpoint\parskip=0pt\baselineskip=10pt{#1}\ifhmode\vskip-\parskip\fi}}
+
+\long\def\quote#1{\begingroup
+    \baselineskip=13pt plus1pt minus1pt
+    \narrower\narrower
+    \noindent \hbox to 0pt{\hss ``}{#1}''\par
+  \endgroup}
+
+\def\secno{\count1} \secno=0
+\def\subsecno{\count2} \subsecno=0
+\def\subsubsecno{\count3} \subsubsecno=0
+
+\newwrite\toc \openout\toc=toc.tex
+\def\leaderfil{\leaders\hbox to 1em{\hss.\hss}\hfil}
+
+\def\section#1{\ifnum\secno>0\newpage\fi
+  \global\advance\secno by 1
+  \global\subsecno=0\global\subsubsecno=0
+  \leftline{\twelvebf \the\secno\quad #1}
+  \write\toc{\bigskip\line{\tenbf\the\secno\quad #1 \leaderfil \folio}}
+  \nobreak\bigskip\nobreak}
+
+\def\subsection#1{\goodbreak\vskip.25in plus.25in
+  \global\advance\subsecno by 1\global\subsubsecno=0
+  \leftline{\twelverm \the\secno.\the\subsecno\quad #1}
+  \write\toc{\medskip\line{\qquad \tenrm\the\secno.\the\subsecno\quad
+	     #1 \leaderfil\folio}}
+  \nobreak\medskip\nobreak}
+
+\def\subsubsection#1{\goodbreak\vskip.15in plus.15in
+  \global\advance\subsubsecno by 1
+  \leftline{\twelverm \the\secno.\the\subsecno.\the\subsubsecno\quad #1}
+  \nobreak\smallskip\nobreak}
+
+\def\appendix#1{\newpage
+  \secno=0\subsecno=0
+  \leftline{\twelverm #1}
+  \write\toc{\bigskip\line{\tenbf Appendix: #1 \leaderfil \folio}}
+  \bigskip}
+
+\def\newpage{\vfil\eject}
+
+% start table of contents
+\write\toc{\centerline{\twelvebf Table of Contents}\bigskip\bigskip}
+
+\def\endtoc{\immediate\closeout\toc \secno=0\subsecno=0}

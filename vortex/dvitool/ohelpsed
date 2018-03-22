@@ -1,0 +1,9 @@
+#  Copyright (c) 1986 - 1991 Regents of the University of California
+#  All rights reserved.
+#
+#  pick an index entry out of a line of text and write it
+#  out as a char [] suitable for compilation.
+#
+s/\\oidx{\([^}]*\)}/\
+\"\1\",\
+/gp

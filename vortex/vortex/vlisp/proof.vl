@@ -1,0 +1,330 @@
+;; Copyright (c) 1987 The Regents of the University of California.
+;; All rights reserved.
+;;
+;; Permission is hereby granted, without written agreement and without
+;; license or royalty fees, to use, copy, modify, and distribute this
+;; software and its documentation for any purpose, provided that the
+;; above copyright notice and the following two paragraphs appear in
+;; all copies of this software.
+;; 
+;; IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+;; DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT
+;; OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+;; CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;;
+;; THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+;; INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+;; AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+;; ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+;; PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+;;
+;; The above licensing information supersedes all licensing information
+;; below.
+;
+;  RCS Info: $Header$
+;
+;  VorTeX - Visually Oriented TeX
+;  A source-based WYSIWYG editor for beautiful documents
+;
+;  This file is part of the source editor/user interface written
+;  by John Coker for the VorTeX project under the direction of
+;  Prof. Michael A. Harrison of the University of California at
+;  Berkeley.
+;
+;  Copyright (c) 1987 John L. Coker
+;  University of California, Berkeley
+;  john@renoir.Berkeley.EDU
+;  vortex@renoir.Berkeley.EDU
+;
+;  This file intact and any code derived from it are copyright
+;  John Coker and the Regents of the University of California.
+;  All rights reserved by the author.  See the copyright notice
+;  distributed with this software for a complete description of
+;  the conditions under which it is made available.
+;
+;  proof.vl - special proof buffer initializations
+;
+
+;
+;  DOCUMENTATION
+;
+;  Name: proof-previous-line
+;  Call: (proof-previous-line 'count)
+;  Retu: lineno
+;  Desc: This function scrolls the current buffer (or the buffer
+;	specified by the second argument if there is one) down by
+;	the specified number of lines.  If the count is negative,
+;	it scrools the page up.
+;  SeeA: proof-next-line proof-document
+;
+
+(defun proof-previous-line (count)
+  (interactive "p")
+  (proof-next-line (- 0 count))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: proof-previous-page
+;  Call: (proof-previous-page 'count)
+;  Retu: pageno
+;  Desc: This function moves the current buffer (or the buffer
+;	specified by the second argument if there is one) back
+;	the specified number of pages.  If the count is negative,
+;	it moves forward.
+;  SeeA: proof-next-page proof-document
+;
+
+(defun proof-previous-page (count)
+  (interactive "p")
+  (proof-next-page (- 0 count))
+)
+
+(defun proof-move-forward (arg)
+  (interactive "p")
+  (proof-move-relative 0 (times arg 100))
+)
+
+(defun proof-move-backward (arg)
+  (interactive "p")
+  (proof-move-relative 0 (minus 0 (times arg 100)))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: proof-selection-as-region
+;  Desc: This function takes the current proof editor selection and
+;	pops to that source buffer, making the current region surround
+;	the characters selected in a proof editor window.
+;
+;	This is used internally by higher-level proof editor commands
+;	but may also be called interactively to find the proof selection
+;	in the appropriate source buffer.
+;  SeeA: proof-select proof-selected-region
+;
+
+(defun proof-selection-as-region ()
+  (interactive)
+  (let ((l (proof-selected-region)))
+    (if (nullp l)
+      (error "No current proof editor selection!"))
+    (pop-to-buffer (car l))
+    (set-window-point (cadr l))
+    (set-window-mark (caddr l)))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: source-to-proof-selection
+;  Desc: Visit the source buffer which corresponds to the source
+;	for the current proof editor selection.
+;  SeeA: proof-to-source-point proof-selected-region
+;
+(defun source-to-proof-selection ()
+  (interactive)
+  (let ((l (proof-selected-region)))
+    (if (nullp l)
+      (error "No current proof editor selection to move to!"))
+    (pop-to-buffer (car l))
+    (set-window-point (caddr l)))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: document-fonts
+;  Desc: This variable holds a list of strings which correspond to the
+;	fonts valid in the current \TeX{} document.  Initially it is
+;	set to those few normally used with plain \TeX{}, but others
+;	may also make sense.
+;  SeeA: proof-change-font
+;
+
+(setq document-fonts '("rm" "it" "bf" "sl" "tt"))
+
+;
+;  DOCUMENTATION
+;
+;  Name: proof-change-font
+;  Call: (proof-change-font)
+;  Desc: This function allows you to change the text of the current
+;  proof selection to a font prompted for from the list of fonts
+;	in the \sym{document-fonts} list.
+;  SeeA: document-fonts
+
+(defun proof-change-font ()
+  (interactive)
+  (proof-selection-as-region)
+  (let ((n (menu "Fonts" document-fonts))
+	(f nil))
+    (if (nullp n)
+	(error "Cancelled."))
+    (setq f (nth n document-fonts))
+    (insert-string (concat "{\\" f " "))
+    (set-window-point (window-mark))
+    (insert-string "}"))
+    (proof-goto-page 1 (current-proof-window))
+)
+
+(defun proof-goto-current-page ()
+  (interactive)
+  (proof-goto-page 1 (current-proof-window))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: proof-kill
+;  Call: (proof-kill)
+;  Retu: fixnum
+;  Desc: This function kills the region defined by the proof selection.
+;  Retu: proof-yank
+;
+
+(setq proof-last-kill "")
+
+(defun proof-kill ()
+  (interactive)
+  (proof-selection-as-region)
+  (setq proof-last-kill (copy-region
+			  (window-point (current-source-window))
+			  (window-mark (current-source-window))))
+  (delete-region
+   (window-point (current-source-window))
+   (window-mark (current-source-window)))
+  (proof-goto-page 1 (current-proof-window))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: proof-yank
+;  Call: (proof-yank)
+;  Retu: fixnum
+;  Desc: This function yanks the most recent killed text before the
+;	current proof selection.
+;  Retu: proof-kill
+;
+
+(defun proof-yank ()
+  (interactive)
+  (proof-selection-as-region)
+  (insert-string (concat proof-last-kill " "))
+  (proof-goto-page 1 (current-proof-window))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: proof-itemize
+;  Call: (proof-itemsize)
+;  Retu: fixnum
+;  Desc: This function puts an item macro around the current proof selection.
+;
+
+(setq item-number 1)
+
+(defun proof-itemize ()
+  (interactive)
+  (proof-selection-as-region)
+  (insert-string (concat "\\item{" item-number "}{"))
+  (set-window-point (window-mark))
+  (insert-string "}");
+  (setq item-number (add item-number 1))
+  (proof-goto-page 1 (current-proof-window))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: proof-to-source-point
+;  Call: (proof-to-source-point)
+;  Retu: fixnum
+;  Desc: This function scrolls the proof window to the same place
+;	as the source buffer's point.
+;  SeeA: use-local-map proof-buffer-create-hook
+;
+
+(defun proof-to-source-point ()
+  (interactive)
+  (proof-moveto (window-point (current-source-window)))
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: proof-buffer-keymap
+;  Desc: This variable is set globally to the keymap used by default
+;	by all proof buffers.  Since this keymap is shared, it will
+;	change for all proof buffers when a local binding in one is
+;	changed.
+;  SeeA: use-local-map proof-buffer-create-hook
+;
+(setq proof-keymap (make-keymap))
+(setq proof-ctl-x-keymap (make-keymap))
+(setq proof-ctl-c-keymap (make-keymap))
+(setq proof-escape-keymap (make-keymap))
+(let ((map proof-keymap))
+  (set-binding ?\^x proof-ctl-x-keymap map)
+  (set-binding ?\^c proof-ctl-c-keymap map)
+  (set-binding ?\e  proof-escape-keymap map)
+  (set-binding ?\@l 'proof-select map)
+  (set-binding ?\@m 'proof-select-more map)
+  (set-binding ?\@L 'proof-select map)
+  (set-binding ?\@M 'proof-select-more map)
+  (set-binding ?\^w 'proof-kill map)
+  (set-binding ?\^? 'proof-kill map)
+  (set-binding ?\^y 'proof-yank map)
+  (set-binding ?    'proof-goto-current-page map)
+
+  (set-binding ?\^n 'proof-next-line map)
+  (set-binding ?\^p 'proof-previous-line map)
+  (set-binding ?\^v 'proof-move-forward map)
+
+  (setq map proof-ctl-c-keymap)
+  (set-binding ?g   'proof-goto-page map)
+  (set-binding ?k   'kill-proof-editor map)
+  (set-binding ?f   'proof-change-font map)
+
+  (setq map proof-ctl-x-keymap)
+  (set-binding ?\^l 'proof-scroll-absolute map)
+  (set-binding ?.   'source-to-proof-selection map)
+  (set-binding ?s   'proof-select map)
+
+  (setq map proof-escape-keymap)
+  (set-binding ?v   'proof-move-backward map)
+  (set-binding ?,   'proof-top-of-page map)
+  (set-binding ?.   'proof-bottom-of-page map)
+  (set-binding ?<   'proof-top-left map)
+  (set-binding ?>   'proof-bottom-right map)
+)
+
+;
+;  DOCUMENTATION
+;
+;  Name: standard-proof-create-hook
+;  Call: (standard-proof-create-hook 'buffer)
+;  Retu: nil
+;  Desc: This function is initially used as the value of the global
+;	\sym{proof-buffer-create-hook}.  If the ``standard'' proof
+;	initializations are wanted, but the user wants to also add
+;	his own initializations, this function should be called from
+;	the user's replacement in \sym{proof-buffer-create-hook}.
+;  SeeA: proof-buffer-create-hook proof-buffer-keymap
+;
+
+(defun standard-proof-create-hook (bname)
+  (let ((oldbuf (buffer-name)))
+    (switch-to-buffer bname t t)
+    (make-local-variable 'mode-line-format)
+    (setq mode-line-format "VorTeX Proof %b%*  %[[%w:%m]%] %p  %M% ")
+    (make-local-variable 'mode-string)
+    (setq mode-string "proof")
+    (use-local-map proof-keymap)
+    (switch-to-buffer oldbuf t t)
+    nil)
+)
+(setq proof-buffer-create-hook standard-proof-create-hook)

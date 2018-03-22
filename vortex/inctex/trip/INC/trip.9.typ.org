@@ -1,0 +1,49 @@
+This is DVItype, Version 2.8 for Berkeley UNIX
+Options selected:
+  Starting page = *.*.*.*.*.*.*.*.*.* 
+  Maximum number of pages = 1000000
+  Output level = 2 (verbose)
+  Resolution =  72.27000000 pixels per inch
+numerator/denominator=25400000/473628672
+magnification=2000;       0.00003052 pixels per DVI unit
+' TeX output 1957.11.20:0700'
+ 
+42: beginning of page -2.0.0.0.11.0.327680.0.0.0 
+87: down4 1071448000 v:=0+1071448000=1071448000, vv:=32698 
+92: push 
+level 0:(h=0,v=1071448000,w=0,x=0,y=0,z=0,hh=0,vv=32698) 
+93: right3 262145 h:=0+262145=262145, hh:=8 
+[ ]
+97: fntdef1 0: trip---loaded at size 655360 DVI units 
+ (this font is magnified 200%) 
+117: fntnum0 current font is trip 
+118: setchar45 h:=262145-327680=-65535, hh:=-2 
+[-]
+119: pop 
+level 0:(h=0,v=1071448000,w=0,x=0,y=0,z=0,hh=0,vv=32698) 
+120: y3 655360 v:=1071448000+655360=1072103360, vv:=32718 
+124: push 
+level 0:(h=0,v=1072103360,w=0,x=0,y=655360,z=0,hh=0,vv=32718) 
+125: right3 327681 h:=0+327681=327681, hh:=10 
+129: setchar45 h:=327681-327680=1, hh:=0 
+130: setchar45 h:=1-327680=-327679, hh:=-10 
+[ --]
+131: pop 
+level 0:(h=0,v=1072103360,w=0,x=0,y=655360,z=0,hh=0,vv=32718) 
+132: y0 655360 v:=1072103360+655360=1072758720, vv:=32738 
+133: push 
+level 0:(h=0,v=1072758720,w=0,x=0,y=655360,z=0,hh=0,vv=32738) 
+134: right3 393217 h:=0+393217=393217, hh:=12 
+138: setchar45 h:=393217-327680=65537, hh:=2 
+139: setchar45 h:=65537-327680=-262143, hh:=-8 
+140: right3 65536 h:=-262143+65536=-196607, hh:=-6 
+144: setchar65 h:=-196607+131072=-65535, hh:=-2 
+[ --A]
+145: pop 
+level 0:(h=0,v=1072758720,w=0,x=0,y=655360,z=0,hh=0,vv=32738) 
+146: down3 851968 v:=1072758720+851968=1073610688, vv:=32764 
+150: eop 
+Postamble starts at byte 151.
+maxv=1073610751, maxh=1310721, maxstackdepth=1, totalpages=1
+Font 0: trip 
+ 

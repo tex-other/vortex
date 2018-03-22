@@ -1,0 +1,55 @@
+%!PS-Adobe-1.0
+%%Title: triangle
+%%CreationDate: Tue, Sep 13, 1988  2:53 PM
+%%BoundingBox: 0 0 289 144
+%%DocumentFonts: (Times-Roman)
+%%EndComments
+100 dict begin 0 setgray [] 0 setdash 1 setlinewidth 1 setlinejoin 0 setlinecap
+/dostroke {currentlinewidth 0 eq {newpath} {stroke} ifelse} def
+/xd {exch def} def /emd {exch ds mul def} def /ddr {ds 2 mul div round 2 mul cvi} def
+/text {gsave translate /dy xd /dx xd dx 0.5 mul fl translate rotate dx -0.5 mul fl neg translate
+ /mwid 0 def dup {stringwidth pop dup mwid gt {/mwid xd} {pop} ifelse} forall
+ dup length dy exch div /lspa xd
+ newpath 0 0 moveto dx 0 rlineto 0 dy rlineto dx neg 0 rlineto dofill
+ /y fh fl sub lspa add 2 div fh add neg def /x 0 def
+ {newpath x y moveto show /y y lspa add def} forall grestore} def
+/ff {/siz exch def findfont siz scalefont setfont
+ currentfont /FontBBox get aload pop
+ currentfont /FontMatrix get dtransform /fh xd /dx xd
+ currentfont /FontMatrix get dtransform /fl xd dx exch sub /fw xd} def
+/rr {/y xd /x xd /dy xd /dx xd x dx add /xx xd y dy add /yy xd
+ dx dy lt {dx} {dy} ifelse 2 div /ds xd ds rad gt {rad /ds xd} if
+ newpath x ds add y moveto xx y xx y ds add a2
+ xx yy xx ds sub yy a2 x yy x yy ds sub a2
+ x y x ds add y a2 closepath dofill dostroke} def
+/a2 {ds 0 eq {lineto 2} {ds arcto 4} ifelse {pop} repeat} def
+/ar {newpath gsave translate /dy xd /dx xd 1 setlinecap
+ /ds dx dup mul dy dup mul add sqrt def /co dx ds div def /si dy ds div def
+ /ay currentlinewidth 5 mul def /ax ay 2 mul def
+ dup 2 and 0 eq {0 0} {0 0 arrow} ifelse moveto /co co neg def /si si neg def
+ 1 and 0 eq {dx dy} {dx dy arrow} ifelse lineto dostroke grestore} def
+/arrow {/y xd /x xd gsave newpath x y moveto
+ ax co mul ay si mul sub ax si mul ay co mul add rlineto
+ ay si mul dup add ay co mul dup add neg rlineto
+ closepath 0 setgray fill grestore ax co mul x add ax si mul y add} def
+/SetFill1 {/dofill {} def} def
+/SetFill2 {/dofill {gsave 1 setgray eofill grestore} def} def
+/SetRound3 {/rad 14 def} def
+/SetThick2 {1 setlinewidth} def
+/SetPen3 {/dostroke {currentlinewidth 0 eq {newpath} {stroke} ifelse} def} def
+%
+%%EndProlog
+%%Page: ? ?
+SetThick2 SetPen3 SetFill2 SetRound3
+108 36 180 0 rr
+108 36 0 0 rr
+144 36 72 108 rr
+SetFill1 (Times-Roman) 12 ff
+[ (source editor) ] 0 77 -14 108 133 text
+[ (proof editor) ] 0 71 -14 18 25 text
+[ (formatter) ] 0 58 -14 207 25 text
+3 54 72 54 36 ar
+3 54 -72 180 108 ar
+3 72 0 108 18 ar
+%%Trailer
+end

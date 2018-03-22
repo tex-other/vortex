@@ -1,0 +1,31 @@
+This is DVItype, Version 2.8 for Berkeley UNIX
+Options selected:
+  Starting page = *.*.*.*.*.*.*.*.*.* 
+  Maximum number of pages = 1000000
+  Output level = 2 (verbose)
+  Resolution =  72.27000000 pixels per inch
+numerator/denominator=25400000/473628672
+magnification=2000;       0.00003052 pixels per DVI unit
+' TeX output 1957.11.20:0700'
+ 
+42: beginning of page -2.0.0.0.11.0.327680.1572864.1073741823.-1073741823 
+87: down4 1072299968 v:=0+1072299968=1072299968, vv:=32724 
+92: push 
+level 0:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+93: right3 196609 h:=0+196609=196609, hh:=6 
+[ ]
+97: fntdef1 0: trip---loaded at size 655360 DVI units 
+ (this font is magnified 200%) 
+117: fntnum0 current font is trip 
+118: setchar65 h:=196609+131072=327681, hh:=10 
+119: right3 373830 h:=327681+373830=701511, hh:=21 
+[A ]
+123: set1 130 h:=701511+262144=963655, hh:=29 
+125: pop 
+level 0:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+126: down3 655360 v:=1072299968+655360=1072955328, vv:=32744 
+130: eop 
+Postamble starts at byte 131.
+maxv=1073610751, maxh=539754497, maxstackdepth=1, totalpages=1
+Font 0: trip 
+ 

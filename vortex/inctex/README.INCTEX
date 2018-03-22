@@ -1,0 +1,143 @@
+README.INCTEX
+
+This is the README file about the IncTeX distribution,
+from the Univ. of California, Berkeley, which is distributed under the
+following licensing restrictions:
+
+# IncTeX is 
+# Copyright (c) 1985-1992 The Regents of the University of California.
+# All rights reserved.
+# 
+# Permission is hereby granted, without written agreement and without
+# license or royalty fees, to use, copy, modify, and distribute this
+# software and its documentation for any purpose, provided that the
+# above copyright notice and the following two paragraphs appear in
+# all copies of this software.
+# 
+# IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO ANY PARTY FOR
+# DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
+# OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF
+# CALIFORNIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# 
+# THE UNIVERSITY OF CALIFORNIA SPECIFICALLY DISCLAIMS ANY WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+# AND FITNESS FOR A PARTICULAR PURPOSE.  THE SOFTWARE PROVIDED HEREUNDER IS
+# ON AN "AS IS" BASIS, AND THE UNIVERSITY OF CALIFORNIA HAS NO OBLIGATION TO
+# PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+IncTeX requires a C compiler which allows contiguous variable allocation
+(initial values are used in variable declarations to force contiguous variable
+allocation).  The variables in question are all declared in "Iglobal.c".
+IncTeX compiles on Sun's, but not DECstations (which use the MIPS compiler).
+
+--------------------Building IncTeX------------------------
+
+The main directory contains the source files for IncTeX.
+The INFO file has information about how to use IncTeX.
+Make will build a basic version of "virtex".
+You need a TeX environment on your system before you can build
+IncTeX (that is, you have to be able to run tex or latex already).
+If you don't, you won't be able to create the .fmt dump files for
+tex (iplain.fmt) and latex (ilplain.fmt).
+It will be helpful if you are familiar with how to build normal TeX.
+Read through the rest of this information before you start building
+IncTeX, there are variables you have to set and choices you should know about.
+
+After the build, you will end up with the following files:
+
+   bin/inctex   - the IncTeX binary
+   bin/ilatex   - a script that runs IncTeX on LaTeX documents
+   bin/itex     - a script that runs IncTeX on TeX documents
+   bin/patchdvi - a utility used in ilatex & itex to merge in new pages
+   INIT/initex  - (optional) a version of IncTeX to build .fmt dump files
+   bin/ilplain.fmt - a dump file for the LaTeX style (from lplain.tex)
+   bin/iplain.fmt  - a dump file for the TeX style (from plain.tex)
+
+There is a csh script called "build" which will create these files for you.
+Before you start it, you should edit "build" and set the TeX environment
+variables TEXFONTS TEXFORMATS TEXINPUTS TEXPOOL appropriately (setenv
+will show what your current settings are) so that formatting input can
+be fetched during the build.  You can build the binaries without a
+TeX environment (you can't generate the .fmt files), see the build script
+comments.
+
+Optional: decide if you want to keep INIT/initex around.
+You will if you want to generate incremental versions for other styles
+than plain TeX or LaTeX (for example, SliTeX).
+Set the variable "saveinitex" to "Y" in the build script if you do.
+
+Optional: If you want to change the memory limits on the formatter,
+modify the values of MEM_BOT and MEM_TOP in "tex.h" (for example,
+if you want it to be the same as your system version) (note: the flags
+BIG and BIGG are off/undefined in Makefile as it is distributed).
+You may want to do this if a user complains that
+the formatter runs out of memory on one of his documents.
+
+Optional: If you want to use your own versions of plain.tex or lplain.tex
+(TeX & LaTeX style files), copy them into this directory.
+IncTeX is based on TeX version 2.9, don't use versions for TeX 3.0!
+
+Edit the Makefile in bin/merge/lib and change the compilation variables
+for your machine type if it is not a Sun (Vax, Pyramid, etc).
+
+Now run the script here called "build".
+
+There is a csh script called "install" which will install the files.
+Before you run it, decide where you want to put the binaries and scripts
+(virtex, patchdvi, itex, ilatex), and where you want to have the
+.fmt files (possibly where they are now or where you put the other .fmt
+files).  Putting the new .fmt files with the other ones means that
+people won't have to change their TEXFORMATS environment variable,
+but you have to be sure that there aren't any files there with the
+same name already.
+Edit "install" and change the variables "bindir" and "fmtdir"
+appropriately.
+
+If you want to test IncTex right now, cd to "test" and run
+the script "test".  You should see output which looks like
+what's in the file "output".
+
+Run the script "install".
+That's it for the basics.
+
+-----------------------
+Setting up IncTeX to run for other styles (in this example, SliTeX):
+Modify build so it saves INIT/initex (otherwise, do a make in
+this directory, then a make in INIT.  A "make clean" in both directories
+will remove the object files).
+First generate a .fmt file for that style:
+  Copy slitex.tex into this directory and type
+  INIT/initex -b slitex '\dump'
+When initex finishes, you should see a file called slitex.fmt
+Rename slitex.fmt to islitex.fmt (so it won't conflict with the
+version for nonincremental TeX).
+Install it with the other .fmt files for IncTeX.
+Now copy the script itex (it's in the bin directory or where you
+set "bindir" in the install procedure) as "islitex".
+Edit "islitex", modify the line that sets variable fmt so it says
+   set fmt="&islitex"
+(or whatever the prefix of the .fmt file name is).
+Install islitex with the other scripts.
+
+-----------------------
+If you now run itex or ilatex and it tells you it cannot find input files
+or fonts, then it is likely that the environment variables controlling
+search paths for these things do not match your system.  "man tex" will
+tell you what these variables are; set these variables and run initex
+one more time; the .fmt files will now have these paths dumped into them.
+
+----------------Optional-------------------
+The subdirectory "trip" was included just in case.  You don't need it
+to build IncTeX and you can delete it if you want.
+In fact you will probably never want to try to learn how to use it!
+It has sources for compiling & running the TeX TRIP acceptance test.
+It has been included in case you ever want to modify IncTeX
+yourself and run it through acceptance tests.
+It contains modified copies of trip.tex and tripmakefile
+so triptex can be tested incrementally.  It has a README file
+with information.  See also the TeX documentation on the normal TRIP test.
+
+"trip" in turn has its own INIT subdirectory for building an initex
+to create a trip.fmt file, if necessary.
+
+If you don't plan to modify code, you can delete the trip directory.

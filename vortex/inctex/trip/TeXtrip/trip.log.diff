@@ -1,0 +1,152 @@
+1c1
+< This is Common TeX, Version 2.9 (preloaded format=trip 88.11.10) 10 NOV 1988 12:39
+---
+> This is TeX, Version 1.4 (preloaded format=trip 85.4.18)  18 APR 1985 03:06
+3c3
+< (./trip.tex ##
+---
+> (trip.tex ##
+41,42c41
+< Completed box being shipped out
+< [0.0.0.0.11]
+---
+> Completed box being shipped out [0.0.0.0.11]
+76c75
+< Memory usage before: 155&14; after: 98&14; still untouched: 1963
+---
+> Memory usage before: 155&302; after: 98&270; still untouched: 1621
+601c600
+< Memory usage before: 743&29; after: 577&26; still untouched: 1947
+---
+> Memory usage before: 743&460; after: 577&457; still untouched: 1516
+767c766
+< Memory usage before: 471&23; after: 286&19; still untouched: 1947
+---
+> Memory usage before: 471&446; after: 286&442; still untouched: 1498
+861c860
+< Memory usage before: 212&16; after: 145&15; still untouched: 1947
+---
+> Memory usage before: 212&435; after: 145&434; still untouched: 1498
+1008c1007
+< Memory usage before: 118&14; after: 102&14; still untouched: 1947
+---
+> Memory usage before: 118&320; after: 102&320; still untouched: 1498
+1343c1342
+< \vbox(16383.99998+0.0)x1000.0, glue set 16341.99902fil
+---
+> \vbox(16383.99998+0.0)x1000.0, glue set 16342.0fil
+1449c1448
+< Memory usage before: 990&26; after: 584&20; still untouched: 947
+---
+> Memory usage before: 990&368; after: 584&362; still untouched: 498
+1859c1858
+< (./tripos.tex
+---
+> (tripos.tex
+1922c1921
+< \vbox(16383.99998+1.0)x100.0, glue set 16238.99902fil
+---
+> \vbox(16383.99998+1.0)x100.0, glue set 16239.0fil
+2090c2089
+< Memory usage before: 942&179; after: 542&97; still untouched: 797
+---
+> Memory usage before: 942&521; after: 542&439; still untouched: 454
+2401c2400
+< \vbox(16383.99998+0.0)x20.0, glue set 16330.99902fil
+---
+> \vbox(16383.99998+0.0)x20.0, glue set 16331.0fil
+2441c2440
+< Memory usage before: 331&32; after: 232&24; still untouched: 797
+---
+> Memory usage before: 331&405; after: 232&397; still untouched: 454
+3144c3143
+< \vbox(10000.0+2.0)x28.0, glue set 9730.58691fil
+---
+> \vbox(10000.0+2.0)x28.0, glue set 9730.5874fil
+3411c3410
+< Memory usage before: 2150&126; after: 1169&71; still untouched: 397
+---
+> Memory usage before: 2150&498; after: 1169&443; still untouched: 112
+3652c3651
+< \vbox(16383.99998+2.0)x100.0, glue set 16317.99902fil
+---
+> \vbox(16383.99998+2.0)x100.0, glue set 16318.0fil
+3739c3738
+< Memory usage before: 640&26; after: 397&21; still untouched: 397
+---
+> Memory usage before: 640&407; after: 397&402; still untouched: 112
+3819c3818
+< \vbox(16383.99998+0.0)x8236.0, glue set 16343.99902fil
+---
+> \vbox(16383.99998+0.0)x8236.0, glue set 16344.0fil
+3838c3837
+< Memory usage before: 255&20; after: 198&18; still untouched: 397
+---
+> Memory usage before: 235&393; after: 178&391; still untouched: 112
+4189c4188
+< \vbox(16383.99998+0.0)x100.0, glue set 16331.99902fil
+---
+> \vbox(16383.99998+0.0)x100.0, glue set 16332.0fil
+4275c4274
+< Memory usage before: 671&43; after: 437&29; still untouched: 397
+---
+> Memory usage before: 651&418; after: 417&404; still untouched: 112
+4462c4461
+< Pretend that you're Hercule Poirot: Examine all clues,
+---
+> Pretend that you're Hercule Poirot, examine all clues,
+4509c4508
+< \vbox(16383.99998+0.0)x205.12613, glue set 16343.99902fil
+---
+> \vbox(16383.99998+0.0)x205.12613, glue set 16344.0fil
+4595c4594
+< Memory usage before: 796&27; after: 484&21; still untouched: 397
+---
+> Memory usage before: 776&427; after: 464&421; still untouched: 112
+6069c6068
+< (./tripos.tex
+---
+> (tripos.tex
+6284c6283
+< Memory usage before: 839&32; after: 740&30; still untouched: 397
+---
+> Memory usage before: 819&389; after: 720&387; still untouched: 112
+6842c6841
+< Memory usage before: 904&47; after: 299&31; still untouched: 397
+---
+> Memory usage before: 895&400; after: 290&384; still untouched: 112
+6946,6948c6945,6947
+< Completed box being shipped out
+< [-1.2.-1118806.0.11.196608.327680.1572864.1073741823]
+< vbox(16383.99998+0.0)x100.0, glue set 8181.99951fill
+---
+> Completed box being shipped out [-1.2.-1118806.0.11.196608.327680.157286
+> 4.1073741823]
+> vbox(16383.99998+0.0)x100.0, glue set 8182.0fill
+6975c6974
+< Memory usage before: 343&31; after: 301&31; still untouched: 397
+---
+> Memory usage before: 334&395; after: 292&382; still untouched: 112
+6980,6989c6979,6987
+< (end occurred when iftrue on line 413 was incomplete)
+<  Here is how much of TeX's memory you used:
+< 660 strings out of 4400
+< 3479 string characters out of 40000
+< 2602 words of memory out of 3001
+< 482 words of token memory out of 30001
+< 358 multiletter control sequences out of 3000
+< 729 words of font info for 4 fonts, out of 35000 for 150
+< 2 hyphenation exceptions out of 307
+< 5i,7n,9p,113b,38s stack positions out of 200i,40n,30p,500b,1000s
+---
+> (end occurred when iftrue on line 413 was incomplete) 
+> Here is how much of TeX's memory you used:
+>  43 strings out of 1819
+>  229 string characters out of 9280
+>  2888 words of memory out of 3000
+>  358 multiletter control sequences out of 2100
+>  729 words of font info for 4 fonts, out of 20000 for 75
+>  2 hyphenation exceptions out of 307
+>  5i,7n,9p,113b,38s stack positions out of 200i,40n,60p,500b,600s
+6990a6989
+> Output written on trip.dvi (16 pages, 2888 bytes).

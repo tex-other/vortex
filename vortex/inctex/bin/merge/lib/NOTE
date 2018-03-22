@@ -1,0 +1,16 @@
+There are two VAX-dependent file in this directory:
+
+- bcopy.s	block copy routine.  You can simply remove this from
+		the Makefile if you are running 4.2; bcopy is already
+		provided.
+
+- bzero.s	block zero routine.  As above.
+
+There is one more system-dependent file:
+
+- error.c	error and panic routines.  These make calls to stdio
+		internals, except on System V or other machines on
+		which there are `vprintf' routines.  Define HAVE_VPRINTF
+		if you have the vprintf routines.
+
+See the manuals for the parameters to these.

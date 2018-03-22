@@ -1,0 +1,250 @@
+(This is the CTEX library from U. of Maryland)
+
+This directory is for library routines.  They are hopefully now 99%
+portable, but only time (and new machines) will tell.
+
+File		Functions
+----------------------------------------------------------------------
+bcopy.s		bcopy(from, to, count)
+		char *from, *to;
+		int count;
+
+		Copies `count' bytes from location `from' to
+		location `to'
+----------------------------------------------------------------------
+bzero.s		bzero(addr, count)
+		char *addr;
+		int count;
+
+		Zeroes `count' bytes starting at location `addr'
+----------------------------------------------------------------------
+error.c		error(quit, errno, fmt, arg1, arg2, ...)
+		int quit, errno;
+		char *fmt;
+
+		Prints the message in `fmt' to stderr as would
+		fprintf, along with the (optional) system error
+		associated with `errno'.  If `quit' is nonzero,
+		does an exit(quit).  Give 0 for errno to suppress
+		the system error part.
+----------------------------------------------------------------------
+findpost.c	FindPostAmble(f)
+		FILE *f;
+
+		Repositions the file `f' (using fseek(3S)) to
+		the beginning of the postamble, such that the next
+		getc from f should return DVI_POST.
+
+		Returns 0 if successful, -1 otherwise.
+----------------------------------------------------------------------
+fio.c		GetLong(f)
+[See also	FILE *f;
+../h/fio.h]
+		Gets a `long' from file `f' in the format written
+		by PutLong.  [This should actually be an `i32'
+		function but I am too lazy to go fix that now.]
+		------------------------------------------------------
+		Get3Byte(f)
+		FILE *f;
+
+		Gets a 3 byte integer from file `f' in the format
+		written by Put3Byte.  The value is sign extended.
+		------------------------------------------------------
+		GetWord(f)
+		FILE *f;
+
+		Gets a 2 byte integer from file `f'.  The value is
+		sign extended.
+		------------------------------------------------------
+		GetByte(f)
+		FILE *f;
+
+		Gets a 1 byte integer from file `f'.  The value is
+		sign extended.
+
+		All of these have counterparts in ../h/fio.h which
+		may be used in speed-critical routines.  However, these
+		differ from the fGet* versions in that:
+		   + these check for EOF (and call error if found);
+		   + these sign extend their return values.
+----------------------------------------------------------------------
+getopt.c	extern char *optarg;
+[From Henry	extern int optind;
+Spencer @
+U of Toronto	int
+Zoology]	getopt(argc, argv, optstring)
+		int argc;
+		char **argv;
+		char *optstring;
+
+		`argv' and `argc' should be those given to main().
+		getopt scans command line arguments according to the
+		string in `optstring'.  Arguments are considered to
+		start with `-'.  A quick example:
+
+			switch (getopt(argc, argv, "bco:s:")) {
+			case 'b': ...
+
+		would allow the options `-b', `-c', `-o argument', and
+		and `-s argument', and would return 'b', 'c', 'o', or
+		's', if one of those were specified.  If getopt runs out
+		of arguments, it returns EOF; if it encounters an invalid
+		option letter (e.g., `-z' in this example) it returns '?'.
+
+		If the option has an argument, getopt leaves `optarg'
+		pointing to it.
+
+		After getopt returns EOF, the remaining arguments (if
+		any) are in argv[optind] through argv[argc - 1].
+----------------------------------------------------------------------
+***deprecated***
+machint.s	machint(addr, count)
+		int *addr;
+		int count;
+
+		Converts `count' 4 byte integers at location `addr'
+		to machine order.  This is used to convert arrays of
+		integers in the order generated and written by PutLong
+		and GetLong to and from machine order.
+----------------------------------------------------------------------
+***deprecated***
+machintnop.c	machint(addr, count)
+		int *addr;
+		int count;
+
+		No-op version for Suns & Pyramids.
+----------------------------------------------------------------------
+***deprecated***
+pxl.c		double DMagFactor(magfactor)
+		int magfactor;
+
+		Returns magfactor/1000.0, with some extra fiddling
+		to get more precise values for the various \magstep's
+		that are commonly used.
+		------------------------------------------------------
+		char *GenPXLFileName(nm, mag, designsize, globalmag, path)
+		char *nm;
+		int mag, designsize, globalmag;
+		char *path;
+
+		Returns (in static storage) the name of the PXL
+		file given the name of the font `nm', the DVI
+		magnification (`at size') `mag', the design
+		size `designsize', an additional magnification
+		of `globalmag/1000.0', and the assumed path
+		`path'.  If path is zero (or *path is 0), the
+		constant PXLPATH (from ../h/pxl.h) is used instead.
+		`Path' should normally be the value of the
+		environment variable ``TEXFONTS''.
+		------------------------------------------------------
+		struct pxltail *ReadPXLFile(nm, getrast)
+		char *nm;
+		int getrast;
+
+		Reads the named PXL file and returns a pointer to
+		a built-up struct pxltail.  `Nm' should be the
+		name as returned by GenPXLFileName.  If `getrast'
+		is nonzero, the character rasters will also be
+		read in, and the raster pointers in the chinfo
+		structures will be set to point to each character's
+		raster (or to 0 if the raster is completely blank).
+----------------------------------------------------------------------
+***XXX***
+rotate.c	PerformRotation(ch, deg)
+		struct chinfo *ch;
+		int deg;
+
+		Rotates the bitmap of the character `ch', and
+		exchanges the height and width fields so that the
+		new bitmap is indistinguishable from the original
+		as far as those values are concerned.  `deg' is
+		the number of degrees of rotation desired and must
+		be a multiple of 90.  Currently only -90 (and 270)
+		degree rotations are supported (this is one quarter
+		turn clockwise).
+
+		The rotation is done in place.
+
+		In general, this should only be used in the final
+		output stages of a device that needs `landscape
+		mode' output.
+----------------------------------------------------------------------
+***XXX***
+scaletfm.c	ScaleTFMWidths(px, z)
+		struct pxltail *px;
+		i32 z;
+
+		Scales all the TFM widths in px->px_info according to
+		the scale factor `z', which should be the `at size'
+		from a DVI file (i.e., a number in scaled points).
+
+		i32 ScaleOneWidth(width, z)
+		i32 width, z;
+
+		Scales the (single) TFM width `width' by `z'.
+----------------------------------------------------------------------
+scanpost.c	ScanPostAmble(f, headerfunc, fontfunc)
+		FILE *f;
+		int (*headerfunc)(), (*fontfunc)();
+
+		Scans the postamble of a DVI file.  The given functions
+		are called with the information gleaned from reading the
+		postamble.  Headerfunc is called once, and fontfunc once
+		per font definition.
+		
+		See ../h/postamble.h for the definitions of the
+		parameters passed to the two functions.
+----------------------------------------------------------------------
+search.c	struct search *SCreate(dsize)
+		unsigned dsize;
+
+		Creates a search table; keys are i32 integers, data
+		objects are of size dsize and of unspecified type.  A
+		null pointer is returned if the table cannot be created.
+
+		SEnumerate(table, func)
+		struct search *table;
+		int (*func)();
+
+		Invokes the given function on each object in the table.
+		The function is handed a "char *" pointer to the objects
+		as its first argument and the i32 key as its second.
+		(The return value from (*func)(), if any, is ignored;
+		technically it should be void (*func)(), but that is
+		not implemented quite right in many Unix compilers...)
+
+		char *SSearch(table, key, disp)
+		struct search *table;
+		i32 key;
+		int *disp;
+
+		Searches for a given key within the given search
+		table.  A number of dispositions can be specified;
+		see ../h/search.h for the flags that can be specified
+		in *disp.  *disp is modified before return to set
+		the reason for the search success or failure.  The
+		return value is a pointer to the user data area
+		for the given key if found, otherwise NULL.
+
+		WARNING: data areas may move on future searches that
+		create new data objects.
+----------------------------------------------------------------------
+seek.c		int Seekable(fd)
+		int fd;
+
+		Returns true iff the Unix file fd is randomly
+		accessible.  (In particular, pipes are not.)
+
+		int MakeSeekable(f)
+		FILE *f;
+
+		If the stdio file f is not seekable, MakeSeekable
+		forces it to be so, by copying it to a temporary
+		file.  MakeSeekable returns zero on success; -1
+		indicates failure.
+----------------------------------------------------------------------
+strsave.c	char *strsave(s)
+		char *s;
+
+		Saves a malloc()ed copy of the C string s.  (Beware:
+		exits if out of memory.)

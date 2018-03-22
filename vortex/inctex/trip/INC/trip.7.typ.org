@@ -1,0 +1,78 @@
+This is DVItype, Version 2.8 for Berkeley UNIX
+Options selected:
+  Starting page = *.*.*.*.*.*.*.*.*.* 
+  Maximum number of pages = 1000000
+  Output level = 2 (verbose)
+  Resolution =  72.27000000 pixels per inch
+numerator/denominator=25400000/473628672
+magnification=2000;       0.00003052 pixels per DVI unit
+' TeX output 1957.11.20:0700'
+ 
+42: beginning of page -2.0.0.0.11.0.0.0.0.0 
+87: down4 1072299968 v:=0+1072299968=1072299968, vv:=32724 
+92: push 
+level 0:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+93: push 
+level 1:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+94: push 
+level 2:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+95: down3 -1441792 v:=1072299968-1441792=1070858176, vv:=32680 
+99: down3 1441792 v:=1070858176+1441792=1072299968, vv:=32724 
+103: pop 
+level 2:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+104: pop 
+level 1:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+105: push 
+level 1:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+106: push 
+level 2:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+107: down3 -1441792 v:=1072299968-1441792=1070858176, vv:=32680 
+111: down3 1310720 v:=1070858176+1310720=1072168896, vv:=32720 
+115: pop 
+level 2:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+116: pop 
+level 1:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+117: push 
+level 1:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+118: push 
+level 2:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+119: down3 -1441792 v:=1072299968-1441792=1070858176, vv:=32680 
+123: down3 1310720 v:=1070858176+1310720=1072168896, vv:=32720 
+127: pop 
+level 2:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+128: pop 
+level 1:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+129: pop 
+level 0:(h=0,v=1072299968,w=0,x=0,y=0,z=0,hh=0,vv=32724) 
+130: y3 655360 v:=1072299968+655360=1072955328, vv:=32744 
+134: push 
+level 0:(h=0,v=1072955328,w=0,x=0,y=655360,z=0,hh=0,vv=32744) 
+135: right3 393217 h:=0+393217=393217, hh:=12 
+[ ]
+139: fntdef1 0: trip---loaded at size 655360 DVI units 
+ (this font is magnified 200%) 
+159: fntnum0 current font is trip 
+160: setchar65 h:=393217+131072=524289, hh:=16 
+161: right3 131072 h:=524289+131072=655361, hh:=20 
+165: setchar66 h:=655361+196608=851969, hh:=26 
+[A B]
+166: pop 
+level 0:(h=0,v=1072955328,w=0,x=0,y=655360,z=0,hh=0,vv=32744) 
+167: y0 655360 v:=1072955328+655360=1073610688, vv:=32764 
+168: push 
+level 0:(h=0,v=1073610688,w=0,x=0,y=655360,z=0,hh=0,vv=32764) 
+169: right3 196609 h:=0+196609=196609, hh:=6 
+173: setchar67 h:=196609+262144=458753, hh:=14 
+[ C]
+174: push 
+level 1:(h=458753,v=1073610688,w=0,x=0,y=655360,z=0,hh=14,vv=32764) 
+175: putrule height 26214, width 393216 (1x12 pixels) 
+184: pop 
+level 1:(h=458753,v=1073610688,w=0,x=0,y=655360,z=0,hh=14,vv=32764) 
+185: pop 
+level 0:(h=0,v=1073610688,w=0,x=0,y=655360,z=0,hh=0,vv=32764) 
+186: eop 
+Postamble starts at byte 187.
+maxv=1073610751, maxh=65536001, maxstackdepth=4, totalpages=1
+Font 0: trip 
+ 

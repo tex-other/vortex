@@ -1,0 +1,225 @@
+% Document Type: LaTeX
+% Master File: inst.tex
+\documentstyle{article}
+\input logo
+
+\begin{document}
+
+\title{Some New Features of {\sl {\Bbf}-mode} and {\TM}}
+\author{Ethan Munson}
+\date{September 12, 1988}
+\maketitle
+
+\section{Reference Annotation}
+
+The reference annotation functions found in {\tt BibTeX-notes.el}
+allow you to attach files containing notes to entries in your
+{\BibTeX} database.  The names of these files should be recorded in a
+new field called {\tt NOTEFILES}.  The files must either be in the
+same directory as the {\BibTeX} database file or in the directory path
+defined by the environment variable {\tt BTXMODENOTEFILES} or their
+full path name must be given.  Multiple file names should be separated
+by commas.  For instance, one such field might be:
+\begin{verbatim}
+        NOTEFILES = {foo,../../bar,/usr/public/notes}
+\end{verbatim}
+This {\tt NOTEFILES} field mentions three separate files.
+
+The annotation files attached to a reference entry can be viewed by
+typing the key sequence \verb+C-c C-v+ while the cursor is somewhere
+in the reference entry. You will then be asked whether you want to
+view each file in the list.  You can skip files, move forward and
+backward in the list of files and recursively edit any files you wish.
+If you only wish to view a single file, it can be specified with a
+prefix argument.  That is, to view the second file in the list, you
+would type \verb+C-u 2 C-c C-v+.
+
+If you do not expect to make extensive use of the annotations feature,
+it is probably sufficient to type its field in by hand.  However, it
+is possible to have the {\tt NOTEFILES} appear in every blank entry
+created by {\BM}.  This is done by adding the string
+\verb+"NOTEFILES"+ to the {\tt bibtex-extra-fields} list in your
+bibtex-mode-hook.
+
+\section{Automatic Citations using Forms-Based Queries}
+
+The new forms-based queries are intended to make it easier for you to
+search large reference databases quickly.  You can select forms-based
+queries by typing \verb+C-c C-b q+ and can choose regular expression
+queries by typing \verb+C-c C-b DEL+.  You can also choose forms-based
+queries by putting the command
+\begin{verbatim}
+  (setq tex-cite-use-full-query t)
+\end{verbatim}
+in your {\tt tex-mode-hook}.
+
+When using forms-based queries, you are presented with a blank
+template similar to a blank {\BM} entry.  You specify a query by
+filling in some of the fields of this template.  For instance, if you
+want to find Chen's paper on multiple representation document
+development in IEEE Computer, you might put the word {\tt chen} in the
+{\tt AUTHOR} field, the word fragment {\tt mult} in the {\tt TITLE}
+field, and the word {\tt computer} in the {\tt JOURNAL} field.  Some
+fields in the template have multiple labels.  These labels were
+combined because the fields have similar content (e.g. {\tt AUTHOR}
+and {\tt EDITOR}) or because they rarely occur together (e.g. {\tt
+SCHOOL} and {\tt ORGANIZATION}).  When you enter a word in a
+multi-label field (e.g. {\tt AUTHOR/EDITOR}), {\TM} will search all
+corresponding fields in the entries for that word.  There is also a
+special field, labelled {\tt ANYFIELD}.  Text entered here is searched
+for in all the fields of an entry.
+
+In the previous example, each field was filled in with a single word
+or word fragment.  You can formulate more complex queries in two ways.
+First, if multiple words are entered in a field of the template, the
+query will find entries which have all the specified words in that
+field.  For instance, if you enter both {\tt chen} and {\tt harrison}
+in the {\tt AUTHOR} field of the template, {\TM} will find all entries
+whose {\tt AUTHOR} field contains both words.  Multiple words in a
+field must be separated by spaces, tabs, or newlines.  These multiple
+words may appear in any order in the entry.  The second feature
+allowing more complex queries is that text entered in a field is
+actually treated as a regular expression.  Thus, if you enter the
+regular expression, {\tt muns[eo]n}, {\TM} will match both the English
+and Norwegian spelling of my name.  If you wish to provide a regular
+expression that includes spaces, tabs, or newlines, it must be
+surrounded by double quotes.  If, for some strange reason, you expect
+to find double quotes in the text of the entry, you can search for
+them by using `\verb+\"+'.
+
+\section{Reference Inspection using a DVI Previewer}
+
+Previously, {\TM}'s reference inspection facility allowed you to view
+a partially formatted version of a citation's corresponding entry in
+the reference list.  This new feature allows users of the X window
+system to view the same information in fully formatted form.  
+
+To use this feature, you should do three things.  First, you should
+add the line 
+\begin{verbatim}
+  (setq tex-insp-use-dvi t)
+\end{verbatim}
+to your {\tt tex-mode-hook}.  Second, the inspection routines assume
+that your X10 previewer is called {\tt dvi2x} and your X11 previewer
+is called {\tt dvi2x11}.  If this is not the case then you should set
+the variable {\tt tex-softcopy} to the correct name.  If you want
+Emacs to figure out which window system version you are using, look at
+the code in {\tt TeX-insp.el} to see how it can be done.  Likewise, if
+the correct version of {\tt dvisend} is not called {\tt dvisend} or is
+not in your path, you should set the variable {\tt tex-dvisend}
+appropriately.
+
+When {\tt tex-insp-use-dvi} is non-nil, {\TM} will use {\tt dvi2x} for
+reference inspection.  You still inspect references by typing
+\verb+C-c C-b i+, but the way the references are displayed changes.
+Now, {\TM} creates a special set of {\LaTeX} files containing your
+references.  If your document's master file is called {\tt foo.tex},
+these files will have names starting with {\tt foo++}.  {\TM} then
+runs {\LaTeX} on these files producing {\tt foo++.dvi} which it
+previews with {\tt dvi2x}.  The {\tt dvi2x} window has been given a
+preset size that should be just enough for even long references.  A
+click of the left mouse button when placing the window will give you a
+window of this size.  You can get a window of a different size by
+using the middle mouse button and dragging the lower right corner of
+the window to the size you wish.  
+
+Once the dvi2x window is placed, {\TM} will automatically control its
+display of different references.  If you move to a different document,
+the switch will be handled correctly.  However, there are two things
+you might do which {\TM} can not account for.  {\TM} can not tell if
+the {\tt dvi2x} is iconic or not, so if you have iconified it, you
+must explicitly uniconify it using your X window manager.  Secondly,
+if you use the {\tt dvi2x} window to view other {\tt dvi} files, you
+must explicitly tell {\TM} to reread the reference inspection {\tt
+dvi} file.  You do this by typing \verb+C-c C-b R+.  {\TM} can
+recognize and correctly handle the case where you have killed the
+{\tt dvi2x} process.
+
+\subsection{Warning}
+
+This feature is not lightning fast.  It takes about fifteen
+seconds minimum to run {\LaTeX} on the special file on a Sun 3/50 and
+another five seconds or so to get {\tt dvi2x} started.  Once {\tt
+dvi2x} is running, it takes about three seconds to switch between
+references on the same machine.
+
+\section{New Bibliography Preprocessing}
+
+Another addition is a new form of bibliography preprocessing, invoked
+with the key sequence \verb+C-c C-b p+.  This new method does not
+alter your {\LaTeX} source file in any way.  Instead, it emulates the
+bibliographic behavior of the first two of the three runs of {\LaTeX}
+required to format a document from scratch.  It scans the document
+source file for citations and saves them in the \verb+.aux+ file, runs
+{\BibTeX}, and places the resulting cross-reference information in the
+\verb+.aux+ file.  The advantages of this new preprocessing method
+are:
+\begin{itemize}
+\item It does not change your {\LaTeX} source files and only changes your
+	.aux files in ways that {\LaTeX} would anyway.  In particular, it
+	does not destroy other cross-reference information in your
+	.aux file.
+
+\item It works correctly with all {\BibTeX} styles.
+
+\item It is somewhat faster and does not require any user response unless
+	errors are found by {\BibTeX}.
+
+\item It ignores bibliographic commands embedded in verbatim
+	environments.
+\end{itemize}
+The relative disadvantages of the new mechanism are:
+\begin{itemize}
+\item It cannot be used with {\TeX} files.
+
+\item It is not integrated with the error correction features of
+	{\TeX}/{\BibTeX}-mode
+\end{itemize}
+
+In testing on an 18 page paper, the new mechanism took 11 seconds to
+do the same work that {\LaTeX} and {\BibTeX} took 105 seconds to do.  The
+earlier preprocessing mechanism took 16 seconds on this task.
+
+\section{Improved Field Operations}
+
+{\BM} has been changed to work correctly with almost any file
+that {\BibTeX} will accept.  Previously, {\BM} made a number of
+assumptions about database files that do not always hold.  In
+particular, {\BM} now accepts files where the \@-sign and entry
+name have whitespace between them, fields whose label, equals sign,
+and text are on different lines, entries with multiple fields on one
+line, and files whose entry and field labels are not all upper-case.
+
+These changes require the use of case-insensitive search.  This could
+be a problem for users who set Emacs to use case-sensitive search.
+Thus, all {\BM} functions which need case-insensitive search now
+change this value temporarily but preserve the user's value.
+
+Finally, the functions in {\BM} which move from field to field were
+rewritten to achieve some performance improvements.  The speed-up is
+substantial in all cases, but is particularly profound when moving
+across multiple fields at once.  A comparison between the speed of
+these operations in Version 1.9 (before the changes) and in Version
+1.10 (after) appears in Table~\ref{fieldops}.
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|} \hline
+&\multicolumn{2}{|c|}{ Version 1.9} & \multicolumn{2}{|c|}{Version
+1.10}\\ \hline
+& Total& Field&Total&	  Field \\ \hline
+Forward one field & 150 & 150 & 82 & 82 \\
+Forward five fields & 750 & 150 & 220 & 44 \\
+Forward 100 fields & 14000 & 140 & 3200 & 32 \\ \hline
+\end{tabular}
+\caption{Measured Performance of Field Operations in two versions of
+{\BM} (times is {\em ms}).}
+\label{fieldops}
+\end{center}
+\end{table}
+
+These performance improvements in {\BM} spill over into the
+automatic citation routines of {\TM}.  For example, a particular search for 
+the Gremlin tutorial in my database and Pehong's takes about 6 seconds
+using Version 1.9 and about 3.5 seconds using Version 1.10.
+
+\end{document}

@@ -1,0 +1,29 @@
+#!/bin/csh
+#
+#   Copyright (C) 1992 by Regents of the University of California
+#
+# This macro installs the IncTeX files.
+#set echo
+
+#Set this variable to be the directory to install
+#  virtex patchdvi (the IncTeX binaries) itex ilatex (scripts)
+set bindir="./bin"
+
+#Set this variable to be the directory to install
+#  virtex patchdvi (the IncTeX binaries) itex ilatex (scripts)
+set fmtdir="./bin"
+
+if ("$bindir" != "./bin") then
+  echo "Installing in $bindir"
+  mv ./bin/inctex $bindir
+  mv ./bin/patchdvi $bindir
+  mv ./bin/itex $bindir
+  mv ./bin/ilatex $bindir
+endif
+if ("$fmtdir" != "./bin") then
+  echo "Installing in $fmtdir"
+  mv ./bin/iplain.fmt $fmtdir
+  mv ./bin/ilplain.fmt $fmtdir
+endif
+echo ""
+echo "Done."
